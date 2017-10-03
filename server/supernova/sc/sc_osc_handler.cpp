@@ -1480,7 +1480,11 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
             p << controls;
 
             for (int i = 0; i != controls; ++i) {
-                p << osc::int32(i); /** \todo later we can return symbols */
+                const char * name_of_slot = scsynth.name_of_slot(i);
+                if(name_of_slot) {
+                    p << name_of_slot;
+                } else
+                    p << osc::int32(i);
 
                 if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
                     /* we use a bus mapping */
