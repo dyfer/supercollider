@@ -1480,7 +1480,10 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
             p << controls;
 
             for (int i = 0; i != controls; ++i) {
-                const char * name_of_slot = scsynth.name_of_slot(i);
+                const char * name_of_slot;
+                if( i < scsynth.number_of_slots())
+                    name_of_slot = scsynth.name_of_slot(i);
+
                 if(name_of_slot) {
                     p << name_of_slot;
                 } else
