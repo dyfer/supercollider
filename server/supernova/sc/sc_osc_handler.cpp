@@ -1517,7 +1517,7 @@ void g_query_tree(int node_id, bool flag, endpoint_ptr endpoint)
 
     abstract_group * group = static_cast<abstract_group*>(node);
 
-    size_t max_msg_size = 1<<16;
+    size_t max_msg_size = 1<<20; //change maximum size
     for(;;) {
         try {
             if (max_msg_size > 1<<22)
