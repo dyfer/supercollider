@@ -1486,9 +1486,9 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
                 else
                     name_of_slot = 0;
 
-                if(name_of_slot) {
+                if(name_of_slot)
                     p << name_of_slot;
-                } else
+                else
                     p << osc::int32(i);
 
                 if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
