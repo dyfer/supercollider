@@ -1480,7 +1480,10 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
             p << controls;
 
             for (int i = 0; i != controls; ++i) {
-                const char * name_of_slot = scsynth.name_of_slot(i);
+                const char * name_of_slot;
+                if( i < scsynth.number_of_slots())
+                    name_of_slot = scsynth.name_of_slot(i);
+
                 if(name_of_slot) {
                     p << name_of_slot;
                 } else
@@ -1515,7 +1518,7 @@ void g_query_tree(int node_id, bool flag, endpoint_ptr endpoint)
 
     abstract_group * group = static_cast<abstract_group*>(node);
 
-    size_t max_msg_size = 1<<20; //change maximum size
+    size_t max_msg_size = 1<<16;
     for(;;) {
         try {
             if (max_msg_size > 1<<22)
