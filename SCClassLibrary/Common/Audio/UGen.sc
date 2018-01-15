@@ -186,13 +186,13 @@ UGen : AbstractFunction {
 	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		^((abs(diff) < margin) * (this + (strength * diff)) + ((abs(diff) >= margin) * this));
+		^Select.multiNew(this.rate, abs(diff) < margin, this, this + (strength * diff));
 	}
 
 	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		^((abs(diff) > margin) * (this + (strength * diff)) + ((abs(diff) <= margin) * this));
+		^Select.multiNew(this.rate, abs(diff) > margin, this, this + (strength * diff));
 	}
 
 	linlin { arg inMin, inMax, outMin, outMax, clip = \minmax;
