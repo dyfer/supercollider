@@ -317,7 +317,7 @@ inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer)
 		uint32 nSpecs = graphDef->mNumParamSpecs;
 		graphDef->mParamSpecs = (ParamSpec*)malloc(nSpecs * sizeof(ParamSpec));
 		IndexMap *tempMaps = (IndexMap*)malloc(nSpecs * sizeof(IndexMap));
-		
+
 		for (uint32 i=0; i<nSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
 			ParamSpec_ReadVer1(paramSpec, buffer); // read version 1 (the only difference to ver 2).
@@ -336,20 +336,20 @@ inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer)
 			paramSpec->mNumChannels = nextTempMap->paramSpecIndex - tempMap->paramSpecIndex;
 			// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
 		}
-		
+
 		IndexMap *tempMap = tempMaps + nSpecs - 1;
 		ParamSpec *paramSpec = graphDef->mParamSpecs + tempMap->index;
 		paramSpec->mNumChannels = graphDef->mNumControls - tempMap->paramSpecIndex;
-		
+
 		// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
-		
+
 		free(tempMaps);
 	} else {
 		// empty table to eliminate test in Graph_SetControl
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
 		graphDef->mParamSpecs = 0;
 	}
-	
+
 }
 
 // Allocation code shared between v1 and v2.
@@ -379,8 +379,7 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef)
 }
 
 // ver 2
-/** \note Relevant supernova code: \c sc_synthdef::prepare()
- * \note Relevant v1 code: \c GraphDef_ReadVer1()
+/** \note Relevant supernova code: `sc_synthdef::prepare(void)`
  */
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
@@ -577,16 +576,16 @@ SCErr GraphDef_Remove(World *inWorld, int32 *inName)
 
 SCErr SendReplyCmd_d_removed(World * inWorld,int inSize,char* inData, ReplyAddress *inReply)
 {
-	void* space = World_Alloc(inWorld, sizeof(SendReplyCmd)); 
-	SendReplyCmd *cmd = new (space) SendReplyCmd(inWorld, inReply); 
-	if (!cmd) return kSCErr_Failed; 
-	int err = cmd->Init(inData, inSize); 
-	if (err) { 
-		cmd->~SendReplyCmd(); 
-		World_Free(inWorld, space); 
-		return err; 
-	} 
-	if (inWorld->mRealTime) cmd->CallNextStage(); 
+	void* space = World_Alloc(inWorld, sizeof(SendReplyCmd));
+	SendReplyCmd *cmd = new (space) SendReplyCmd(inWorld, inReply);
+	if (!cmd) return kSCErr_Failed;
+	int err = cmd->Init(inData, inSize);
+	if (err) {
+		cmd->~SendReplyCmd();
+		World_Free(inWorld, space);
+		return err;
+	}
+	if (inWorld->mRealTime) cmd->CallNextStage();
 	else cmd->CallEveryStage();
 	return kSCErr_None;
 }
