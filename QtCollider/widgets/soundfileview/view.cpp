@@ -69,7 +69,10 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cursorColor( QColor(255,0,0) ),
   _gridColor( QColor(100,100,200) ),
   dirty(false),
-  _drawWaveform(true)
+  _drawWaveform(true),
+  _antialiasing(false),
+  _drawsCenterLine(true),
+  _drawsBoundingLines(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
 
@@ -711,6 +714,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   QPainter p( pix );
 
+  if( _antialiasing ) p.setRenderHint( QPainter::Antialiasing );
+
   if( !_cache || !_cache->ready() ) return;
 
   // check for sane situation:
@@ -781,15 +786,19 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       minMaxPen.setColor( _peakColor );
     }
 
-    // draw center line
-    p.setPen( QColor(90,90,90) );
-    p.drawLine( x, 0, x + width, 0 );
+    if( _drawsCenterLine ) {
+      // draw center line
+      p.setPen( QColor(90,90,90) );
+      p.drawLine( x, 0, x + width, 0 );
+    }
 
-    // draw bounding lines
-    p.setPen( QColor(100,100,100) );
+    if( _drawsBoundingLines ) {
+      // draw bounding lines
+      p.setPen( QColor(100,100,100) );
 
-    p.drawLine( x, halfChHScaled, x+width, halfChHScaled );
-    p.drawLine( x, -halfChHScaled, x+width, -halfChHScaled );
+      p.drawLine( x, halfChHScaled, x+width, halfChHScaled );
+      p.drawLine( x, -halfChHScaled, x+width, -halfChHScaled );
+    }
 
     p.save();
 
