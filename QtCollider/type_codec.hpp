@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_TYPE_CODEC_INCLUDED
-#define QT_COLLIDER_TYPE_CODEC_INCLUDED
+#pragma once
 
 #include "widgets/QcTreeWidget.h"
 #include "image.h"
@@ -41,13 +40,14 @@
 #include <QPalette>
 #include <QWidget>
 #include <QVector>
+#include <QUrl>
 #include <QVariantList>
 
 class QObjectProxy;
 
 namespace QtCollider {
 
-template <typename T> struct TypeCodec { };
+template <typename T, typename EnabledT=void> struct TypeCodec { };
 
 // Forwarding from QtCollider namespace to TypeCodec
 
@@ -209,6 +209,18 @@ template <> struct TypeCodec<QString>
   }
 
   static void write( PyrSlot *slot, const QString & val );
+};
+
+template <> struct TypeCodec<QUrl>
+{
+  static QUrl read( PyrSlot *slot );
+  
+  static QUrl safeRead( PyrSlot *slot )
+  {
+    return read(slot);
+  }
+  
+  static void write( PyrSlot *slot, const QUrl & val );
 };
 
 template <> struct TypeCodec<QPointF>
@@ -425,6 +437,32 @@ template <> struct TypeCodec<QVariantList>
   static void write( PyrSlot *slot, const QVariantList & );
 };
 
-} // namespace QtCollider
+template<typename QObjectT>
+struct TypeCodec<QObjectT, void>
+{
+  static QObjectT read( PyrSlot *slot )
+  {
+    return safeRead(slot);
+  }
 
-#endif // QT_COLLIDER_TYPE_CODEC_INCLUDED
+  static QObjectT safeRead( PyrSlot *slot )
+  {
+    auto proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+
+    if (proxy) {
+      auto action = qobject_cast<QObjectT>(proxy->object());
+      return action;
+    } else {
+      return 0;
+    }
+  }
+
+  static void write(PyrSlot * slot, QObjectT object)
+  {
+    auto qobject = qobject_cast<QObject*>(object);
+    TypeCodec<QObject*>::write(slot, qobject);
+  }
+
+};
+
+} // namespace QtCollider

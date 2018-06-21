@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-
 # This makes sclang/scide work with a Qt installation at a fixed location.
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -208,7 +206,7 @@ if(SC_IDE OR SC_QT)
 	find_package(Qt5Core)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
 	message(STATUS "Found Qt: " ${QtCore_location} )
-  get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
+    get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()

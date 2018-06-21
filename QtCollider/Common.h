@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef _SC_QT_COMMON_H
-#define _SC_QT_COMMON_H
+#pragma once
 
 #include "debug.h"
 
@@ -96,6 +95,8 @@ namespace QtCollider {
   QC_DO_SYMBOL(Size); \
   QC_DO_SYMBOL(QPalette); \
   QC_DO_SYMBOL(Font); \
+  QC_DO_SYMBOL(QCallback); \
+  QC_DO_SYMBOL(WebPage); \
   QC_DO_SYMBOL(QObject); \
   QC_DO_SYMBOL(Layout); \
   QC_DO_SYMBOL(TreeViewItem); \
@@ -111,5 +112,3 @@ QC_DO_SYMBOLS
 #define SC_CLASS( SYM ) SC_SYM(SYM)->u.classobj
 
 }
-
-#endif //_SC_QT_COMMON_H
