@@ -33,6 +33,10 @@
 #include <QFileOpenEvent>
 #include <QKeyEvent>
 #include <QIcon>
+#include <QMenuBar>
+#include <QSharedPointer>
+
+#include "hacks/hacks_mac.hpp"
 
 #ifdef Q_OS_MAC
 #include "../../common/SC_Apple.hpp"
@@ -73,6 +77,11 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.lock();
   _instance = this;
   _mutex.unlock();
+  this->setAttribute(Qt::AA_UseHighDpiPixmaps);
+  
+#ifdef Q_OS_MAC
+  QtCollider::Mac::DisableAutomaticWindowTabbing();
+#endif
 
   if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
     QIcon icon;
@@ -81,6 +90,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
     icon.addFile(":/icons/sc-cube-32");
     icon.addFile(":/icons/sc-cube-16");
     setWindowIcon(icon);
+    _mainMenu = QSharedPointer<QMenuBar>(new QMenuBar(0));
   }
   
 #ifdef Q_OS_MAC

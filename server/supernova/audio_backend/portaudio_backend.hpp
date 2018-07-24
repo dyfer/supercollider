@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef _PORTAUDIO_HPP
-#define _PORTAUDIO_HPP
+#pragma once
 
 #include <cstdio>
 #include <string>
@@ -75,6 +74,11 @@ public:
     {
         return blocksize_;
     }
+
+	uint32_t get_latency(void) const
+	{
+		return latency_;
+	}
 
 private:
     static void report_error(int err, bool throw_exception = false)
@@ -202,6 +206,12 @@ public:
 
         if (opened != paNoError)
             return false;
+		else {
+			const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
+			if (psi)
+				latency_ = (uint32_t) (psi->outputLatency * psi->sampleRate);
+            fprintf(stdout,"  latency: %d\n", latency_);
+		}
 
         input_channels = inchans;
         super::input_samples.resize(inchans);
@@ -325,8 +335,8 @@ private:
     uint32_t blocksize_    = 0;
     bool engine_initalised = false;
     cpu_time_info cpu_time_accumulator;
+
+	uint32_t latency_      = 0;
 };
 
 } /* namespace nova */
-
-#endif /* _PORTAUDIO_HPP */
