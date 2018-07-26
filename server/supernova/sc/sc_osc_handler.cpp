@@ -200,7 +200,7 @@ struct movable_array
         data_   = rhs.data_;
 
         rhs.data_ = nullptr;
-        
+
         return *this;
     }
 
@@ -1482,24 +1482,15 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
             p << controls;
 
             for (int i = 0; i != controls; ++i) {
-                const char * name_of_slot;
-                if( i < scsynth.number_of_slots())
-                    name_of_slot = scsynth.name_of_slot(i);
-                else
-                    name_of_slot = 0;
-
+                const char * name_of_slot = scsynth.name_of_slot(i);
                 if(name_of_slot)
                     p << name_of_slot;
                 else
                     p << osc::int32(i);
 
-                if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
-                    /* we use a bus mapping */
-                    int bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
-                    char str[10];
-                    sprintf(str, "s%d", bus);
+                char str[10];
+                if (scsynth.getMappedSymbol(i, str))
                     p << str;
-                }
                 else
                     p << scsynth.mControls[i];
             }
@@ -1600,7 +1591,11 @@ void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int 
         } else
             stream << ", ";
 
-        stream << synth.get(control_index);
+        char str[10];
+        if (synth.getMappedSymbol(control_index, str))
+            stream << str;
+        else
+            stream << synth.get(control_index);
     }
     if (eol_pending)
         stream << endl;
