@@ -47,6 +47,7 @@ class QcScopeShm : public QWidget, QcHelper
   Q_PROPERTY( float yOffset READ dummyFloat WRITE setYOffset );
   Q_PROPERTY( float xZoom READ dummyFloat WRITE setXZoom );
   Q_PROPERTY( float yZoom READ dummyFloat WRITE setYZoom );
+  Q_PROPERTY( float lineWidth READ dummyFloat WRITE setLineWidth );
   Q_PROPERTY( int style READ style WRITE setStyle );
   Q_PROPERTY( QVariantList waveColors READ dummyVariantList WRITE setWaveColors );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
@@ -64,6 +65,7 @@ class QcScopeShm : public QWidget, QcHelper
     void setYOffset( float f )      { yOffset = f; }
     void setXZoom( float f )        { xZoom = f; }
     void setYZoom( float f )        { yZoom = f; }
+    void setLineWidth( float f )    { lineWidth = f; }
     int style() const               { return _style; }
     void setStyle( int i )          { _style = i; }
     void setWaveColors( const QVariantList & colors );
@@ -104,6 +106,7 @@ class QcScopeShm : public QWidget, QcHelper
     float yOffset;
     float xZoom;
     float yZoom;
+    float lineWidth;
     int _style;
     QList<QColor> colors;
     QColor _bkg;

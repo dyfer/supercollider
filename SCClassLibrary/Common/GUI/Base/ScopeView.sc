@@ -2,6 +2,7 @@ ScopeView : View {
 	var <bufnum;
 	var <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0, <fill=true;
 	var <waveColors;
+	var <lineWidth=0.0;
 
 	*qtClass { ^'QcScopeShm' }
 
@@ -56,4 +57,10 @@ ScopeView : View {
 		waveColors = aColorArray;
 		this.setProperty( \waveColors, aColorArray );
 	}
+
+	lineWidth_ {arg aFloat;
+		lineWidth = aFloat;
+		this.setProperty( \lineWidth, aFloat );
+	}
+
 }

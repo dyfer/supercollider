@@ -43,6 +43,7 @@ QcScopeShm::QcScopeShm() :
   yOffset( 0.f ),
   xZoom( 1.f ),
   yZoom( 1.f ),
+  lineWidth( 0.f ),
   _style( 0 ),
   _bkg( QColor(0,0,0) ),
   _fill( true )
@@ -51,7 +52,7 @@ QcScopeShm::QcScopeShm() :
   setAutoFillBackground(false);
 
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-  
+
   timer = new QTimer( this );
   timer->setInterval( 50 );
   connect( timer, SIGNAL( timeout() ), this, SLOT( updateScope() ) );
@@ -166,7 +167,7 @@ void QcScopeShm::paintEvent ( QPaintEvent * event )
     int maxFrames = _shm->reader.max_frames();
     QRect area (_pixmap.rect());
     area.setSize(area.size() / _pixmap.devicePixelRatio());
-    
+
     p.begin(&_pixmap);
 
     switch (_style) {
@@ -200,7 +201,8 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
   float yHeight = area.height();
   if( !overlapped ) yHeight /= chanCount;
   QPen pen;
-  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setWidthF(lineWidth);  // width==0 means width 1 regardless of transformations
+  pen.setCosmetic(true);
   pen.setCapStyle( Qt::FlatCap );
 
   if( frameCount < area.width() )
@@ -228,10 +230,10 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
         path.lineTo(xOffset + frameCount, 0);
         path.lineTo(0, 0);
         path.lineTo(xOffset, frameData[0]);
-        
+
         painter.fillPath(path, QBrush(fillColor));
       }
-      
+
       painter.drawPath(path);
 
       painter.restore();
@@ -252,7 +254,7 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
       painter.setPen(pen);
-      
+
       qreal ratio = 1.0 / _pixmap.devicePixelRatio();
 
       QPainterPath pathLine;
@@ -282,19 +284,19 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
         pathLine.moveTo( pixel, y );
         y = qMax( min * yRatio, y + 1 );
         pathLine.lineTo( pixel, y );
-        
+
         if (_fill) {
           pathFill.moveTo( pixel, y );
           pathFill.lineTo( pixel, 0 );
         }
-        
+
         // flip min/max to ensure continuity
         std::swap( min, max );
       }
-      
+
       pen.setColor(strokeColor);
       painter.strokePath(pathLine, pen);
-      
+
       if (_fill) {
         pen.setColor(fillColor);
         painter.strokePath(pathFill, pen);
@@ -314,10 +316,11 @@ void QcScopeShm::paint2D( int chanCount, int maxFrames, int frameCount,
   float yRatio = -yZoom * minSize * 0.5;
   QPoint center = area.center();
   QPen pen;
-  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setWidthF(lineWidth);  // width==0 means width 1 regardless of transformations
+  pen.setCosmetic(true); 
   pen.setCapStyle( Qt::FlatCap );
   pen.setColor(colors.count() ? colors[0] : QColor(255,255,255));
-    
+
   painter.setPen(pen);
   painter.translate( center.x(), center.y() );
   painter.scale( xRatio, yRatio );

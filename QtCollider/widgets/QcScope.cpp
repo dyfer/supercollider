@@ -33,6 +33,7 @@ QcScope::QcScope()
   yOffset( 0.f ),
   xZoom( 1.f ),
   yZoom( 1.f ),
+  lineWidth( 0.f ),
   style( 0 ),
   _bkg( QColor(0,0,0) )
 {
@@ -108,7 +109,8 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
   QPointF pt1;
   QPointF pt2;
   QPen pen;
-  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setWidthF(lineWidth);  // width==0 means width 1 regardless of transformations
+  pen.setCosmetic(true);
 
   for( c = 0; c < buffer.channels; c++ ) {
     pen.setColor(c < colors.count() ? colors[c] : QColor(255,255,255));
@@ -137,7 +139,8 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
 void QcScope::paint2D( QPainter & p )
 {
   QPen pen;
-  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setWidthF(lineWidth);  // width==0 means width 1 regardless of transformations
+  pen.setCosmetic(true);
   pen.setColor(colors.count() ? colors[0] : QColor(255,255,255));
 
   QRect area = rect();
