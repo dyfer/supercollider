@@ -233,32 +233,70 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks|
-		var lines,p,pixRange;
-		var nfrac,d,graphmin,graphmax,range;
-		pixRange = pixelMax - pixelMin;
-		if(numTicks.isNil,{
-			numTicks = (pixRange / 64);
-			numTicks = numTicks.max(3).round(1);
-		});
-		# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
+	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,minDistance|
+		var lines, p, pixRange;
+		var nfrac, d, graphmin, graphmax, range;
+		var nDecades, first, step, tick;
+
+		pixRange = abs(pixelMax - pixelMin);
 		lines = [];
-		if(d != inf,{
-			forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-				if(tick.inclusivelyBetween(valueMin,valueMax),{
-					lines = lines.add( tick );
-				})
-			});
-		});
+
+		spec.warp.asSpecifier.switch(
+			\exp, {
+				nDecades = log10(valueMax/valueMin);
+				minDistance ?? {minDistance = 40};
+				numTicks ?? {numTicks = (pixRange / (minDistance*nDecades))}; //this should be calculated for the smalles deistance between ticks...
+				first = step = 10**(valueMin.abs.log10.trunc);
+				tick = first.abs;
+				(step > 0.0).if({
+					while ({tick < valueMax.abs}, {
+						if(tick.inclusivelyBetween(valueMin,valueMax),{
+							if((numTicks > 4)
+								.or((numTicks > 2.5).and(tick==this.niceNum(tick,true)))
+								.or(tick.log10.frac < 0.01),
+								{ lines = lines.add( tick )} );
+						});
+						if(tick >= (step*10), { step = (step*10) });
+						tick = (tick+step);
+					});
+				}, {
+					format("Unable to draw exponential GridLines for values between % and %", valueMin, valueMax).warn;
+				});
+			},
+			{
+				// this should probably be specified as \linear, once we figure out what to do with other warps
+				minDistance ?? {minDistance = 64};
+				numTicks ?? {
+					numTicks = (pixRange / minDistance);
+					// numTicks = (pixRange / 40);
+					numTicks = numTicks.max(3).round(1);
+				};
+				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
+				if(d != inf,{
+					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+						if(tick.inclusivelyBetween(valueMin,valueMax),{
+							lines = lines.add( tick );
+						})
+					});
+				});
+			}
+		);
+
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
-			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val,nfrac) ] });
+			p['labels'] = lines.collect({ arg val;
+				// (spec.warp.asSpecifier == \exp).if({nfrac = max(floor(log10(val)).neg, 0)}); //for \exp warp nfrac needs to be calculated for each value
+				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
+				[val, this.formatLabel(val, nfrac ? max(floor(log10(val)).neg, 0))] });
 		};
+		// p.cs.postln;
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		^val.round( (10**numDecimalPlaces).reciprocal).asString + (spec.units?"")
+		val = val.round((10**numDecimalPlaces).reciprocal);
+		(numDecimalPlaces.asInteger == 0).if({val = val.asInteger});
+		^(val.asString + (spec.units?""))
 	}
 }
 
