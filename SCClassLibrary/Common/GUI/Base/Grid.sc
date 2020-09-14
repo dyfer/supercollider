@@ -197,9 +197,13 @@ GridLines {
 	niceNum { arg val,round;
 		// http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
 		var exp,f,nf,rf;
-		exp = floor(log10(val));
-		f = val / 10.pow(exp);
-		rf = 10.pow(exp);
+		exp = floor(log10(val.abs));
+		f = val.abs / 10.pow(exp);
+		if(val < 0) {
+			rf = 10.pow(exp).neg;
+		} {
+			rf = 10.pow(exp);
+		};
 		if(round,{
 			if(f < 1.5,{
 				^rf *  1.0
@@ -223,6 +227,36 @@ GridLines {
 			});
 			^rf *  10.0
 		});
+	}
+	niceNumWarp { arg val,warp=0;
+		var exp,f,nf,rf,negative,rounding,rv;
+		exp = floor(log10(val.abs));
+		f = val.abs / 10.pow(exp);
+		"f: ".post; f.postln;
+		"warp: ".post; warp.postln;
+		negative = val < 0;
+		if(negative) {
+			rf = 10.pow(exp).neg;
+
+		} {
+			rf = 10.pow(exp);
+		};
+		if(f<5) {
+			warp = (warp.linlin(-8, 0, 0, 1).postln * f.linlin(0, 5, 1, 0).postln).postln.linlin(0, 1, 0, 8);
+		} {
+			warp = (warp.linlin(0, 8, 0, 1).postln * f.linlin(5, 10, 0, 1).postln).postln.linlin(0, 1, 0, 8);
+		};
+
+		"warp after: ".post; warp.postln;
+		rounding = (2**warp.round(1)).reciprocal;
+		"rounding: ".post; rounding.postln;
+		rv = f.roundUp(rounding);
+		"rv: ".post; rv.postln;
+		"rf: ".post; rf.postln;
+		if(f <= rv,{
+			^rf *  rv;
+		});
+		^rf *  10.0
 	}
 	ideals { arg min,max,ntick=5;
 		var nfrac,d,graphmin,graphmax,range,x;
@@ -331,68 +365,26 @@ GridLines {
 					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
 				};
 			},
-			{ //all other warps
-				avgPixDistance ?? {avgPixDistance = 64};
+			{
+				avgPixDistance ?? {avgPixDistance = 40};
 				numTicks ?? {
 					numTicks = (pixRange / avgPixDistance);
 					numTicks = numTicks.max(3).round(1);
 				};
-				// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
 				# graphmin, graphmax, nfractmp, d = this.ideals(valueMin, valueMax, numTicks);
-				// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
-				if(d != inf) {
+				if(d != inf,{
 					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-						// "----".postln;
-						// "tick before everything: ".post; tick.postln;
-						if(lines.last.isNil && (tick != valueMin)) {lines = lines.add( valueMin )};
-						// if(tick.inclusivelyBetween(valueMin,valueMax)) {
-						if(tick >= valueMin) {
-							// "-".postln;
-							tick = tick.min(valueMax);
-							if(lines.last.notNil) {
-								thisMin = lines.last;
-								thisMax = tick;
-								sectionPixRange = (spec.unmap(thisMax) - spec.unmap(thisMin)) * pixRange;//
-								numTicksThisSection = sectionPixRange / (avgPixDistance * 0.2);
-								// "[thisMin, thisMax, numTicksThisSection]: ".post; [thisMin, thisMax, numTicksThisSection].postln;
-							} {
-								numTicksThisSection = 0;
-							};
-							if((numTicksThisSection > 2) && ((spec.warp.asSpecifier ? 0).abs > 2)) {
-								# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
-								// "second [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
-								if(d != inf) {
-									forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-										// if(tick.exclusivelyBetween(graphmin,graphmax)) {
-										if(tick > graphmin) {
-											// var tickDiff;
-											// "more: ".post; tick.postln;
-
-											sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
-											// "sectionPixRange: ".post; sectionPixRange.postln;
-											// "tick.log10.frac: ".post; tick.log10.frac.postln;
-											if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01) || (tick == 0.0)) {
-												if(sectionPixRange < (avgPixDistance * 0.5)) {lines.pop}; //remove previous element if it's too close
-												// "adding tick ".post; tick.postln;
-												lines = lines.add( tick );
-											}
-										}
-									});
-								};
-							} {
-								lines.last !? {
-									sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
-								};								// "lone sectionPixRange: ".post; sectionPixRange.postln;
-								// "lone tick.log10.frac: ".post; tick.log10.frac.postln;
-								if((lines.last.isNil) || ((sectionPixRange ? 0) > (avgPixDistance * 0.5)) || (tick.abs.log10.frac < 0.01)) {
-									// "adding lone tick: ".post; tick.postln;
-									lines = lines.add( tick );
-								}
+						if(tick.inclusivelyBetween(valueMin,valueMax),{
+							// var thisVal = this.niceNum(spec.map(tick.linlin(valueMin, valueMax, 0, 1)), false);
+							var thisVal = spec.map(tick.linlin(valueMin, valueMax, 0, 1));
+							thisVal = this.niceNumWarp(thisVal, spec.warp.curve ? 0);
+							// lines = lines.add( spec.map(tick.linlin(valueMin, valueMax, 0, 1)) );
+							if((thisVal != lines.last) && (thisVal <= valueMax)) {
+								lines = lines.add( thisVal );
 							}
-						}
+						})
 					});
-				};
-				// calculate individual nfrac.... this causes rounding errors I think.
+				});
 				nfracarr = lines.collect({ arg val, inc;
 					// var nextVal = lines[inc+1] ? (10*val);
 					// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
@@ -404,13 +396,87 @@ GridLines {
 					// (nextVal - val).log10.floor.neg.max(0);
 					// this.niceNum(val, true).log10.floor.neg.max(0)
 				});
-
-
-					// if(
-					// (valueMin < valueMax) && (log10(valueMax/valueMin) > 1) ||
-					// ((valueMin > valueMax) && (log10(valueMin/valueMax) > 1))
-				// ) { "unsetting".postln; nfrac = nil }; //unset nfrac if more than one decade
-			}
+			},
+			// { //all other warps
+			// 	avgPixDistance ?? {avgPixDistance = 64};
+			// 	numTicks ?? {
+			// 		numTicks = (pixRange / avgPixDistance);
+			// 		numTicks = numTicks.max(3).round(1);
+			// 	};
+			// 	// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
+			// 	# graphmin, graphmax, nfractmp, d = this.ideals(valueMin, valueMax, numTicks);
+			// 	// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+			// 	if(d != inf) {
+			// 		forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+			// 			// "----".postln;
+			// 			// "tick before everything: ".post; tick.postln;
+			// 			if(lines.last.isNil && (tick != valueMin)) {lines = lines.add( valueMin )};
+			// 			// if(tick.inclusivelyBetween(valueMin,valueMax)) {
+			// 			if(tick >= valueMin) {
+			// 				// "-".postln;
+			// 				tick = tick.min(valueMax);
+			// 				if(lines.last.notNil) {
+			// 					thisMin = lines.last;
+			// 					thisMax = tick;
+			// 					sectionPixRange = (spec.unmap(thisMax) - spec.unmap(thisMin)) * pixRange;//
+			// 					numTicksThisSection = sectionPixRange / (avgPixDistance * 0.2);
+			// 					// "[thisMin, thisMax, numTicksThisSection]: ".post; [thisMin, thisMax, numTicksThisSection].postln;
+			// 				} {
+			// 					numTicksThisSection = 0;
+			// 				};
+			// 				if((numTicksThisSection > 2) && ((spec.warp.asSpecifier ? 0).abs > 2)) {
+			// 					# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
+			// 					// "second [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+			// 					if(d != inf) {
+			// 						forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+			// 							// if(tick.exclusivelyBetween(graphmin,graphmax)) {
+			// 							if(tick > graphmin) {
+			// 								// var tickDiff;
+			// 								// "more: ".post; tick.postln;
+			//
+			// 								sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
+			// 								// "sectionPixRange: ".post; sectionPixRange.postln;
+			// 								// "tick.log10.frac: ".post; tick.log10.frac.postln;
+			// 								if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01) || (tick == 0.0)) {
+			// 									if(sectionPixRange < (avgPixDistance * 0.5)) {lines.pop}; //remove previous element if it's too close
+			// 									// "adding tick ".post; tick.postln;
+			// 									lines = lines.add( tick );
+			// 								}
+			// 							}
+			// 						});
+			// 					};
+			// 				} {
+			// 					lines.last !? {
+			// 						sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
+			// 					};								// "lone sectionPixRange: ".post; sectionPixRange.postln;
+			// 					// "lone tick.log10.frac: ".post; tick.log10.frac.postln;
+			// 					if((lines.last.isNil) || ((sectionPixRange ? 0) > (avgPixDistance * 0.5)) || (tick.abs.log10.frac < 0.01)) {
+			// 						// "adding lone tick: ".post; tick.postln;
+			// 						lines = lines.add( tick );
+			// 					}
+			// 				}
+			// 			}
+			// 		});
+			// 	};
+			// 	// calculate individual nfrac.... this causes rounding errors I think.
+			// 	nfracarr = lines.collect({ arg val, inc;
+			// 		// var nextVal = lines[inc+1] ? (10*val);
+			// 		// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
+			// 		if(val.abs.frac < 0.00001) {
+			// 			0
+			// 		} {
+			// 			val.asString.split($.)[1].size; //that's lame? but...
+			// 		}
+			// 		// (nextVal - val).log10.floor.neg.max(0);
+			// 		// this.niceNum(val, true).log10.floor.neg.max(0)
+			// 	});
+			//
+			//
+			// 	// if(
+			// 	// (valueMin < valueMax) && (log10(valueMax/valueMin) > 1) ||
+			// 	// ((valueMin > valueMax) && (log10(valueMin/valueMax) > 1))
+			// 	// ) { "unsetting".postln; nfrac = nil }; //unset nfrac if more than one decade
+			// }
 		);
 
 		p = ();
