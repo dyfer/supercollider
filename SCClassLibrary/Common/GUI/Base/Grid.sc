@@ -186,6 +186,9 @@ GridLines {
 
 	var <>spec;
 
+	classvar <>getParamsFunc;
+
+
 	*new { arg spec;
 		^super.newCopyArgs(spec.asSpec)
 	}
@@ -233,42 +236,21 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,minDistance|
+	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance|
+		// ^getParamsFunc.(valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance,this)
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range;
-		var nDecades, first, step, tick;
+		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
+		var sectionPixRange, numTicksThisSection, thisMin, thisMax;
 
 		pixRange = abs(pixelMax - pixelMin);
 		lines = [];
 
 		spec.warp.asSpecifier.switch(
-			\exp, {
-				nDecades = log10(valueMax/valueMin);
-				minDistance ?? {minDistance = 40};
-				numTicks ?? {numTicks = (pixRange / (minDistance*nDecades))}; //this should be calculated for the smalles deistance between ticks...
-				first = step = 10**(valueMin.abs.log10.trunc);
-				tick = first.abs;
-				(step > 0.0).if({
-					while ({tick < valueMax.abs}, {
-						if(tick.inclusivelyBetween(valueMin,valueMax),{
-							if((numTicks > 4)
-								.or((numTicks > 2.5).and(tick==this.niceNum(tick,true)))
-								.or(tick.log10.frac < 0.01),
-								{ lines = lines.add( tick )} );
-						});
-						if(tick >= (step*10), { step = (step*10) });
-						tick = (tick+step);
-					});
-				}, {
-					format("Unable to draw exponential GridLines for values between % and %", valueMin, valueMax).warn;
-				});
-			},
-			{
-				// this should probably be specified as \linear, once we figure out what to do with other warps
-				minDistance ?? {minDistance = 64};
+			\linear, {
+				avgPixDistance ?? {avgPixDistance = 64};
 				numTicks ?? {
-					numTicks = (pixRange / minDistance);
-					// numTicks = (pixRange / 40);
+					numTicks = (pixRange / avgPixDistance);
 					numTicks = numTicks.max(3).round(1);
 				};
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
@@ -279,8 +261,128 @@ GridLines {
 						})
 					});
 				});
-			}
-		);
+			},
+			\exp, {
+				expRangeIsValid = ((valueMin > 0) && (valueMax > 0)) || ((valueMin < 0) && (valueMax < 0));
+				if(expRangeIsValid) {
+					expRangeIsPositive = valueMin > 0;
+					if(expRangeIsPositive) {
+						nDecades = log10(valueMax/valueMin);
+						first = step = 10**(valueMin.abs.log10.trunc);
+						roundFactor = step;
+					} {
+						nDecades = log10(valueMin/valueMax);
+						step = 10**(valueMin.abs.log10.trunc - 1);
+						first = 10 * step.neg;
+						roundFactor = 10**(valueMax.abs.log10.trunc);
+					};
+					// "step:".post; step.postln;
+					if(nDecades < 1) { //workaround for small ranges
+						step = step * 0.1;
+						roundFactor = roundFactor * 0.1;
+						nfrac = valueMin.abs.log10.floor.neg + 1;
+					};
+					// "step:".post; step.postln;
+					// "roundFactor: ".post; roundFactor.postln;
+					avgPixDistance ?? {avgPixDistance = 64};
+					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades.min(1)))};
+					// nDecades = log10(valueMax/valueMin);
+					// avgPixDistance ?? {avgPixDistance = 40};
+					// numTicks ?? {numTicks = (pixRange / (avgPixDistance*nDecades))}; //this should be calculated for the smalles deistance between ticks...
+				// "numTicks: ".post; numTicks.postln;
+					// first = step = 10**(valueMin.abs.log10.trunc);
+					tick = first;
+					while ({tick <= (valueMax + step)}) {
+						// "tick: ".post; tick.postln;
+						// "tick.log10: ".post; tick.log10.postln;
+						if(round(tick,roundFactor).inclusivelyBetween(valueMin,valueMax),{
+							// "gl.niceNum(tick,true): ".post; gl.niceNum(tick,true).postln;
+							// "numTicks: ".post; numTicks.postln;
+							if(
+								(numTicks > 4) ||
+								((numTicks > 2).and(tick.abs==this.niceNum(tick.abs,true))) ||
+								(tick.abs.log10.frac < 0.01)
+							) { lines = lines.add( tick ) };
+						});
+						// "tick: ".post; tick.post; " (step*10): ".post; (step*10).postln;
+						// if(tick >= (gl.niceNum(step*10,false)), { "is larger".postln; step = (step*10) });
+						// if(round(tick,first) >= (round(step*10,first)), {
+							// "is larger".postln;
+						// step = (step*10) });
+						if(expRangeIsPositive) {
+							if((round(tick,roundFactor) >= (round(step*10,roundFactor))) && (nDecades > 1)) { step = (step*10) };
+						} {
+						if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) && (nDecades > 1)) { step = (step*0.1).postln };
+						};
+						// if(tick >= (step*10), { "is larger".postln; step = (step*10) });
+						// tick = (gl.niceNum(tick+step,false));//.postln;
+						tick = (tick+step);//.postln;
+					};
+				} {
+					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
+				};
+			},
+			{ //all other warps
+				avgPixDistance ?? {avgPixDistance = 64};
+				numTicks ?? {
+					numTicks = (pixRange / avgPixDistance);
+					numTicks = numTicks.max(3).round(1);
+				};
+				// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
+				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
+				// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+				if(d != inf) {
+					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+						// "----".postln;
+						// "tick before everything: ".post; tick.postln;
+						if(lines.last.isNil && (tick != valueMin)) {lines = lines.add( valueMin )};
+						if(tick.inclusivelyBetween(valueMin,valueMax)) {
+							// "-".postln;
+							// only positive values for now
+							if(lines.last.notNil) {
+								thisMin = lines.last;
+								thisMax = tick;
+								sectionPixRange = (spec.unmap(thisMax) - spec.unmap(thisMin)) * pixRange;//
+								numTicksThisSection = sectionPixRange / (avgPixDistance * 0.2);
+								// "[thisMin, thisMax, numTicksThisSection]: ".post; [thisMin, thisMax, numTicksThisSection].postln;
+							} {
+								numTicksThisSection = 0;
+							};
+							if(numTicksThisSection > 2) {
+								# graphmin, graphmax, nfrac, d = this.ideals(thisMin, thisMax, numTicksThisSection);
+								// "[graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+								if(d != inf) {
+									forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+										// if(tick.exclusivelyBetween(graphmin,graphmax)) {
+										if(tick > graphmin) {
+											// var tickDiff;
+											// "more: ".post; tick.postln;
+
+											sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
+											// "sectionPixRange: ".post; sectionPixRange.postln;
+											// "tick.log10.frac: ".post; tick.log10.frac.postln;
+											if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01)) {
+												// "adding tick ".post; tick.postln;
+												lines = lines.add( tick );
+											}
+										}
+									});
+								};
+							} {
+								lines.last !? {
+									sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
+								};								// "lone sectionPixRange: ".post; sectionPixRange.postln;
+								// "lone tick.log10.frac: ".post; tick.log10.frac.postln;
+								if((lines.last.isNil) || ((sectionPixRange ? 0) > (avgPixDistance * 0.5)) || (tick.abs.log10.frac < 0.01)) {
+									// "adding lone tick: ".post; tick.postln;
+									lines = lines.add( tick );
+								}
+							}
+						}
+					});
+				};
+				nfrac = nil; //unset nfrac
+		});
 
 		p = ();
 		p['lines'] = lines;
@@ -288,16 +390,30 @@ GridLines {
 			p['labels'] = lines.collect({ arg val;
 				// (spec.warp.asSpecifier == \exp).if({nfrac = max(floor(log10(val)).neg, 0)}); //for \exp warp nfrac needs to be calculated for each value
 				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
-				[val, this.formatLabel(val, nfrac ? max(floor(log10(val)).neg, 0))] });
+				[val, this.formatLabel(val, nfrac ? max(val.abs.log10.floor.neg, 0))] });
 		};
 		// p.cs.postln;
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		val = val.round((10**numDecimalPlaces).reciprocal);
-		(numDecimalPlaces.asInteger == 0).if({val = val.asInteger});
+		spec.warp.asSpecifier.switch(
+			nil, { //FIXME this doesn't work well - why? what are the problems?
+				var valLog = val.log10;
+				// postf("val % valLog %\n", val, valLog);
+				// (valLog.frac < 0.01).if({
+					val = val.round(10**(valLog.round))
+			// }, {
+					// strUnit = "";
+				// (val!=this.niceNum(val,false)).if({ val = "" });
+		// });
+			}, {
+				val = val.round((10**numDecimalPlaces).reciprocal);
+			}
+		);
+		((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)).if({val = val.asInteger});
 		^(val.asString + (spec.units?""))
 	}
+
 }
 
 
