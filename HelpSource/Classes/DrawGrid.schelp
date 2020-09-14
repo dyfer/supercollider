@@ -138,6 +138,15 @@ A DrawGridY object that draws the y (vertical) axis
 returns:: a DrawGridY
 
 
+METHOD:: pixSpacing
+Set spacing that code::DrawGrid:: will attempt to maintain between grid lines. note::For exponential grids, this value is used for the lowest section of each decade::
+
+ARGUMENT:: val
+spacing in pixels
+
+METHOD:: dropLabelIfTooNarrow
+If code::true:: (default), individual labels will not be displayed if they overlap with the next label.
+
 
 
 METHOD:: copy

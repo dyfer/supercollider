@@ -8,7 +8,7 @@ GridLines is a strategy object that implements a general strategy for finding a 
 
 The object that does the actual drawing on a view is DrawGrid.
 
-A GridLines object uses a ControlSpec to define the minimum and maximum possible values.  Given a data set's actual minimum and maximum values, the GridLines object can choose a logical range for graphing that encompasses the data that will be plotted.  
+A GridLines object uses a ControlSpec to define the minimum and maximum possible values.  Given a data set's actual minimum and maximum values, the GridLines object can choose a logical range for graphing that encompasses the data that will be plotted.
 
 Future development work will add subclasses of GridLines that can bind more tightly with the data they are representing.  For instance a FreqGridLines (not yet implemented) could apply stronger lines to octave divisions.  A DegreeGridLines could be used to draw pitch degree gridlines behind a frequency plot.
 
@@ -93,7 +93,7 @@ returns:: [ideal min, ideal max]
 METHOD:: getParams
 Specifically for use by DrawGrid. This returns a dictionary filled with:
 'lines': an array of values where lines should be drawn
-'labels': [value, formatted label] for each line 
+'labels': [value, formatted label] for each line
 
 argument:: valueMin
 minimum value of the data to be plotted
@@ -109,6 +109,9 @@ If numTicks is nil: used to guess the ideal numTicks based on the graph size.
 
 argument:: numTicks
 Explicit number of ticks you would like to see on the graph.
+
+argument:: pixSpacing
+Minimal spacing to maintain between ticks. Only used if code::numTicks:: is code::nil::. For exponential grid it is used for the lowest portion of each decade.
 
 returns:: A dictionary
 
