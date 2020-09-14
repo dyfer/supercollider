@@ -186,7 +186,6 @@ GridLines {
 
 	var <>spec;
 
-
 	*new { arg spec;
 		^super.newCopyArgs(spec.asSpec)
 	}
