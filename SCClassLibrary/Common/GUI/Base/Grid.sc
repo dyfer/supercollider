@@ -186,8 +186,6 @@ GridLines {
 
 	var <>spec;
 
-	classvar <>getParamsFunc;
-
 
 	*new { arg spec;
 		^super.newCopyArgs(spec.asSpec)
@@ -228,36 +226,6 @@ GridLines {
 			^rf *  10.0
 		});
 	}
-	niceNumWarp { arg val,warp=0;
-		var exp,f,nf,rf,negative,rounding,rv;
-		exp = floor(log10(val.abs));
-		f = val.abs / 10.pow(exp);
-		"f: ".post; f.postln;
-		"warp: ".post; warp.postln;
-		negative = val < 0;
-		if(negative) {
-			rf = 10.pow(exp).neg;
-
-		} {
-			rf = 10.pow(exp);
-		};
-		if(f<5) {
-			warp = (warp.linlin(-8, 0, 0, 1).postln * f.linlin(0, 5, 1, 0).postln).postln.linlin(0, 1, 0, 8);
-		} {
-			warp = (warp.linlin(0, 8, 0, 1).postln * f.linlin(5, 10, 0, 1).postln).postln.linlin(0, 1, 0, 8);
-		};
-
-		"warp after: ".post; warp.postln;
-		rounding = (2**warp.round(1)).reciprocal;
-		"rounding: ".post; rounding.postln;
-		rv = f.roundUp(rounding);
-		"rv: ".post; rv.postln;
-		"rf: ".post; rf.postln;
-		if(f <= rv,{
-			^rf *  rv;
-		});
-		^rf *  10.0
-	}
 	ideals { arg min,max,ntick=5;
 		var nfrac,d,graphmin,graphmax,range,x;
 		range = this.niceNum(max - min,false);
@@ -271,11 +239,9 @@ GridLines {
 		^this.ideals(min,max).at( [ 0,1] )
 	}
 	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance|
-		// ^getParamsFunc.(valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance,this)
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
-		var sectionPixRange, numTicksThisSection, thisMin, thisMax, nfractmp, nfracarr;
 
 		pixRange = abs(pixelMax - pixelMin);
 		lines = [];
@@ -311,200 +277,67 @@ GridLines {
 						first = 10 * step.neg;
 						roundFactor = 10**(valueMax.abs.log10.trunc);
 					};
-					// "step:".post; step.postln;
-					if(nDecades < 1) { //workaround for small ranges
+					//workaround for small ranges
+					if(nDecades < 1) {
 						step = step * 0.1;
 						roundFactor = roundFactor * 0.1;
 						nfrac = valueMin.abs.log10.floor.neg + 1;
 					};
-					// "step:".post; step.postln;
-					// "roundFactor: ".post; roundFactor.postln;
 					avgPixDistance ?? {avgPixDistance = 64};
 					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades.min(1)))};
-					// nDecades = log10(valueMax/valueMin);
-					// avgPixDistance ?? {avgPixDistance = 40};
-					// numTicks ?? {numTicks = (pixRange / (avgPixDistance*nDecades))}; //this should be calculated for the smalles deistance between ticks...
-				// "numTicks: ".post; numTicks.postln;
-					// first = step = 10**(valueMin.abs.log10.trunc);
 					tick = first;
 					while ({tick <= (valueMax + step)}) {
-						// "tick: ".post; tick.postln;
-						// "tick.log10: ".post; tick.log10.postln;
 						if(round(tick,roundFactor).inclusivelyBetween(valueMin,valueMax),{
-							// "gl.niceNum(tick,true): ".post; gl.niceNum(tick,true).postln;
-							// "numTicks: ".post; numTicks.postln;
 							if(
 								(numTicks > 4) ||
 								((numTicks > 2).and(tick.abs==this.niceNum(tick.abs,true))) ||
 								(tick.abs.log10.frac < 0.01)
 							) { lines = lines.add( tick ) };
 						});
-						// "tick: ".post; tick.post; " (step*10): ".post; (step*10).postln;
-						// if(tick >= (gl.niceNum(step*10,false)), { "is larger".postln; step = (step*10) });
-						// if(round(tick,first) >= (round(step*10,first)), {
-							// "is larger".postln;
-						// step = (step*10) });
 						if(expRangeIsPositive) {
 							if((round(tick,roundFactor) >= (round(step*10,roundFactor))) && (nDecades > 1)) { step = (step*10) };
 						} {
 						if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) && (nDecades > 1)) { step = (step*0.1).postln };
 						};
-						// if(tick >= (step*10), { "is larger".postln; step = (step*10) });
-						// tick = (gl.niceNum(tick+step,false));//.postln;
 						tick = (tick+step);//.postln;
 					};
 					nfracarr = lines.collect({ arg val;
 						val.abs.log10.floor.neg.max(0)
 					});
 
-					// 	var nextVal = lines[inc+1] ? (10*val);
-					// 	this.niceNum(nextVal - val, true).log10.floor.neg.max(0)
-					// 	// this.niceNum(val, true).log10.floor.neg.max(0)
-					// });
 				} {
 					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
 				};
 			},
 			{
-				avgPixDistance ?? {avgPixDistance = 40};
+				// TODO: other Warp specs currently have the same implementation as LinearWarp
+				avgPixDistance ?? {avgPixDistance = 64};
 				numTicks ?? {
 					numTicks = (pixRange / avgPixDistance);
 					numTicks = numTicks.max(3).round(1);
 				};
-				# graphmin, graphmax, nfractmp, d = this.ideals(valueMin, valueMax, numTicks);
+				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
 				if(d != inf,{
 					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
 						if(tick.inclusivelyBetween(valueMin,valueMax),{
-							// var thisVal = this.niceNum(spec.map(tick.linlin(valueMin, valueMax, 0, 1)), false);
-							var thisVal = spec.map(tick.linlin(valueMin, valueMax, 0, 1));
-							thisVal = this.niceNumWarp(thisVal, spec.warp.curve ? 0);
-							// lines = lines.add( spec.map(tick.linlin(valueMin, valueMax, 0, 1)) );
-							if((thisVal != lines.last) && (thisVal <= valueMax)) {
-								lines = lines.add( thisVal );
-							}
+							lines = lines.add( tick );
 						})
 					});
 				});
-				nfracarr = lines.collect({ arg val, inc;
-					// var nextVal = lines[inc+1] ? (10*val);
-					// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
-					if(val.abs.frac < 0.00001) {
-						0
-					} {
-						val.asString.split($.)[1].size; //that's lame? but...
-					}
-					// (nextVal - val).log10.floor.neg.max(0);
-					// this.niceNum(val, true).log10.floor.neg.max(0)
-				});
 			},
-			// { //all other warps
-			// 	avgPixDistance ?? {avgPixDistance = 64};
-			// 	numTicks ?? {
-			// 		numTicks = (pixRange / avgPixDistance);
-			// 		numTicks = numTicks.max(3).round(1);
-			// 	};
-			// 	// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
-			// 	# graphmin, graphmax, nfractmp, d = this.ideals(valueMin, valueMax, numTicks);
-			// 	// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
-			// 	if(d != inf) {
-			// 		forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-			// 			// "----".postln;
-			// 			// "tick before everything: ".post; tick.postln;
-			// 			if(lines.last.isNil && (tick != valueMin)) {lines = lines.add( valueMin )};
-			// 			// if(tick.inclusivelyBetween(valueMin,valueMax)) {
-			// 			if(tick >= valueMin) {
-			// 				// "-".postln;
-			// 				tick = tick.min(valueMax);
-			// 				if(lines.last.notNil) {
-			// 					thisMin = lines.last;
-			// 					thisMax = tick;
-			// 					sectionPixRange = (spec.unmap(thisMax) - spec.unmap(thisMin)) * pixRange;//
-			// 					numTicksThisSection = sectionPixRange / (avgPixDistance * 0.2);
-			// 					// "[thisMin, thisMax, numTicksThisSection]: ".post; [thisMin, thisMax, numTicksThisSection].postln;
-			// 				} {
-			// 					numTicksThisSection = 0;
-			// 				};
-			// 				if((numTicksThisSection > 2) && ((spec.warp.asSpecifier ? 0).abs > 2)) {
-			// 					# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
-			// 					// "second [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
-			// 					if(d != inf) {
-			// 						forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-			// 							// if(tick.exclusivelyBetween(graphmin,graphmax)) {
-			// 							if(tick > graphmin) {
-			// 								// var tickDiff;
-			// 								// "more: ".post; tick.postln;
-			//
-			// 								sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
-			// 								// "sectionPixRange: ".post; sectionPixRange.postln;
-			// 								// "tick.log10.frac: ".post; tick.log10.frac.postln;
-			// 								if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01) || (tick == 0.0)) {
-			// 									if(sectionPixRange < (avgPixDistance * 0.5)) {lines.pop}; //remove previous element if it's too close
-			// 									// "adding tick ".post; tick.postln;
-			// 									lines = lines.add( tick );
-			// 								}
-			// 							}
-			// 						});
-			// 					};
-			// 				} {
-			// 					lines.last !? {
-			// 						sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
-			// 					};								// "lone sectionPixRange: ".post; sectionPixRange.postln;
-			// 					// "lone tick.log10.frac: ".post; tick.log10.frac.postln;
-			// 					if((lines.last.isNil) || ((sectionPixRange ? 0) > (avgPixDistance * 0.5)) || (tick.abs.log10.frac < 0.01)) {
-			// 						// "adding lone tick: ".post; tick.postln;
-			// 						lines = lines.add( tick );
-			// 					}
-			// 				}
-			// 			}
-			// 		});
-			// 	};
-			// 	// calculate individual nfrac.... this causes rounding errors I think.
-			// 	nfracarr = lines.collect({ arg val, inc;
-			// 		// var nextVal = lines[inc+1] ? (10*val);
-			// 		// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
-			// 		if(val.abs.frac < 0.00001) {
-			// 			0
-			// 		} {
-			// 			val.asString.split($.)[1].size; //that's lame? but...
-			// 		}
-			// 		// (nextVal - val).log10.floor.neg.max(0);
-			// 		// this.niceNum(val, true).log10.floor.neg.max(0)
-			// 	});
-			//
-			//
-			// 	// if(
-			// 	// (valueMin < valueMax) && (log10(valueMax/valueMin) > 1) ||
-			// 	// ((valueMin > valueMax) && (log10(valueMin/valueMax) > 1))
-			// 	// ) { "unsetting".postln; nfrac = nil }; //unset nfrac if more than one decade
-			// }
 		);
 
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
 			p['labels'] = lines.collect({ arg val, inc;
-				// (spec.warp.asSpecifier == \exp).if({nfrac = max(floor(log10(val)).neg, 0)}); //for \exp warp nfrac needs to be calculated for each value
-				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
-				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ) ? 1] });
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ? 1)]
+			});
 		};
-		p.cs.postln;
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		// spec.warp.asSpecifier.switch(
-		// 	nil, { //FIXME this doesn't work well - why? what are the problems?
-		// 		var valLog = val.log10;
-		// 		// postf("val % valLog %\n", val, valLog);
-		// 		// (valLog.frac < 0.01).if({
-		// 		val = val.round(10**(valLog.round))
-		// 		// }, {
-		// 		// strUnit = "";
-		// 		// (val!=this.niceNum(val,false)).if({ val = "" });
-		// 		// });
-		// 	}, {
-				val = val.round((10**numDecimalPlaces).reciprocal);
-	// }
-	// );
+		val = val.round((10**numDecimalPlaces).reciprocal);
 		((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)).if({val = val.asInteger});
 		^(val.asString + (spec.units?""))
 	}
