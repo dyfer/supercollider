@@ -233,7 +233,7 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance|
+	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, avgPixDistance=64|
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range, nfracarr;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
@@ -244,7 +244,6 @@ GridLines {
 
 		spec.warp.class.switch(
 			LinearWarp, {
-				avgPixDistance ?? {avgPixDistance = 64};
 				numTicks ?? {
 					numTicks = (pixRange / avgPixDistance);
 					numTicks = numTicks.max(3).round(1);
@@ -278,7 +277,6 @@ GridLines {
 						roundFactor = roundFactor * 0.1;
 						nfrac = valueMin.abs.log10.floor.neg + 1;
 					};
-					avgPixDistance ?? {avgPixDistance = 64};
 					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades.min(1)))};
 					tick = first;
 					while ({tick <= (valueMax + step)}) {
@@ -306,7 +304,6 @@ GridLines {
 			},
 			{
 				// TODO: other Warp specs currently have the same implementation as LinearWarp
-				avgPixDistance ?? {avgPixDistance = 64};
 				numTicks ?? {
 					numTicks = (pixRange / avgPixDistance);
 					numTicks = numTicks.max(3).round(1);
