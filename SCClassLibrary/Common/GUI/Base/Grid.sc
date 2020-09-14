@@ -247,8 +247,8 @@ GridLines {
 		lines = [];
 		nfracarr = [];
 
-		spec.warp.asSpecifier.switch(
-			\linear, {
+		spec.warp.class.switch(
+			LinearWarp, {
 				avgPixDistance ?? {avgPixDistance = 64};
 				numTicks ?? {
 					numTicks = (pixRange / avgPixDistance);
@@ -263,7 +263,7 @@ GridLines {
 					});
 				});
 			},
-			\exp, {
+			ExponentialWarp, {
 				expRangeIsValid = ((valueMin > 0) && (valueMax > 0)) || ((valueMin < 0) && (valueMax < 0));
 				if(expRangeIsValid) {
 					expRangeIsPositive = valueMin > 0;
@@ -358,7 +358,7 @@ GridLines {
 							} {
 								numTicksThisSection = 0;
 							};
-							if(numTicksThisSection > 2) {
+							if((numTicksThisSection > 2) && ((spec.warp.asSpecifier ? 0).abs > 2)) {
 								# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
 								// "second [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
 								if(d != inf) {
@@ -396,7 +396,7 @@ GridLines {
 				nfracarr = lines.collect({ arg val, inc;
 					// var nextVal = lines[inc+1] ? (10*val);
 					// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
-					if(val.frac == 0) {
+					if(val.abs.frac < 0.00001) {
 						0
 					} {
 						val.asString.split($.)[1].size; //that's lame? but...
@@ -421,24 +421,24 @@ GridLines {
 				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
 				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ) ? 1] });
 		};
-		// p.cs.postln;
+		p.cs.postln;
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		spec.warp.asSpecifier.switch(
-			nil, { //FIXME this doesn't work well - why? what are the problems?
-				var valLog = val.log10;
-				// postf("val % valLog %\n", val, valLog);
-				// (valLog.frac < 0.01).if({
-					val = val.round(10**(valLog.round))
-			// }, {
-					// strUnit = "";
-				// (val!=this.niceNum(val,false)).if({ val = "" });
-		// });
-			}, {
+		// spec.warp.asSpecifier.switch(
+		// 	nil, { //FIXME this doesn't work well - why? what are the problems?
+		// 		var valLog = val.log10;
+		// 		// postf("val % valLog %\n", val, valLog);
+		// 		// (valLog.frac < 0.01).if({
+		// 		val = val.round(10**(valLog.round))
+		// 		// }, {
+		// 		// strUnit = "";
+		// 		// (val!=this.niceNum(val,false)).if({ val = "" });
+		// 		// });
+		// 	}, {
 				val = val.round((10**numDecimalPlaces).reciprocal);
-			}
-		);
+	// }
+	// );
 		((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)).if({val = val.asInteger});
 		^(val.asString + (spec.units?""))
 	}
