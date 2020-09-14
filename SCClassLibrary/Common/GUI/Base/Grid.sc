@@ -274,7 +274,7 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, avgPixDistance=64|
+	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, pixSpacing=64|
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range, nfracarr;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
@@ -286,7 +286,7 @@ GridLines {
 		spec.warp.class.switch(
 			LinearWarp, {
 				numTicks ?? {
-					numTicks = (pixRange / avgPixDistance);
+					numTicks = (pixRange / pixSpacing);
 					numTicks = numTicks.max(3).round(1);
 				};
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
@@ -318,7 +318,7 @@ GridLines {
 						roundFactor = roundFactor * 0.1;
 						nfrac = valueMin.abs.log10.floor.neg + 1;
 					};
-					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades))};
+					numTicks ?? {numTicks = (pixRange / (pixSpacing * nDecades))};
 					tick = first;
 					while ({tick <= (valueMax + step)}) {
 						if(round(tick,roundFactor).inclusivelyBetween(valueMin,valueMax),{
@@ -346,7 +346,7 @@ GridLines {
 			{
 				// TODO: other Warp specs currently have the same implementation as LinearWarp
 				numTicks ?? {
-					numTicks = (pixRange / avgPixDistance);
+					numTicks = (pixRange / pixSpacing);
 					numTicks = numTicks.max(3).round(1);
 				};
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
