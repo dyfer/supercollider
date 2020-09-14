@@ -195,13 +195,9 @@ GridLines {
 	niceNum { arg val,round;
 		// http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
 		var exp,f,nf,rf;
-		exp = floor(log10(val.abs));
-		f = val.abs / 10.pow(exp);
-		if(val < 0) {
-			rf = 10.pow(exp).neg;
-		} {
-			rf = 10.pow(exp);
-		};
+		exp = floor(log10(val));
+		f = val / 10.pow(exp);
+		rf = 10.pow(exp);
 		if(round,{
 			if(f < 1.5,{
 				^rf *  1.0
