@@ -372,7 +372,7 @@ GridLines {
 	formatLabel { arg val, numDecimalPlaces;
 		val = val.round((10**numDecimalPlaces).reciprocal);
 		if((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)) {val = val.asInteger};
-		^(val.asString + (spec.units?""))
+		^(val.asString + (spec.units ? ""))
 	}
 }
 
