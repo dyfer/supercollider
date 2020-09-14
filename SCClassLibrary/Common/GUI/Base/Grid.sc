@@ -338,17 +338,17 @@ GridLines {
 					numTicks = numTicks.max(3).round(1);
 				};
 				// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
-				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
-				"first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
-				nfrac = nfrac + 1; //increase accuracy for warp'd grids
+				# graphmin, graphmax, nfractmp, d = this.ideals(valueMin, valueMax, numTicks);
+				// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
 				if(d != inf) {
 					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
 						// "----".postln;
 						// "tick before everything: ".post; tick.postln;
 						if(lines.last.isNil && (tick != valueMin)) {lines = lines.add( valueMin )};
-						if(tick.inclusivelyBetween(valueMin,valueMax)) {
+						// if(tick.inclusivelyBetween(valueMin,valueMax)) {
+						if(tick >= valueMin) {
 							// "-".postln;
-							// only positive values for now
+							tick = tick.min(valueMax);
 							if(lines.last.notNil) {
 								thisMin = lines.last;
 								thisMax = tick;
@@ -360,7 +360,7 @@ GridLines {
 							};
 							if(numTicksThisSection > 2) {
 								# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
-								// "[graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+								// "second [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
 								if(d != inf) {
 									forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
 										// if(tick.exclusivelyBetween(graphmin,graphmax)) {
@@ -372,6 +372,7 @@ GridLines {
 											// "sectionPixRange: ".post; sectionPixRange.postln;
 											// "tick.log10.frac: ".post; tick.log10.frac.postln;
 											if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01) || (tick == 0.0)) {
+												if(sectionPixRange < (avgPixDistance * 0.5)) {lines.pop}; //remove previous element if it's too close
 												// "adding tick ".post; tick.postln;
 												lines = lines.add( tick );
 											}
@@ -391,11 +392,16 @@ GridLines {
 						}
 					});
 				};
-				// calculate individual nfrac....
-				nfrac = nil;
+				// calculate individual nfrac.... this causes rounding errors I think.
 				nfracarr = lines.collect({ arg val, inc;
-					var nextVal = lines[inc+1] ? (10*val);
-					this.niceNum(nextVal - val, true).log10.floor.neg.max(0)
+					// var nextVal = lines[inc+1] ? (10*val);
+					// this.niceNum(nextVal - val, false).log10.floor.neg.max(0)
+					if(val.frac == 0) {
+						0
+					} {
+						val.asString.split($.)[1].size; //that's lame? but...
+					}
+					// (nextVal - val).log10.floor.neg.max(0);
 					// this.niceNum(val, true).log10.floor.neg.max(0)
 				});
 
@@ -413,7 +419,7 @@ GridLines {
 			p['labels'] = lines.collect({ arg val, inc;
 				// (spec.warp.asSpecifier == \exp).if({nfrac = max(floor(log10(val)).neg, 0)}); //for \exp warp nfrac needs to be calculated for each value
 				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
-				[val, this.formatLabel(val, nfrac ? nfracarr[inc] )] });
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ) ? 1] });
 		};
 		// p.cs.postln;
 		^p
