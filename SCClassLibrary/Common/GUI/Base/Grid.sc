@@ -241,10 +241,11 @@ GridLines {
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
-		var sectionPixRange, numTicksThisSection, thisMin, thisMax;
+		var sectionPixRange, numTicksThisSection, thisMin, thisMax, nfractmp, nfracarr;
 
 		pixRange = abs(pixelMax - pixelMin);
 		lines = [];
+		nfracarr = [];
 
 		spec.warp.asSpecifier.switch(
 			\linear, {
@@ -318,6 +319,14 @@ GridLines {
 						// tick = (gl.niceNum(tick+step,false));//.postln;
 						tick = (tick+step);//.postln;
 					};
+					nfracarr = lines.collect({ arg val;
+						val.abs.log10.floor.neg.max(0)
+					});
+
+					// 	var nextVal = lines[inc+1] ? (10*val);
+					// 	this.niceNum(nextVal - val, true).log10.floor.neg.max(0)
+					// 	// this.niceNum(val, true).log10.floor.neg.max(0)
+					// });
 				} {
 					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
 				};
@@ -330,7 +339,8 @@ GridLines {
 				};
 				// "frst [valueMin, valueMax, numTicks]: ".post; [valueMin, valueMax, numTicks].postln;
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
-				// "first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+				"first [graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
+				nfrac = nfrac + 1; //increase accuracy for warp'd grids
 				if(d != inf) {
 					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
 						// "----".postln;
@@ -349,7 +359,7 @@ GridLines {
 								numTicksThisSection = 0;
 							};
 							if(numTicksThisSection > 2) {
-								# graphmin, graphmax, nfrac, d = this.ideals(thisMin, thisMax, numTicksThisSection);
+								# graphmin, graphmax, nfractmp, d = this.ideals(thisMin, thisMax, numTicksThisSection);
 								// "[graphmin, graphmax, nfrac, d]: ".post; [graphmin, graphmax, nfrac, d].postln;
 								if(d != inf) {
 									forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
@@ -361,7 +371,7 @@ GridLines {
 											sectionPixRange = (spec.unmap(tick) - spec.unmap(lines.last)) * pixRange;
 											// "sectionPixRange: ".post; sectionPixRange.postln;
 											// "tick.log10.frac: ".post; tick.log10.frac.postln;
-											if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01)) {
+											if((sectionPixRange > (avgPixDistance * 0.5)) || (tick.log10.frac < 0.01) || (tick == 0.0)) {
 												// "adding tick ".post; tick.postln;
 												lines = lines.add( tick );
 											}
@@ -381,16 +391,29 @@ GridLines {
 						}
 					});
 				};
-				nfrac = nil; //unset nfrac
-		});
+				// calculate individual nfrac....
+				nfrac = nil;
+				nfracarr = lines.collect({ arg val, inc;
+					var nextVal = lines[inc+1] ? (10*val);
+					this.niceNum(nextVal - val, true).log10.floor.neg.max(0)
+					// this.niceNum(val, true).log10.floor.neg.max(0)
+				});
+
+
+					// if(
+					// (valueMin < valueMax) && (log10(valueMax/valueMin) > 1) ||
+					// ((valueMin > valueMax) && (log10(valueMin/valueMax) > 1))
+				// ) { "unsetting".postln; nfrac = nil }; //unset nfrac if more than one decade
+			}
+		);
 
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
-			p['labels'] = lines.collect({ arg val;
+			p['labels'] = lines.collect({ arg val, inc;
 				// (spec.warp.asSpecifier == \exp).if({nfrac = max(floor(log10(val)).neg, 0)}); //for \exp warp nfrac needs to be calculated for each value
 				// nfrac ?? {nfrac = max(floor(log10(val)).neg, 0)}; //for \exp warp nfrac needs to be calculated for each value
-				[val, this.formatLabel(val, nfrac ? max(val.abs.log10.floor.neg, 0))] });
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] )] });
 		};
 		// p.cs.postln;
 		^p
