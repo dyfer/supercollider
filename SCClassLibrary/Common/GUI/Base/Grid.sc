@@ -318,13 +318,13 @@ GridLines {
 						roundFactor = roundFactor * 0.1;
 						nfrac = valueMin.abs.log10.floor.neg + 1;
 					};
-					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades.min(1)))};
+					numTicks ?? {numTicks = (pixRange / (avgPixDistance * nDecades))};
 					tick = first;
 					while ({tick <= (valueMax + step)}) {
 						if(round(tick,roundFactor).inclusivelyBetween(valueMin,valueMax),{
 							if(
 								(numTicks > 4) ||
-								((numTicks > 2).and(tick.abs==this.niceNum(tick.abs,true))) ||
+								((numTicks > 2.5).and(tick.abs==this.niceNum(tick.abs,true))) ||
 								(tick.abs.log10.frac < 0.01)
 							) { lines = lines.add( tick ) };
 						});
