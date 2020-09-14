@@ -236,7 +236,7 @@ GridLines {
 	}
 	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,avgPixDistance|
 		var lines, p, pixRange;
-		var nfrac, d, graphmin, graphmax, range;
+		var nfrac, d, graphmin, graphmax, range, nfracarr;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
 
 		pixRange = abs(pixelMax - pixelMin);
@@ -334,7 +334,7 @@ GridLines {
 	}
 	formatLabel { arg val, numDecimalPlaces;
 		val = val.round((10**numDecimalPlaces).reciprocal);
-		((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)).if({val = val.asInteger});
+		if((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)) {val = val.asInteger};
 		^(val.asString + (spec.units?""))
 	}
 
