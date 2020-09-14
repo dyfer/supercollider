@@ -64,6 +64,14 @@ DrawGrid {
 	vertGrid_ { arg g;
 		y.grid = g;
 	}
+	pixSpacing_ { arg val;
+		x.pixSpacing = val;
+		y.pixSpacing = val;
+	}
+	dropLabelIfTooNarrow_ { arg bool;
+		x.dropLabelIfTooNarrow = bool;
+		y.dropLabelIfTooNarrow = bool;
+	}
 	copy {
 		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
 	}
@@ -79,6 +87,7 @@ DrawGridX {
 	var <grid,<>range,<>bounds;
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
+	var <pixSpacing = 64, <dropLabelIfTooNarrow = true;
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -93,6 +102,14 @@ DrawGridX {
 		range = [grid.spec.minval, grid.spec.maxval];
 		this.clearCache;
 	}
+	pixSpacing_ { arg val;
+		pixSpacing = val;
+		this.clearCache;
+	}
+	dropLabelIfTooNarrow_ { arg bool;
+		dropLabelIfTooNarrow = bool;
+		this.clearCache;
+	}
 	setZoom { arg min,max;
 		range = [min,max];
 	}
@@ -102,7 +119,7 @@ DrawGridX {
 		^commands ?? {
 			cacheKey = [range,bounds];
 			commands = [];
-			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
+			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, pixSpacing);
 			p['lines'].do { arg val;
 				// value, [color]
 				var x;
@@ -112,20 +129,32 @@ DrawGridX {
 				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(bounds.width >= 12	,{
+			if(bounds.width >= 12, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val;
-					var x;
-					// value, label, [color, font]
-					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
-					});
-					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
-					});
-					x = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.left, bounds.right);
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(x, bounds.bottom) + labelOffset ] );
+				p['labels'].do { arg val, i;
+					var x, next_x, diff, labelWidth, drawLabel = true;
+					x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+					if(dropLabelIfTooNarrow) {
+						next_x = (p['labels'][i + 1] ? [])[0];
+						labelWidth = val[1].asString.size * font.size * 0.5;
+						if(next_x.notNil) {
+							diff = grid.spec.unmap(next_x).linlin(0, 1, bounds.left, bounds.right) - x;
+							if(diff < labelWidth) {
+								drawLabel = false
+							}
+						};
+					};
+					if(drawLabel) {
+						// value, label, [color, font]
+						if(val[2].notNil,{
+							commands = commands.add( ['color_',val[2] ] );
+						});
+						if(val[3].notNil,{
+							commands = commands.add( ['font_',val[3] ] );
+						});
+						commands = commands.add( ['stringAtPoint', val[1].asString, Point(x, bounds.bottom) + labelOffset ] );
+					};
 				}
 			});
 			commands
@@ -148,29 +177,41 @@ DrawGridY : DrawGridX {
 		^commands ?? {
 			commands = [];
 
-			p = grid.getParams(range[0],range[1],bounds.top,bounds.bottom);
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, pixSpacing);
 			p['lines'].do { arg val;
 				// value, [color]
 				var y;
 				val = val.asArray;
-				y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
+				y = grid.spec.unmap(val[0]).linlin(0, 1, bounds.bottom, bounds.top);
 				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
 				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(bounds.height >= 20	,{
+			if(bounds.height >= 20, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val,i;
-					var y;
-					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
-					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
-					});
-					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
-					});
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(bounds.left, y) + labelOffset ] );
+					var y, next_y, diff, labelHeight, drawLabel = true;
+					y = grid.spec.unmap(val[0]).linlin(0, 1, bounds.bottom, bounds.top);
+					if(dropLabelIfTooNarrow) {
+						next_y = (p['labels'][i + 1] ? [])[0];
+						labelHeight = font.size * 1.5;
+						if(next_y.notNil) {
+							diff = y - grid.spec.unmap(next_y).linlin(0, 1, bounds.bottom, bounds.top);
+							if(diff < labelHeight) {
+								drawLabel = false
+							}
+						};
+					};
+					if(drawLabel) {
+						if(val[2].notNil,{
+							commands = commands.add( ['color_',val[2] ] );
+						});
+						if(val[3].notNil,{
+							commands = commands.add( ['font_',val[3] ] );
+						});
+						commands = commands.add( ['stringAtPoint', val[1].asString, Point(bounds.left, y) + labelOffset ] );
+					}
 				}
 			});
 			commands
