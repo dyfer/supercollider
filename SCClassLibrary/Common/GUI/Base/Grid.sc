@@ -336,7 +336,6 @@ GridLines {
 		if((numDecimalPlaces.asInteger == 0) && val.isKindOf(SimpleNumber)) {val = val.asInteger};
 		^(val.asString + (spec.units?""))
 	}
-
 }
 
 
