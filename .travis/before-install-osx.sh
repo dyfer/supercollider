@@ -8,7 +8,7 @@ brew install portaudio || exit 2
 brew install ccache || exit 3
 # we don't upgrade qt since we don't update homebrew
 brew link qt5 --force || exit 5
-brew install fftw --verbose # temp allow
+brew install fftw || exit 6
 
 if $USE_SYSLIBS; then
     # boost is already installed
