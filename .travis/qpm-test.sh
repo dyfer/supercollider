@@ -5,6 +5,7 @@
 # pip2 --version
 # echo "pip3 version"
 # pip3 --version
+QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu" $SCLANG
 QPM_DEBUG=1
 echo "\"hello\".postln; 0.exit" >> test.scd
 $SCLANG test.scd
