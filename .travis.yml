@@ -238,6 +238,9 @@ matrix:
     # macOS 10.14 xcode10
     - os: osx
       osx_image: xcode10.3
+      addons:
+        homebrew:
+          update: true
       env:
         - JOB_NAME="macos xcode10.3"
         - QT=true
@@ -248,6 +251,9 @@ matrix:
     # macOS 10.14 xcode11
     - os: osx
       osx_image: xcode11.3
+      addons:
+        homebrew:
+          update: true
       env:
         - JOB_NAME="macos xcode11.3"
         - QT=true
@@ -259,6 +265,9 @@ matrix:
     # macOS 10.14 xcode11 use_syslibs
     - os: osx
       osx_image: xcode11.3
+      addons:
+        homebrew:
+          update: true
       env:
         - JOB_NAME="macos xcode11.3 with syslibs"
         - QT=true
@@ -269,6 +278,9 @@ matrix:
     # macOS 10.14 xcode11 shared_scsynth (LIBSCSYNTH)
     - os: osx
       osx_image: xcode11.3
+      addons:
+        homebrew:
+          update: true
       env:
         - JOB_NAME="macos xcode11.3 with shared libscsynth"
         - QT=true
