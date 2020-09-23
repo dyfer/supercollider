@@ -9,10 +9,10 @@ matrix:
     #    clang {4, 5, 6, 7, 8, 9, 10}
     # gcc 6, clang 4 are on xenial, all others on bionic
     #
-    # macOS jobs: xcode 10.3, xcode 11.3, xcode 11.3-using-syslibs, xcode 11.3-shared-libscsynth
-    # both on Mojave 10.14
+    # macOS jobs: xcode 10.3, xcode 11.6, xcode 11.6-using-syslibs, xcode 11.6-shared-libscsynth
+    # xcode 10.3 build on Mojave 10.14, xcode 11.6 builds on Catalina 10.15
     #
-    # macOS is deployed from the plain xcode 11.3 job
+    # macOS is deployed from the plain xcode 11.6 job
 
     # Ubuntu 16.04 gcc6
     - os: linux
@@ -249,28 +249,28 @@ matrix:
     - os: osx
       osx_image: xcode11.6
       env:
-        - JOB_NAME="macos xcode11.3"
+        - JOB_NAME="macos xcode11.6"
         - QT=true
         - DO_LINT=false
         - USE_SYSLIBS=false
         - SHARED_LIBSCSYNTH=false
         - DO_DEPLOY=YES # presence option
 
-    # macOS 10.14 xcode11 use_syslibs
+    # macOS 10.15 xcode11 use_syslibs
     - os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.6
       env:
-        - JOB_NAME="macos xcode11.3 with syslibs"
+        - JOB_NAME="macos xcode11.6 with syslibs"
         - QT=true
         - DO_LINT=false
         - USE_SYSLIBS=true
         - SHARED_LIBSCSYNTH=false
 
-    # macOS 10.14 xcode11 shared_scsynth (LIBSCSYNTH)
+    # macOS 10.15 xcode11 shared_scsynth (LIBSCSYNTH)
     - os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.6
       env:
-        - JOB_NAME="macos xcode11.3 with shared libscsynth"
+        - JOB_NAME="macos xcode11.6 with shared libscsynth"
         - QT=true
         - DO_LINT=false
         - USE_SYSLIBS=false
