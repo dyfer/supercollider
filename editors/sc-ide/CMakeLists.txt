@@ -498,6 +498,8 @@ if(APPLE OR WIN32)
                 message(STATUS \"Fixing up bad path in libfftw3f.3.dylib manually due to faulty logic in macdeployqt\")
                 execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/0/libgcc_s.1.dylib
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/9/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                 execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/10/libgcc_s.1.dylib
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                     ")
