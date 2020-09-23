@@ -1,6 +1,7 @@
 #!/bin/sh
 
 export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 brew install libsndfile || brew install libsndfile || exit 1
 brew install portaudio || exit 2
