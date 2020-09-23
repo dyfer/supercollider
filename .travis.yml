@@ -245,9 +245,9 @@ matrix:
         - USE_SYSLIBS=false
         - SHARED_LIBSCSYNTH=false
 
-    # macOS 10.14 xcode11
+    # macOS 10.15 xcode11
     - os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.6
       env:
         - JOB_NAME="macos xcode11.3"
         - QT=true
