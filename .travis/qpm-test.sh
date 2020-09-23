@@ -6,7 +6,7 @@
 # echo "pip3 version"
 # pip3 --version
 # QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --enable-logging --log-level=0 --no-sandbox" $SCLANG
-export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --enable-logging --log-level=0 --no-sandbox"
+export QTWEBENGINE_CHROMIUM_FLAGS="--headless --disable-gpu --enable-logging --log-level=0 --no-sandbox"
 export QPM_DEBUG=1
 echo "\"hello\".postln; 0.exit" >> test.scd
 $SCLANG test.scd
