@@ -284,10 +284,10 @@ cache:
  ccache: true
  directories:
    - ../downloads
-   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then $HOME/Library/Caches/Homebrew; fi
+   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then echo "adding homebrew cache dir"; $HOME/Library/Caches/Homebrew; fi
 
 before_cache:
-  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew cleanup; fi
+  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then echo "adding brew cleanup"; brew cleanup; fi
 
 before_install:
  - eval "$MATRIX_EVAL"
