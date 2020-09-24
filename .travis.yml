@@ -287,7 +287,7 @@ cache:
    - $HOME/Library/Caches/Homebrew
 
 before_cache:
-  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then echo "adding brew cleanup"; brew cleanup; fi
+  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then brew cleanup; fi # cleanup before caching downloads
 
 before_install:
  - eval "$MATRIX_EVAL"
