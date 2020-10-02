@@ -261,6 +261,17 @@ matrix:
         - DEPLOY_AWS_PREFIX="SC-" #turn on AWS deployment
         - DEPLOY_GITHUB_SUFFIX="-macOS" #turn on Github deployment
 
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - JOB_NAME="macos xcode11.3 custom fftw"
+        - IS_LEGACY_BUILD=false
+        - USE_CUSTOM_HOMEBREW=true
+        - QT=true
+        - DO_LINT=false
+        - USE_SYSLIBS=false
+        - SHARED_LIBSCSYNTH=false
+
     # macOS 10.14 xcode11 use_syslibs
     - os: osx
       osx_image: xcode11.3

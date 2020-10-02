@@ -17,7 +17,12 @@ if $IS_LEGACY_BUILD; then
 else
   brew upgrade qt5 || exit 4
 fi
-brew install fftw # do not abort in this step - fftw dependency install may fail, but this is not fatal
+if $USE_CUSTOM_HOMEBREW; then
+  brew install dyfer/formulae/fftw-sc
+  export FFTW3_DIR=`brew --prefix fftw-sc`
+else
+  brew install fftw # do not abort in this step - fftw dependency install may fail, but this is not fatal
+fi
 
 if $USE_SYSLIBS; then
     # boost is already installed
