@@ -17,7 +17,7 @@ if $IS_LEGACY_BUILD; then
 else
   brew upgrade qt5 || exit 4
 fi
-if $USE_CUSTOM_HOMEBREW; then
+if $USE_CUSTOM_FFTW; then
   brew install dyfer/formulae/fftw-sc
   export FFTW3_DIR=`brew --prefix fftw-sc`
 else
