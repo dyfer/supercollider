@@ -254,6 +254,7 @@ matrix:
       env:
         - JOB_NAME="macos xcode11.3"
         - IS_LEGACY_BUILD=false
+        - USE_CUSTOM_FFTW=false
         - QT=true
         - DO_LINT=false
         - USE_SYSLIBS=false
@@ -266,7 +267,7 @@ matrix:
       env:
         - JOB_NAME="macos xcode11.3 custom fftw"
         - IS_LEGACY_BUILD=false
-        - USE_CUSTOM_HOMEBREW=true
+        - USE_CUSTOM_FFTW=true
         - QT=true
         - DO_LINT=false
         - USE_SYSLIBS=false
