@@ -20,22 +20,33 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.9/msvc2015"
-          CMAKE_GENERATOR: "Visual Studio 16 2019"
+        - QT_DIR: "C:/Qt/5.6.3/msvc2015"
+          CMAKE_GENERATOR: "Visual Studio 14 2015"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
           CMAKE_ARCH: "Win32"
-          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
           # https://www.appveyor.com/docs/lang/cpp/
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars32.bat"
+          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+          APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
 
-        - QT_DIR: "C:/Qt/5.15/msvc2019_64"
-          CMAKE_GENERATOR: "Visual Studio 16 2019"
-          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
-          ARCH: "x64"
-          CMAKE_ARCH: "x64"
-          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+        # - QT_DIR: "C:/Qt/5.9/msvc2015"
+        #   CMAKE_GENERATOR: "Visual Studio 16 2019"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+        #   ARCH: "x86"
+        #   CMAKE_ARCH: "Win32"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+        #   # https://www.appveyor.com/docs/lang/cpp/
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars32.bat"
+        # 
+        # - QT_DIR: "C:/Qt/5.15/msvc2019_64"
+        #   CMAKE_GENERATOR: "Visual Studio 16 2019"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
+        #   ARCH: "x64"
+        #   CMAKE_ARCH: "x64"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
 
 install:
 - ps: echo "Install phase start"
@@ -90,7 +101,8 @@ before_build:
 - cd build
 
 build_script:
-- cmake -G "%CMAKE_GENERATOR%" -A "%CMAKE_ARCH%" -D CMAKE_PREFIX_PATH=%QT_DIR% -D SUPERNOVA=ON ..
+- echo %CMAKE_ADDITIONAL_OPITONS%
+- cmake -G "%CMAKE_GENERATOR%" -A "%CMAKE_ARCH%" -D CMAKE_PREFIX_PATH=%QT_DIR% -D SUPERNOVA=ON %CMAKE_ADDITIONAL_OPITONS% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
 # after_build instead of before_deploy so artifacts are collected at the right time
