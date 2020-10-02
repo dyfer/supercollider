@@ -119,19 +119,19 @@ bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s) {
 
 Path SC_Filesystem::defaultSystemAppSupportDirectory() {
     PWSTR wptr = nullptr;
-    const HRESULT hr = SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, &wptr);
+    HRESULT hr = SHGetFolderPathW(nullptr, CSIDL_COMMON_APPDATA, nullptr, 0, wptr);
     return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultUserHomeDirectory() {
     PWSTR wptr = nullptr;
-    const HRESULT hr = SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, &wptr);
+    HRESULT hr = SHGetFolderPathW(nullptr, CSIDL_PROFILE, nullptr, 0, wptr);
     return FAILED(hr) ? Path() : Path(wptr);
 }
 
 Path SC_Filesystem::defaultUserAppSupportDirectory() {
     PWSTR wptr = nullptr;
-    const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &wptr);
+    HRESULT hr = SHGetFolderPathW(nullptr, CSIDL_LOCAL_APPDATA, nullptr, 0, wptr);
     return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
@@ -139,7 +139,7 @@ Path SC_Filesystem::defaultUserConfigDirectory() { return defaultUserAppSupportD
 
 Path SC_Filesystem::defaultMyDocumentsDirectory() {
     PWSTR wptr = nullptr;
-    const HRESULT hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &wptr);
+    HRESULT hr = SHGetFolderPathW(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, wptr);
     return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
