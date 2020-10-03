@@ -113,7 +113,7 @@ before_build:
 
 build_script:
 - echo %CMAKE_ADDITIONAL_OPITONS%
-- cmake -G "%CMAKE_GENERATOR%" -A "%CMAKE_ARCH%" -D CMAKE_PREFIX_PATH=%QT_DIR% -D SUPERNOVA=ON %CMAKE_ADDITIONAL_OPITONS% ..
+- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% -D SUPERNOVA=ON %CMAKE_ADDITIONAL_OPITONS% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
 # after_build instead of before_deploy so artifacts are collected at the right time
