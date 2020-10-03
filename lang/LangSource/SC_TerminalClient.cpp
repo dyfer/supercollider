@@ -37,6 +37,7 @@
 #    include "SC_Win32Utils.h"
 #    include <io.h>
 #    include <windows.h>
+#    include <ioapiset.h>
 #    include <iostream> // for cerr
 #endif
 
