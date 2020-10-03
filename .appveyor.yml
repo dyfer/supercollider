@@ -20,16 +20,27 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.6.3/msvc2015"
-          CMAKE_GENERATOR: "Visual Studio 14 2015"
+        # - QT_DIR: "C:/Qt/5.6.3/msvc2015"
+        #   CMAKE_GENERATOR: "Visual Studio 14 2015"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+        #   ARCH: "x86"
+        #   CMAKE_ARCH: "Win32"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
+        #   # https://www.appveyor.com/docs/lang/cpp/
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+        #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+        #   CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
+
+        - QT_DIR: "C:/Qt/5.6.3/mingw49_32"
+          CMAKE_GENERATOR: "MinGW Makefiles5"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
           CMAKE_ARCH: "Win32"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
           # https://www.appveyor.com/docs/lang/cpp/
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+          # VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
           APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
+          CMAKE_ADDITIONAL_OPITONS: "-D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
 
         # - QT_DIR: "C:/Qt/5.9/msvc2015"
         #   CMAKE_GENERATOR: "Visual Studio 16 2019"
