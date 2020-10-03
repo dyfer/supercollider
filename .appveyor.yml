@@ -65,7 +65,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 # Load command-line tools (lib.exe)
-- cmd: call "%VCVARS_SCRIPT%"
+# - cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
