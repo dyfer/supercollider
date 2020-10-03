@@ -35,10 +35,10 @@ environment:
           CMAKE_GENERATOR: "MinGW Makefiles"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
-          CMAKE_ARCH: "Win32"
+          # CMAKE_ARCH: "Win32"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
           # https://www.appveyor.com/docs/lang/cpp/
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+          # VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
           APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CMAKE_ADDITIONAL_OPITONS: "-D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
 
@@ -65,7 +65,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 # Load command-line tools (lib.exe)
-- cmd: call "%VCVARS_SCRIPT%"
+# - cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
@@ -89,7 +89,7 @@ install:
 # can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: lib.exe /machine:%ARCH% /def:libfftw3f-3.def
+# - cmd: lib.exe /machine:%ARCH% /def:libfftw3f-3.def
 - cmd: cd ..
 - cmd: move fftw "C:/%PROGFILES%/fftw"
 - cmd: echo "Done installing fftw"
