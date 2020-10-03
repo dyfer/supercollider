@@ -32,6 +32,7 @@ environment:
         #   CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
 
         - QT_DIR: "C:/Qt/5.6.3/mingw49_32"
+          MINGW_DIR: "C:/Qt/Tools/mingw492_32/bin"
           CMAKE_GENERATOR: "MinGW Makefiles"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
@@ -108,6 +109,7 @@ install:
 
 before_build:
 - set PATH=%QT_DIR%\bin;%PATH%
+- set PATH=%MINGW_DIR%\bin;%PATH%
 # Workaround for CMake not wanting sh.exe on PATH for MinGW
 - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 - mkdir build
