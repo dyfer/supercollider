@@ -9,7 +9,7 @@ version: '{build}' # incremented with each build
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
-image: Visual Studio 2017
+image: Visual Studio 2015
 
 # disable automatic tests
 test: off
@@ -20,20 +20,45 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.9/msvc2015"
-          CMAKE_GENERATOR: "Visual Studio 15 2017"
+        # - QT_DIR: "C:/Qt/5.6.3/msvc2015"
+        #   CMAKE_GENERATOR: "Visual Studio 14 2015"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+        #   ARCH: "x86"
+        #   CMAKE_ARCH: "Win32"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
+        #   # https://www.appveyor.com/docs/lang/cpp/
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+        #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+        #   CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
+
+        - QT_DIR: "C:/Qt/5.6.3/mingw49_32"
+          MINGW_BIN_DIR: "C:/Qt/Tools/mingw492_32/bin"
+          CMAKE_GENERATOR: "MinGW Makefiles"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
-          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+          # CMAKE_ARCH: "Win32"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32-legacy"
           # https://www.appveyor.com/docs/lang/cpp/
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars32.bat"
+          # VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+          # APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CMAKE_ADDITIONAL_OPITONS: "-D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF"
 
-        - QT_DIR: "C:/Qt/5.11/msvc2017_64"
-          CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
-          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
-          ARCH: "x64"
-          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars64.bat"
+        # - QT_DIR: "C:/Qt/5.9/msvc2015"
+        #   CMAKE_GENERATOR: "Visual Studio 16 2019"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+        #   ARCH: "x86"
+        #   CMAKE_ARCH: "Win32"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+        #   # https://www.appveyor.com/docs/lang/cpp/
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars32.bat"
+        # 
+        # - QT_DIR: "C:/Qt/5.15/msvc2019_64"
+        #   CMAKE_GENERATOR: "Visual Studio 16 2019"
+        #   FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
+        #   ARCH: "x64"
+        #   CMAKE_ARCH: "x64"
+        #   S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
+        #   VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
 
 install:
 - ps: echo "Install phase start"
@@ -41,7 +66,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 # Load command-line tools (lib.exe)
-- cmd: call "%VCVARS_SCRIPT%"
+# - cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
@@ -65,7 +90,7 @@ install:
 # can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: lib.exe /machine:%ARCH% /def:libfftw3f-3.def
+# - cmd: lib.exe /machine:%ARCH% /def:libfftw3f-3.def
 - cmd: cd ..
 - cmd: move fftw "C:/%PROGFILES%/fftw"
 - cmd: echo "Done installing fftw"
@@ -83,12 +108,17 @@ install:
 - cmd: echo "Install phase end"
 
 before_build:
+- if defined QT_DIR dir C:\Qt\
 - set PATH=%QT_DIR%\bin;%PATH%
+- set PATH=%MINGW_BIN_DIR%;%PATH%
+# Workaround for CMake not wanting sh.exe on PATH for MinGW
+- set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 - mkdir build
 - cd build
 
 build_script:
-- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
+- echo %CMAKE_ADDITIONAL_OPITONS%
+- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% %CMAKE_ADDITIONAL_OPITONS% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
 # after_build instead of before_deploy so artifacts are collected at the right time
