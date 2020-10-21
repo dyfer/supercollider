@@ -108,8 +108,8 @@ install:
 - cmd: echo "Install phase end"
 
 before_build:
-- if defined QT_DIR dir C:\Qt\
-- if defined QT_DIR dir %QT_DIR%
+- if defined QT_DIR dir C:\Qt\5.6\
+# - if defined QT_DIR dir %QT_DIR%
 - set PATH=%QT_DIR%\bin;%PATH%
 - set PATH=%MINGW_BIN_DIR%;%PATH%
 # Workaround for CMake not wanting sh.exe on PATH for MinGW
