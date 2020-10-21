@@ -20,7 +20,7 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.6"
+        - QT_DIR: "C:/Qt/5.6/msvc2013"
           CMAKE_GENERATOR: "Visual Studio 12 2013"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
@@ -109,6 +109,7 @@ install:
 
 before_build:
 - if defined QT_DIR dir C:\Qt\
+- if defined QT_DIR dir %QT_DIR%
 - set PATH=%QT_DIR%\bin;%PATH%
 - set PATH=%MINGW_BIN_DIR%;%PATH%
 # Workaround for CMake not wanting sh.exe on PATH for MinGW
