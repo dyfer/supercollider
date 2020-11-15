@@ -15,7 +15,7 @@ brew install ccache || exit 3
 if $IS_LEGACY_BUILD; then
     brew install supercollider/formulae/qt@5.9.3 --force || exit 4
 else
-    brew upgrade qt5 || exit 4
+    brew upgrade --skip-cask-deps qt5 || exit 4
 fi
 brew install fftw # do not abort in this step - fftw dependency install may fail, but this is not fatal
 
