@@ -31,7 +31,7 @@ environment:
         #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
         #   CMAKE_ADDITIONAL_OPITONS: "-T v140_xp -D SC_USE_QTWEBENGINE=OFF -D SC_HIDAPI=OFF -D SC_ABLETON_LINK=OFF"
 
-        - QT_DIR: "C:/Qt/5.7.0/mingw53_32"
+        - QT_DIR: "C:/Qt/5.7/mingw53_32"
           MINGW_BIN_DIR: "C:/Qt/Tools/mingw530_32/bin"
           CMAKE_GENERATOR: "MinGW Makefiles"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
@@ -108,7 +108,7 @@ install:
 - cmd: echo "Install phase end"
 
 before_build:
-- if defined QT_DIR dir C:\Qt\
+- if defined QT_DIR dir C:\Qt\5.7
 - set PATH=%QT_DIR%\bin;%PATH%
 - set PATH=%MINGW_BIN_DIR%;%PATH%
 # Workaround for CMake not wanting sh.exe on PATH for MinGW
