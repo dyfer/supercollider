@@ -5,11 +5,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-        submodules: `recursive`
+        with:
+          path: supercollider
+          submodules: recursive
       # - uses: actions/setup-node@v1
       # - run: npm install -g bats
       - name: make-build-dir
-        run: cd $GITHUB_WORKSPACE && mkdir BUILD && cd BUILD  # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
+        run: cd $GITHUB_WORKSPACE/supercollider && mkdir BUILD && cd BUILD  # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
       - name: get-dependencies
         run: sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev
       - name: cmake
