@@ -37,7 +37,7 @@ jobs:
     runs-on: macos-10.15
     env: 
       BUILD_PATH: ${{ github.workshpace }}/build
-      INSTALL_PATH: ${{ emv.build_path }}/Install
+      INSTALL_PATH: ${{ env.build_path }}/Install
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
