@@ -14,12 +14,12 @@ jobs:
       - name: make-build-dir
         run: mkdir $GITHUB_WORKSPACE/build  # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
       - name: cd
-        run: cd $GITHUB_WORKSPACE/build
+        run: cd $GITHUB_WORKSPACE/build # does not persist between actions
       - name: where-am-i
         run: pwd
       - name: where-is-gh
         run: echo $GITHUB_WORKSPACE
-      - name: cmake # FIXME: use env var for supercollider path
-        run: cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=OFF -DSC_IDE=OFF -DCMAKE_BUILD_TYPE=Release .. # --debug-output # -DCMAKE_INSTALL_PREFIX:PATH=$TRAVIS_BUILD_DIR/BUILD/Install
+      - name: cmake
+        run: cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=OFF -DSC_IDE=OFF -DCMAKE_BUILD_TYPE=Release $GITHUB_WORKSPACE/build # --debug-output # -DCMAKE_INSTALL_PREFIX:PATH=$TRAVIS_BUILD_DIR/BUILD/Install
       - name: build
-        run: sudo make install -j2
+        run: cd $GITHUB_WORKSPACE/build && sudo make install -j2
