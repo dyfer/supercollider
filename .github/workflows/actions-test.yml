@@ -60,14 +60,14 @@ jobs:
         # run: echo $GITHUB_WORKSPACE # /home/runner/work/supercollider/supercollider
       - name: configure
         run: |
-        cd $GITHUB_WORKSPACE/build && \
-        cmake -G "Xcode" \
-            # -DRULE_LAUNCH_COMPILE=ccache \
-            -DCMAKE_PREFIX_PATH=`brew --prefix qt5` \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
-            -DSUPERNOVA=ON \
-            # $EXTRA_CMAKE_FLAGS \
-            -DCMAKE_BUILD_TYPE=Release .. --debug-output
+          cd $GITHUB_WORKSPACE/build && \
+          cmake -G "Xcode" \
+          # -DRULE_LAUNCH_COMPILE=ccache \
+          -DCMAKE_PREFIX_PATH=`brew --prefix qt5` \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
+          -DSUPERNOVA=ON \
+          # $EXTRA_CMAKE_FLAGS \
+          -DCMAKE_BUILD_TYPE=Release .. --debug-output
       - name: build
         run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
       - name: upload-artifacts
