@@ -3,7 +3,7 @@ on: [push]
 jobs:
   test-build-linux:
     runs-on: ubuntu-18.04
-    env: 
+    # env: 
       # BUILD_PATH: ${{env.GITHUB_WORKSPACE}}/build
       # INSTALL_PATH: ${{BUILD_PATH}}/Install
     steps:
