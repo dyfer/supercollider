@@ -1,10 +1,20 @@
-name: learn-github-actions
+name: test-build-linux
 on: [push]
 jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
+  test-build-linux:
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - run: npm install -g bats
-      - run: bats -v
+      # - uses: actions/setup-node@v1
+      # - run: npm install -g bats
+      - name: make-dirs
+        run: |
+        cd supercollider
+        mkdir BUILD && cd BUILD
+        # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
+      - name: get-dependencies
+        run: sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev
+      - name: cmake
+        run: cmake -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=OFF -DSC_IDE=OFF -DCMAKE_BUILD_TYPE=Release .. --debug-output # -DCMAKE_INSTALL_PREFIX:PATH=$TRAVIS_BUILD_DIR/BUILD/Install
+      - name: build
+        run: sudo make install -j2
