@@ -72,8 +72,8 @@ jobs:
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
           -DSUPERNOVA=ON \
           -DCMAKE_BUILD_TYPE=Release .. --debug-output
-          # -DRULE_LAUNCH_COMPILE=ccache \
-          # $EXTRA_CMAKE_FLAGS \
+      # -DRULE_LAUNCH_COMPILE=ccache \
+      # $EXTRA_CMAKE_FLAGS \
       - name: build
         run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
       - name: upload-artifacts
