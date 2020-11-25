@@ -32,6 +32,7 @@ jobs:
         with:
           name: SC-${{ github.job }}-${{ github.sha }}
           path: ${{ env.INSTALL_PATH }}/*
+          retention-days: 7 # quickly remove test artifacts
 
   test-build-macos:
     runs-on: macos-10.15
@@ -64,6 +65,7 @@ jobs:
         with:
           name: SC-${{ github.job }}-${{ github.sha }}
           path: ${{ env.INSTALL_PATH }}/*
+          retention-days: 7 # quickly remove test artifacts
 
 
 # notes:
