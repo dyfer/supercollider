@@ -59,6 +59,10 @@ jobs:
         # run: pwd # /home/runner/work/supercollider/supercollider
       # - name: where-is-gh
         # run: echo $GITHUB_WORKSPACE # /home/runner/work/supercollider/supercollider
+      - name: ls
+        run: |
+          ls /usr/local/opt/
+          ls /usr/local/opt/qt/
       - name: configure
         run: |
           cd $BUILD_PATH && \
@@ -76,4 +80,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: sc-${{ github.workflow }}-#{{ github.sha }}
-          path: ${{ github.workspace }}/build/Install/*
+          path: ${{ env.BUILD_PATH }}/Install/*
