@@ -3,8 +3,8 @@ on: [push]
 jobs:
   test-build-linux:
     runs-on: ubuntu-18.04
-    # env: 
-      # BUILD_PATH: ${{env.GITHUB_WORKSPACE}}/build
+    env: 
+      BUILD_PATH: ${{ github.workspace }}/build
       # INSTALL_PATH: ${{BUILD_PATH}}/Install
     steps:
       - uses: actions/checkout@v2
@@ -13,10 +13,10 @@ jobs:
 
       - name: install dependencies
         run: sudo apt-get update && sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev # I was getting errors when apt-get update was not run first
-      - name: install-qt
+      - name: install qt
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
-      - name: make-build-dir
-        run: mkdir $GITHUB_WORKSPACE/build # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
+      - name: make build directory
+        run: mkdir $BUILD_PATH # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
       # - name: cd
         # run: cd $GITHUB_WORKSPACE/build # does not persist between actions
       # - name: where-am-i
@@ -30,7 +30,7 @@ jobs:
       - name: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: sc-${{ github.workflow }}-${{ github.sha }}
+          name: sc-${{ github.job }}-${{ github.sha }}
           path: ${{ github.workspace }}/build/Install/*
 
   test-build-macos:
@@ -52,7 +52,7 @@ jobs:
       # - name: install-qt
         # run: brew install qt
       - name: make-build-dir
-        run: mkdir $GITHUB_WORKSPACE/build # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
+        run: mkdir $BUILD_PATH # export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
       # - name: cd
         # run: cd $GITHUB_WORKSPACE/build # does not persist between actions
       # - name: where-am-i
@@ -68,17 +68,17 @@ jobs:
         # $EXTRA_CMAKE_FLAGS \
         run: |
           cd $BUILD_PATH && \
-          pwd $$ \
+          pwd && \
           cmake -G "Xcode" \
           -DCMAKE_PREFIX_PATH=`brew --prefix qt` \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
           -DSUPERNOVA=ON \
-          -DCMAKE_BUILD_TYPE=Release .. --debug-output
+          .. --debug-output
 
       - name: build
         run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
       - name: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: sc-${{ github.workflow }}-${{ github.sha }}
+          name: sc-${{ github.job }}-${{ github.sha }}
           path: ${{ env.BUILD_PATH }}/Install/*
