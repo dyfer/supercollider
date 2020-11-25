@@ -30,7 +30,7 @@ jobs:
       - name: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: sc-${{ github.workflow }}-#{{ github.sha }}
+          name: sc-${{ github.workflow }}-${{ github.sha }}
           path: ${{ github.workspace }}/build/Install/*
 
   test-build-macos:
@@ -41,7 +41,7 @@ jobs:
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
-      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer # set XCode version
     steps:
       - uses: actions/checkout@v2
         with:
@@ -68,16 +68,16 @@ jobs:
           cd $BUILD_PATH && \
           pwd $$ \
           cmake -G "Xcode" \
-          # -DRULE_LAUNCH_COMPILE=ccache \
+        # -DRULE_LAUNCH_COMPILE=ccache \
           -DCMAKE_PREFIX_PATH=`brew --prefix qt` \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
           -DSUPERNOVA=ON \
-          # $EXTRA_CMAKE_FLAGS \
+        # $EXTRA_CMAKE_FLAGS \
           -DCMAKE_BUILD_TYPE=Release .. --debug-output
       - name: build
         run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
       - name: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: sc-${{ github.workflow }}-#{{ github.sha }}
+          name: sc-${{ github.workflow }}-${{ github.sha }}
           path: ${{ env.BUILD_PATH }}/Install/*
