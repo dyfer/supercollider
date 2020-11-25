@@ -53,7 +53,7 @@ jobs:
         run: mkdir $BUILD_PATH 
       - name: configure
         run: |
-          DEVELOPER_DIR = /Applications/Xcode_$XCODE_VERSION.app/Contents/Developer # set XCode version
+          export DEVELOPER_DIR="/Applications/Xcode_$XCODE_VERSION.app/Contents/Developer"
           cd $BUILD_PATH
           # cmake -G "Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
           cmake -G "ninja" -D CMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
