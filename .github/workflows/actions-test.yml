@@ -56,8 +56,8 @@ jobs:
         run: |
           export DEVELOPER_DIR="/Applications/Xcode_$XCODE_VERSION.app/Contents/Developer"
           cd $BUILD_PATH
-          # cmake -G "Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
-          cmake -G "ninja" -D CMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
+          # cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
+          cmake -G"Ninja" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: upload artifacts
