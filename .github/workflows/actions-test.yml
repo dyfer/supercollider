@@ -41,7 +41,7 @@ jobs:
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
-      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer # set XCode version
+      XCODE_VERSION: 11.7 # set XCode version
     steps:
       - uses: actions/checkout@v2
         with:
@@ -53,6 +53,7 @@ jobs:
         run: mkdir $BUILD_PATH 
       - name: configure
         run: |
+          DEVELOPER_DIR = /Applications/Xcode_$XCODE_VERSION.app/Contents/Developer # set XCode version
           cd $BUILD_PATH
           # cmake -G "Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
           cmake -G "ninja" -D CMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
