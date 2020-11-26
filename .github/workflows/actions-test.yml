@@ -26,16 +26,16 @@ jobs:
           cd $BUILD_PATH
           make install -j2
       - name: create archive
-        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE . # this assumes that we end up with the build in the folder SuperCollider
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
         env: 
-          ARTIFACT_FILE: "${{ env.INSTALL_PATH }}/SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         env: 
-          ARTIFACT_FILE: "${{ env.INSTALL_PATH }}/SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
         with:
-          name: SC-${{ github.job }}-${{ github.sha }}
-          path: ${{ env.ARTIFACT_FILE }}
+          name: ${{ github.ARTIFACT_FILE }}
+          path: {{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
   test-build-macos:
@@ -64,16 +64,16 @@ jobs:
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
-        run: echo $ARTIFACT_FILE && cd $INSTALL_PATH && ls && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
         env: 
-          ARTIFACT_FILE: "${{ env.INSTALL_PATH }}/SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         env: 
-          ARTIFACT_FILE: "${{ env.INSTALL_PATH }}/SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
         with:
-          name: SC-${{ github.job }}-${{ github.sha }}
-          path: ${{ env.ARTIFACT_FILE }}
+          name: ${{ github.ARTIFACT_FILE }}
+          path: {{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
 
