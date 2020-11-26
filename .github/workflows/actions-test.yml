@@ -34,8 +34,8 @@ jobs:
         env: 
           ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
         with:
-          name: ${{ github.ARTIFACT_FILE }}
-          path: {{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
   test-build-macos:
@@ -72,8 +72,8 @@ jobs:
         env: 
           ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
         with:
-          name: ${{ github.ARTIFACT_FILE }}
-          path: {{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
 
