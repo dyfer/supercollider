@@ -46,14 +46,11 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       XCODE_VERSION: 11.7 # set XCode version
       ARTIFACT_SUFFIX: macOS
+      ARTIFACT_FILE: "$INSTALL_PATH/SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set environment variables
-        run: |
-          export DEVELOPER_DIR="/Applications/Xcode_$XCODE_VERSION.app/Contents/Developer"
-          export ARTIFACT_FILE="$INSTALL_PATH/SuperCollider-$GITHUB_SHA-$ARTIFACT_SUFFIX.zip"
       - name: install dependencies
         run: brew install libsndfile portaudio ccache qt fftw ninja # ninja added temporarily
       - name: configure
@@ -61,10 +58,12 @@ jobs:
           mkdir $BUILD_PATH && cd $BUILD_PATH
           # cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
           cmake -G"Ninja" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
+        env:
+          DEVELOPER_DIR: "/Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer"
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
-        run: echo $ARTIFACT_FILE && cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+        run: echo $ARTIFACT_FILE && cd $INSTALL_PATH && ls && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         with:
