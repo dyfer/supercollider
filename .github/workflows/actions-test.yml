@@ -10,7 +10,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-
+      - name: set environment variables
+        run: |
+          export ARTIFACT_FILE="$INSTALL_PATH/SuperCollider-$GITHUB_SHA-$ARTIFACT_SUFFIX.zip"
       - name: install dependencies
         run: |
           sudo apt-get update # I was getting errors if apt-get update was not run first
@@ -25,11 +27,13 @@ jobs:
         run: |
           cd $BUILD_PATH
           make install -j2
+      - name: create archive
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE . # this assumes that we end up with the build in the folder SuperCollider
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: SC-${{ github.job }}-${{ github.sha }}
-          path: ${{ env.INSTALL_PATH }}/*
+          path: ${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
   test-build-macos:
@@ -46,7 +50,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-
       - name: set environment variables
         run: |
           export DEVELOPER_DIR="/Applications/Xcode_$XCODE_VERSION.app/Contents/Developer"
@@ -61,7 +64,7 @@ jobs:
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
-        run: zip --symlinks -r $ARTIFACT_FILE $INSTALL_PATH
+        run: echo $ARTIFACT_FILE && cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         with:
