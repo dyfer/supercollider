@@ -2,7 +2,7 @@ name: test-CI
 on: [push]
 jobs:
   build-linux:
-    runs-on: ${{ marix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
