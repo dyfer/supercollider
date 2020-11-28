@@ -1,12 +1,17 @@
 name: test-CI
 on: [push]
 jobs:
-  test-build-linux:
-    runs-on: ubuntu-18.04
+  build-linux:
+    runs-on: ${{ marix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-18.04
+            artifact-suffix: linux
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_SUFFIX: linux # setting this  enables artifact creation/upload
+      ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
       DO_LINT: true # true or false
     steps:
       - uses: actions/checkout@v2
