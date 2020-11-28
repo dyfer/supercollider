@@ -7,12 +7,14 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_SUFFIX: linux
-      DO_LINT: false
+      DO_LINT: something
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
       - name: lint
+        # if: env.DO_LINT == true
+        if: env.DO_LINT
         run: |
           pushd . >/dev/null
           cd ..
@@ -38,7 +40,6 @@ jobs:
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
-        if: env.DO_LINT == true
       - name: install dependencies
         run: |
           sudo apt-get update # I was getting errors if apt-get update was not run first
@@ -54,11 +55,13 @@ jobs:
           cd $BUILD_PATH
           make install -j2
       - name: create archive
-        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
+        if: env.ARTIFACT_SUFFIX
         env: 
           ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
       - name: upload artifacts
         uses: actions/upload-artifact@v2
+        if: env.ARTIFACT_SUFFIX
         env: 
           ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
         with:
