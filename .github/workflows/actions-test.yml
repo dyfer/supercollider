@@ -13,7 +13,7 @@ jobs:
         with:
           path: ../downloads
           # key: ${{ runner.os }}-${{ job.name }}
-          key: ${{ github.job.container.image }}-${{ github.job.name }}
+          key: ${{ runner.os }}-${{ github.job.name }}
       - name: lint
         run: |
           pushd . >/dev/null
@@ -81,6 +81,7 @@ jobs:
           echo "matrix eval:" "$MATRIX_EVAL"
           eval "$MATRIX_EVAL"
           echo "CC:" "$CC"
+          echo "CXX:" "$CXX"
           cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
         run: |
