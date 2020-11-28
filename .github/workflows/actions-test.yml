@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: recursive
       - name: lint
-        if: ${{ env.DO_LINT == true }}
+        if: env.DO_LINT == 'true'
         run: |
           pushd . >/dev/null
           cd ..
