@@ -45,15 +45,20 @@ jobs:
             os-version: '18.04'
             matrix-eval: 'CC=gcc-10 && CXX=g++-10'
             compiler-packages: 'g++-10'
+            use-syslibs: false
+            shared-libscsynth: false
             artifact-suffix: linux
-            
+# TODO: pass syslisbs and shared libsysynth to the build system
             
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
+      # ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
+      ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip"
       MATRIX_EVAL: ${{ matrix.matrix-eval }}
       COMPILER_PACKAGES: ${{ matrix.compiler-packages }}
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -61,7 +66,7 @@ jobs:
       - name: install dependencies
         run: |
           if [[ -n "$COMPILER_PACKAGES" ]]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test; fi # get toolchains ppa
-          sudo apt-get update # I was getting errors if apt-get update was not run first
+          sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev $COMPILER_PACKAGES
       - name: install qt
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
@@ -75,15 +80,11 @@ jobs:
           cd $BUILD_PATH
           make install -j2
       - name: create archive
-        if: env.ARTIFACT_SUFFIX
-        env: 
-          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+        if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
       - name: upload artifacts
         uses: actions/upload-artifact@v2
-        if: env.ARTIFACT_SUFFIX
-        env: 
-          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+        if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
