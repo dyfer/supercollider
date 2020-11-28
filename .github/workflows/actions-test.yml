@@ -12,7 +12,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ../downloads
-          key: ${{ runner.os }}-${{ job.name }}
+          # key: ${{ runner.os }}-${{ job.name }}
+          key: ${{ github.job.container.image }}-${{ github.job.name }}
       - name: lint
         run: |
           pushd . >/dev/null
