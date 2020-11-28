@@ -47,8 +47,8 @@ jobs:
             compiler-packages: 'g++-10'
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: linux # set only where needed
-            # no-ableton-link: true # set only where needed
+            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+            # no-ableton-link: true # set if needed
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
@@ -72,8 +72,9 @@ jobs:
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
+          echo "matrix eval:" "$MATRIX_EVAL"
           eval "$MATRIX_EVAL"
-          cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. --debug-output
+          cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
         run: |
           cd $BUILD_PATH
