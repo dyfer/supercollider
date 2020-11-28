@@ -47,9 +47,8 @@ jobs:
             compiler-packages: 'g++-10'
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: linux
-# TODO: pass syslisbs and shared libsysynth to the build system
-            
+            artifact-suffix: linux # set only where needed
+            # no-ableton-link: true # set only where needed
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
