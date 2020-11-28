@@ -38,7 +38,7 @@ jobs:
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
-        if: ${{ env.DO_LINT }}
+        if: ${{ env.DO_LINT }} == true
       - name: install dependencies
         run: |
           sudo apt-get update # I was getting errors if apt-get update was not run first
