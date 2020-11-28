@@ -1,24 +1,14 @@
 name: test-CI
 on: [push]
 jobs:
-  build-linux:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-18.04
-            artifact-suffix: linux
-    env: 
-      BUILD_PATH: ${{ github.workspace }}/build
-      INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
-      DO_LINT: true # true or false
+  lint:
+    # TODO: add lintspaces step here as well
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
       - name: lint
-        if: env.DO_LINT == 'true'
         run: |
           pushd . >/dev/null
           cd ..
@@ -44,6 +34,23 @@ jobs:
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
+
+  build-linux:
+    needs: lint
+    runs-on: ubuntu-${{ matrix.os-version }}
+    strategy:
+      matrix:
+        include:
+          - os-version: '18.04'
+            artifact-suffix: linux
+    env: 
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: install dependencies
         run: |
           sudo apt-get update # I was getting errors if apt-get update was not run first
@@ -74,6 +81,7 @@ jobs:
           retention-days: 7 # quickly remove test artifacts
 
   test-build-macos:
+    needs: lint
     runs-on: macos-10.15
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
