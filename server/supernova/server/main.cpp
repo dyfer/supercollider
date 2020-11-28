@@ -317,7 +317,7 @@ void lock_memory(server_arguments const& args) {
 } /* namespace */
 
 int supernova_main(int argc, char* argv[]) {
-    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
+        drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
                           // it!
     enable_core_dumps();
 
