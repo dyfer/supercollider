@@ -7,7 +7,7 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_SUFFIX: linux
-      DO_LINT: something
+      # DO_LINT: something
     steps:
       - uses: actions/checkout@v2
         with:
