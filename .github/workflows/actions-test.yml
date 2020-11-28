@@ -1,4 +1,4 @@
-name: test-CI
+name: check, build and test SuperCollider
 on: [push]
 jobs:
   lint:
@@ -8,6 +8,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+      - name: cache downloads
+        uses: actions/cache@v2
+        with:
+          path: ../downloads
+          key: ${{ runner.os }}-${{ job.name }}
       - name: lint
         run: |
           pushd . >/dev/null
@@ -74,6 +79,7 @@ jobs:
           mkdir $BUILD_PATH && cd $BUILD_PATH
           echo "matrix eval:" "$MATRIX_EVAL"
           eval "$MATRIX_EVAL"
+          echo "CC:" "$CC"
           cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
         run: |
