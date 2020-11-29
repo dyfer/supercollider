@@ -69,7 +69,7 @@ jobs:
             compiler-packages: 'g++-10'
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
 
     env: 
