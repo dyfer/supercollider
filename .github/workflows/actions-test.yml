@@ -26,6 +26,8 @@ jobs:
 
       - name: lint cpp files
         run: |
+          sudo rm /usr/bin/clang-format
+          sudo ln -s /usr/bin/clang-format-8 /usr/bin/clang-format
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
