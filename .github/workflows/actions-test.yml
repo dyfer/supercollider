@@ -179,7 +179,7 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        if: !matrix.qt-version
+        if: '!matrix.qt-version'
         run: |
           # if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
           sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
