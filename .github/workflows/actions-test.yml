@@ -13,7 +13,6 @@ jobs:
         with:
           path: ../downloads
           key: ${{ runner.os }}-${{ github.job }}
-          # key: ${{ runner.os }}-${{ github.job.name }}
       - name: lint
         run: |
           pushd . >/dev/null
@@ -47,6 +46,14 @@ jobs:
     strategy:
       matrix:
         include:
+          - job-name: 'bionic gcc9'
+            os-version: '18.04'
+            matrix-eval: 'CC=gcc-9 && CXX=g++-9'
+            compiler-packages: 'g++-9'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
           - job-name: 'bionic gcc10'
             os-version: '18.04'
             matrix-eval: 'CC=gcc-10 && CXX=g++-10'
@@ -54,7 +61,8 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-            # no-ableton-link: true # set if needed
+
+
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
