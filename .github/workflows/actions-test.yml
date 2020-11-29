@@ -212,15 +212,25 @@ jobs:
 
   macOS:
     needs: linter
-    runs-on: macos-10.15
+    runs-on: macos-${{ matrix.os-version }} 
+    strategy:
+      matrix:
+        include:
+
+          - job-name: 'macOS'
+            os-version: '10.15'
+            xcode-version: '11.7'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
-      XCODE_VERSION: '11.7' # set XCode version
-      ARTIFACT_SUFFIX: macOS # setting this enables artifact creation/upload
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      ARTIFACT_FILE: 'SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -232,20 +242,14 @@ jobs:
           mkdir $BUILD_PATH && cd $BUILD_PATH
           # cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
           cmake -G"Ninja" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
-        env:
-          DEVELOPER_DIR: "/Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer"
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
-        if: env.ARTIFACT_SUFFIX
+        if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
-        env: 
-          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
       - name: upload artifacts
         uses: actions/upload-artifact@v2
-        if: env.ARTIFACT_SUFFIX
-        env: 
-          ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ env.ARTIFACT_SUFFIX }}.zip"
+        if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
