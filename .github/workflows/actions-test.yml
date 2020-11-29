@@ -15,6 +15,7 @@ jobs:
       #     path: '../downloads'
       #     key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
       - name: lint class library
+        if: 'false' # temporary disable
         run: |
           sudo npm install -g lintspaces-cli
           set -o errexit
