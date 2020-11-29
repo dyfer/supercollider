@@ -41,6 +41,7 @@ jobs:
     # available gcc:
     # gcc  gcc-10  gcc-7  gcc-8  gcc-9  gcc-ar  gcc-ar-10  gcc-ar-7  gcc-ar-8  gcc-ar-9  gcc-nm  gcc-nm-10  gcc-nm-7  gcc-nm-8  gcc-nm-9  gcc-ranlib  gcc-ranlib-10  gcc-ranlib-7  gcc-ranlib-8  gcc-ranlib-9
     strategy:
+      fail-fast: false
       matrix:
         include:
           # - job-name: 'xenial gcc5' # disabled because of  https://github.com/jurplel/install-qt-action/issues/65
@@ -209,6 +210,7 @@ jobs:
     needs: linter
     runs-on: macos-${{ matrix.os-version }} 
     strategy:
+      fail-fast: false
       matrix:
         include:
 
