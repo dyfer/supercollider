@@ -51,14 +51,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - job-name: 'xenial gcc5'
-            os-version: '16.04'
-            c-compiler: 'gcc-5'
-            cxx-compiler: 'g++-5'
-            use-syslibs: false
-            shared-libscsynth: false
-            qt-version: '5.9.3' # manually install requested version of qt
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+          # - job-name: 'xenial gcc5' # disabled because of  https://github.com/jurplel/install-qt-action/issues/65
+          #   os-version: '16.04'
+          #   c-compiler: 'gcc-5'
+          #   cxx-compiler: 'g++-5'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   qt-version: '5.9.3' # manually install requested version of qt
+          #   # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic gcc7'
             os-version: '18.04'
@@ -181,10 +181,7 @@ jobs:
       - name: install qt from apt
         if: '!matrix.qt-version'
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
-      # ubuntu-16.04 only - needed by jurplel/install-qt-action@v2, see https://github.com/jurplel/install-qt-action/issues/65
-      - name: install importlib-metadata 
-        if: matrix.config.os == 'ubuntu-16.04'
-        run: pip3 install importlib-metadata==2.1.0
+      # custon Qt version doesn't work in ubuntu 16.04 - see https://github.com/jurplel/install-qt-action/issues/65
       - name: install qt - specific version
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -196,17 +193,12 @@ jobs:
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-
-          echo "CC:" "$CC"
-          echo "CXX:" "$CXX"
           
           EXTRA_CMAKE_FLAGS=
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-          
-          echo "EXTRA_CMAKE_FLAGS:" "$EXTRA_CMAKE_FLAGS"
 
           cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
