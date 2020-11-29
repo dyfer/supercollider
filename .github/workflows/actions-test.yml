@@ -18,20 +18,18 @@ jobs:
       # - name: debug with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: lint class library
-        if: 'false' # temporary disable
+        # if: 'false' # temporary disable
         run: |
           sudo npm install -g lintspaces-cli
-          set -o errexit
-          shopt -s globstar
-          lintspaces -e .editorconfig SCClassLibrary/**/*.sc
+          # set -o errexit
+          # shopt -s globstar
+          lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
 
       - name: lint cpp files
         run: |
           # switch cmake versions
-          sudo rm /usr/bin/clang-format
-          sudo ln -s /usr/bin/clang-format-8 /usr/bin/clang-format
           echo "Running tools/clang-format.py lintall"
-          tools/clang-format.py lintall || exit 1
+          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
           echo "Lint successful"
 
   Linux:
@@ -138,10 +136,7 @@ jobs:
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      # ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
       ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip"
-      # MATRIX_EVAL: ${{ matrix.matrix-eval }}
-      # COMPILER_PACKAGES: ${{ matrix.compiler-packages }}
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
@@ -229,6 +224,8 @@ jobs:
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       ARTIFACT_FILE: 'SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip'
     steps:
@@ -236,11 +233,21 @@ jobs:
         with:
           submodules: recursive
       - name: install dependencies
-        run: brew install libsndfile portaudio ccache qt fftw ninja # ninja added temporarily
+        run: brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
+      - name: install qt from homebrew
+        if: '!matrix.qt-version'
+        run: brew install qt
+      - name: install qt - specific version
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: qtwebengine
+          version: ${{ matrix.qt-version }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
           # cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
+          # add switching qt path here
           cmake -G"Ninja" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
