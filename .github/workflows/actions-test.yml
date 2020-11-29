@@ -40,6 +40,8 @@ jobs:
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
+      - name: debug with tmate # live debugging
+        uses: mxschmitt/action-tmate@v3.1
 
   Linux:
     needs: linter
@@ -189,7 +191,7 @@ jobs:
         with:
           modules: qtwebengine
           version: ${{ matrix.qt-version }}
-      # - name: Debugging with tmate # live debugging
+      # - name: debug with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: configure
         run: |
