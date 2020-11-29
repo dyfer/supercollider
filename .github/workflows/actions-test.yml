@@ -18,11 +18,8 @@ jobs:
       # - name: debug with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: lint class library
-        # if: 'false' # temporary disable
         run: |
           sudo npm install -g lintspaces-cli
-          # set -o errexit
-          # shopt -s globstar
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
 
       - name: lint cpp files
