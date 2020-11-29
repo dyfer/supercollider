@@ -12,7 +12,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ../downloads
-          key: ${{ runner.os }}-${{ github.job }}
+          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('README.md') }}
       - name: lint
         run: |
           pushd . >/dev/null
