@@ -107,6 +107,8 @@ jobs:
           fi
       - name: install qt
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
+      - name: Debugging with tmate
+        uses: mxschmitt/action-tmate@v3.1
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
