@@ -9,11 +9,11 @@ jobs:
         with:
           submodules: recursive
       - name: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v1
         with:
-          path: '${{ github.workspace }}/../downloads'
-          # path: '../downloads'
-          key: ${{ runner.os }}-${{ github.job }}-v2-${{ hashFiles('README.md') }}
+          # path: '${{ github.workspace }}/../downloads'
+          path: '../downloads'
+          key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
       - name: lint
         run: |
           pushd . >/dev/null
