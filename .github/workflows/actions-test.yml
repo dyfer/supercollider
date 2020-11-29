@@ -144,11 +144,9 @@ jobs:
         with:
           submodules: recursive
       - name: cache
-        uses: actions/cache@v1
+        uses: actions/cache@v1 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
-          path: |
-            # '../downloads'
-            .ccache
+          path: ~/.ccache
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -${{ hashFiles('README.md') }}
       - name: install dependencies
         run: |
