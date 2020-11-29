@@ -95,7 +95,7 @@ jobs:
           
           # Install required clang toolchain
           if [[ -n "$CLANG_VERSION" ]]; then
-              DIST_CODENAME=lsb_release -cs
+              DIST_CODENAME=`lsb_release -cs`
               wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
               echo "deb https://apt.llvm.org/$DIST_CODENAME/ llvm-toolchain-$DIST_CODENAME-$CLANG_VERSION main" | sudo tee -a /etc/apt/sources.list
               sudo apt-get update
