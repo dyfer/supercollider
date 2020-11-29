@@ -51,12 +51,13 @@ jobs:
     strategy:
       matrix:
         include:
-          # - job-name: 'xenial gcc5' # disabled, since it comes with Qt 5.5
-          #   os-version: '16.04'
-          #   c-compiler: 'gcc-5'
-          #   cxx-compiler: 'g++-5'
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+          - job-name: 'xenial gcc5'
+            os-version: '16.04'
+            c-compiler: 'gcc-5'
+            cxx-compiler: 'g++-5'
+            use-syslibs: false
+            shared-libscsynth: false
+            qt-version: '5.9.3' # manually install requested version of qt
             # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic gcc7'
@@ -99,12 +100,12 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
-          - job-name: 'focal gcc10 use syslibs'
-            os-version: '20.04'
-            c-compiler: 'gcc-10'
-            cxx-compiler: 'g++-10'
-            use-syslibs: true
-            shared-libscsynth: false
+          # - job-name: 'focal gcc10 use syslibs' # disabled - boost version too low
+          #   os-version: '20.04'
+          #   c-compiler: 'gcc-10'
+          #   cxx-compiler: 'g++-10'
+          #   use-syslibs: true
+          #   shared-libscsynth: false
             # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic clang6.0'
@@ -177,10 +178,17 @@ jobs:
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
-      - name: install qt
+      - name: install qt from apt
+        if: !matrix.qt-version
         run: |
           # if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
           sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+      - name: install qt - specific version
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: qtwebengine
+          version: ${{ matrix.qt-version }}
       # - name: Debugging with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: configure
