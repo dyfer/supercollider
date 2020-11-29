@@ -149,7 +149,7 @@ jobs:
           path: |
             # '../downloads'
             .ccache
-        key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.se-syslibs }}-${{ matrix.shared-libscsynth }} # -${{ hashFiles('README.md') }}
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.se-syslibs }}-${{ matrix.shared-libscsynth }} # -${{ hashFiles('README.md') }}
       - name: install dependencies
         run: |
           sudo apt-get update
