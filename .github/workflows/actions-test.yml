@@ -51,13 +51,45 @@ jobs:
     strategy:
       matrix:
         include:
+          - job-name: 'xenial gcc5'
+            os-version: '16.04'
+            c-compiler: 'gcc-5'
+            cxx-compiler: 'g++-5'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic gcc7'
+            os-version: '18.04'
+            c-compiler: 'gcc-7'
+            cxx-compiler: 'g++-7'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic gcc8'
+            os-version: '18.04'
+            c-compiler: 'gcc-8'
+            cxx-compiler: 'g++-8'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
           - job-name: 'bionic gcc9'
             os-version: '18.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
-            use-syslibs: false # not working yet
-            shared-libscsynth: false # not working yet
+            use-syslibs: false
+            shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic gcc9 shared libscsynth'
+            os-version: '18.04'
+            c-compiler: 'gcc-9'
+            cxx-compiler: 'g++-9'
+            use-syslibs: false
+            shared-libscsynth: true
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic gcc10'
             os-version: '18.04'
@@ -67,10 +99,42 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
+          - job-name: 'focal gcc10 use syslibs'
+            os-version: '20.04'
+            c-compiler: 'gcc-10'
+            cxx-compiler: 'g++-10'
+            use-syslibs: true
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+
           - job-name: 'bionic clang6.0'
             os-version: '18.04'
             c-compiler: 'clang-6.0'
             cxx-compiler: 'clang++-6.0'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic clang8'
+            os-version: '18.04'
+            c-compiler: 'clang-8'
+            cxx-compiler: 'clang++-8'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic clang9'
+            os-version: '18.04'
+            c-compiler: 'clang-9'
+            cxx-compiler: 'clang++-9'
+            use-syslibs: false
+            shared-libscsynth: false
+            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+
+          - job-name: 'focal clang10'
+            os-version: '20.04'
+            c-compiler: 'clang-10'
+            cxx-compiler: 'clang++-10'
             use-syslibs: false
             shared-libscsynth: false
             # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
@@ -110,10 +174,13 @@ jobs:
           #         # sudo apt-get install --yes libc++-$CLANG_VERSION-dev libc++abi-$CLANG_VERSION-dev
           #     # fi
           # fi
+      - name: install system libraries
+        if: ${{ env.USE_SYSLIBS }}
+        run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
-      - name: Debugging with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+      # - name: Debugging with tmate # live debugging
+      #   uses: mxschmitt/action-tmate@v3.1
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -123,27 +190,13 @@ jobs:
           
           EXTRA_CMAKE_FLAGS=
 
-          if $USE_SYSLIBS; then
-              EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"
-          fi
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
-          if $SHARED_LIBSCSYNTH; then
-              EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"
-          fi
-
-          # if [[ "$CLANG_VERSION" =~ ^[456].0$ ]]; then
-          #     echo "using clang with libstdc++ instead of libc++"
-          #     EXTRA_CMAKE_FLAGS="-DSC_CLANG_USES_LIBSTDCPP=ON $EXTRA_CMAKE_FLAGS"
-          # fi
-
-          # if [[ "$CLANG_VERSION" == "4.0" ]]; then
-          #     echo "turning off Ableton link due to 'linux' predef issue"
-          #     # clang 4.0 predefines the token "linux" as 1, but Ableton has a 'namespace linux' which
-          #     # is broken by that. Undefining the token from our own header does not fix it.
-          #     EXTRA_CMAKE_FLAGS="-DSC_ABLETON_LINK=OFF $EXTRA_CMAKE_FLAGS"
-          # fi
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
           
-          cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_ED=OFF -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output #FIXME: turn EL/VIM/ED back on
+          echo "EXTRA_CMAKE_FLAGS:" "$EXTRA_CMAKE_FLAGS"
+
+          cmake -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output #FIXME: turn EL/VIM/ED back on
       - name: build
         run: |
           cd $BUILD_PATH
