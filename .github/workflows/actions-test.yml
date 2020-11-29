@@ -12,7 +12,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/downloads
-          key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('README.md') }}
+          key: ${{ runner.os }}-${{ github.job }}-v2-${{ hashFiles('README.md') }}
       - name: lint
         run: |
           pushd . >/dev/null
@@ -51,12 +51,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - job-name: 'xenial gcc5'
-            os-version: '16.04'
-            c-compiler: 'gcc-5'
-            cxx-compiler: 'g++-5'
-            use-syslibs: false
-            shared-libscsynth: false
+          # - job-name: 'xenial gcc5' # disabled, since it comes with Qt 5.5
+          #   os-version: '16.04'
+          #   c-compiler: 'gcc-5'
+          #   cxx-compiler: 'g++-5'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
             # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic gcc7'
@@ -179,8 +179,8 @@ jobs:
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt
         run: |
-          if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
-          sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev $QTWEBENGINE_DEV
+          # if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
+          sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
       # - name: Debugging with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: configure
