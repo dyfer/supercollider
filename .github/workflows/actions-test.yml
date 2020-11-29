@@ -101,9 +101,9 @@ jobs:
               sudo apt-get update
               sudo apt-get install --yes clang-$CLANG_VERSION
               # Clang 4.0-6.0 didn't package libstdc++ as far as I can tell; so we use libc++ instead
-              if [[ ! "$CLANG_VERSION" =~ "^[456].0$" ]]; then
-                  sudo apt-get install --yes libc++-$CLANG_VERSION-dev libc++abi-$CLANG_VERSION-dev
-              fi
+              # if [[ ! "$CLANG_VERSION" =~ "^[456].0$" ]]; then
+                  # sudo apt-get install --yes libc++-$CLANG_VERSION-dev libc++abi-$CLANG_VERSION-dev
+              # fi
           fi
       - name: install qt
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
