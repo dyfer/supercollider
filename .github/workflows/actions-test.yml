@@ -8,35 +8,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: cache
-        uses: actions/cache@v1
-        with:
-          # path: '${{ github.workspace }}/../downloads'
-          path: '../downloads'
-          key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
-      - name: lint
+      # - name: cache
+      #   uses: actions/cache@v1
+      #   with:
+      #     # path: '${{ github.workspace }}/../downloads'
+      #     path: '../downloads'
+      #     key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
+      - name: lint class library
         run: |
-          pushd . >/dev/null
-          cd .. # github cache action can't traverse up, so we don't go up
-          if ! [[ -d "downloads" ]]
-          then
-             mkdir downloads
-          fi
-          cd downloads
-          export RELEASE_NAME=clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04
-          if ! [[ -d "$RELEASE_NAME" ]]
-          then
-             echo "Downloading and extracting Clang 8.0.0"
-             curl -o clang.tar.xz https://releases.llvm.org/8.0.0/$RELEASE_NAME.tar.xz
-             tar xf clang.tar.xz
-          else
-             echo "Using Clang 8.0.0 from cache"
-          fi
-          cd $RELEASE_NAME/bin
-          export PATH=$(pwd):$PATH
-          echo "Added clang-format in $(pwd) to PATH"
-          popd >/dev/null
+          sudo npm install -g lintspaces-cli
+          set -o errexit
+          shopt -s globstar
+          lintspaces -e .editorconfig SCClassLibrary/**/*.sc
 
+      - name: lint cpp files
+        run: |
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
