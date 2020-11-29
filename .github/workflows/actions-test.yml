@@ -11,7 +11,7 @@ jobs:
       - name: cache
         uses: actions/cache@v2
         with:
-          path: downloads/
+          path: ${{ github.workspace }}/downloads
           key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('README.md') }}
       - name: lint
         run: |
@@ -42,7 +42,12 @@ jobs:
 
   build-linux:
     needs: lint
-    runs-on: ubuntu-${{ matrix.os-version }}
+    runs-on: ubuntu-${{ matrix.os-version }} 
+    # on 18.04
+    # available clang: 
+    # clang    clang++-6.0  clang++-9       clang-6.0  clang-9        clang-cpp-8  clang-format      clang-format-8  clang-format-diff-6.0  clang-format-diff-9     clang++  clang++-8    clang++-libc++  clang-8    clang-cpp-6.0  clang-cpp-9  clang-format-6.0  clang-format-9  clang-format-diff-8
+    # available gcc:
+    # gcc  gcc-10  gcc-7  gcc-8  gcc-9  gcc-ar  gcc-ar-10  gcc-ar-7  gcc-ar-8  gcc-ar-9  gcc-nm  gcc-nm-10  gcc-nm-7  gcc-nm-8  gcc-nm-9  gcc-ranlib  gcc-ranlib-10  gcc-ranlib-7  gcc-ranlib-8  gcc-ranlib-9
     strategy:
       matrix:
         include:
@@ -76,7 +81,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       # ARTIFACT_SUFFIX: ${{ matrix.artifact-suffix }} # setting this  enables artifact creation/upload
       ARTIFACT_FILE: "SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip"
-      MATRIX_EVAL: ${{ matrix.matrix-eval }}
+      # MATRIX_EVAL: ${{ matrix.matrix-eval }}
       # COMPILER_PACKAGES: ${{ matrix.compiler-packages }}
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
@@ -88,7 +93,7 @@ jobs:
           submodules: recursive
       - name: install dependencies
         run: |
-          if [[ -n "$COMPILER_PACKAGES" ]]; then echo "adding repository"; sudo add-apt-repository ppa:ubuntu-toolchain-r/test; fi # get toolchains ppa
+          # if [[ -n "$COMPILER_PACKAGES" ]]; then echo "adding repository"; sudo add-apt-repository ppa:ubuntu-toolchain-r/test; fi # get toolchains ppa
           
           sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev
@@ -112,8 +117,7 @@ jobs:
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-          # echo "matrix eval:" "$MATRIX_EVAL"
-          # eval "$MATRIX_EVAL"
+
           echo "CC:" "$CC"
           echo "CXX:" "$CXX"
           
