@@ -42,7 +42,7 @@ jobs:
           echo "Lint successful"
 
   Linux:
-    needs: lint
+    needs: linter
     runs-on: ubuntu-${{ matrix.os-version }} 
     # on 18.04
     # available clang: 
@@ -218,7 +218,7 @@ jobs:
           retention-days: 7 # quickly remove test artifacts
 
   macOS:
-    needs: lint
+    needs: linter
     runs-on: macos-10.15
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
