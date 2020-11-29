@@ -14,8 +14,9 @@ jobs:
       #     # path: '${{ github.workspace }}/../downloads'
       #     path: '../downloads'
       #     key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+
+      # - name: debug with tmate # live debugging
+      #   uses: mxschmitt/action-tmate@v3.1
       - name: lint class library
         if: 'false' # temporary disable
         run: |
@@ -26,13 +27,12 @@ jobs:
 
       - name: lint cpp files
         run: |
+          # switch cmake versions
           sudo rm /usr/bin/clang-format
           sudo ln -s /usr/bin/clang-format-8 /usr/bin/clang-format
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
 
   Linux:
     needs: linter
