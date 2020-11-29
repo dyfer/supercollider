@@ -11,12 +11,13 @@ jobs:
       - name: cache
         uses: actions/cache@v2
         with:
-          path: ${{ github.workspace }}/downloads
+          # path: ${{ github.workspace }}/downloads
+          path: '../downloads'
           key: ${{ runner.os }}-${{ github.job }}-v2-${{ hashFiles('README.md') }}
       - name: lint
         run: |
           pushd . >/dev/null
-          # cd .. # tirhub cache action can't traverse up, so we don't go up
+          cd .. # github cache action can't traverse up, so we don't go up
           if ! [[ -d "downloads" ]]
           then
              mkdir downloads
@@ -40,7 +41,7 @@ jobs:
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
 
-  build-linux:
+  build Linux:
     needs: lint
     runs-on: ubuntu-${{ matrix.os-version }} 
     # on 18.04
@@ -100,7 +101,7 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
-          # - job-name: 'focal gcc10 use syslibs' # disabled - boost version too low
+          # - job-name: 'focal gcc10 use syslibs' # disabled - boost version incompatible
           #   os-version: '20.04'
           #   c-compiler: 'gcc-10'
           #   cxx-compiler: 'g++-10'
@@ -216,7 +217,7 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
-  test-build-macos:
+  build macOS:
     needs: lint
     runs-on: macos-10.15
     env: 
