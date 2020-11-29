@@ -178,7 +178,9 @@ jobs:
         if: ${{ env.USE_SYSLIBS }}
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt
-        run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
+        run: |
+          if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
+          sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev $QTWEBENGINE_DEV
       # - name: Debugging with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       - name: configure
