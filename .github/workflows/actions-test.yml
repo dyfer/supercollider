@@ -148,23 +148,8 @@ jobs:
           submodules: recursive
       - name: install dependencies
         run: |
-          # if [[ -n "$COMPILER_PACKAGES" ]]; then echo "adding repository"; sudo add-apt-repository ppa:ubuntu-toolchain-r/test; fi # get toolchains ppa
-          
           sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs
-          
-          # # Install required clang toolchain
-          # if [[ -n "$CLANG_VERSION" ]]; then
-          #     DIST_CODENAME=`lsb_release -cs`
-          #     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          #     echo "deb https://apt.llvm.org/$DIST_CODENAME/ llvm-toolchain-$DIST_CODENAME-$CLANG_VERSION main" | sudo tee -a /etc/apt/sources.list
-          #     sudo apt-get update
-          #     sudo apt-get install --yes clang-$CLANG_VERSION
-          #     # Clang 4.0-6.0 didn't package libstdc++ as far as I can tell; so we use libc++ instead
-          #     # if [[ ! "$CLANG_VERSION" =~ "^[456].0$" ]]; then
-          #         # sudo apt-get install --yes libc++-$CLANG_VERSION-dev libc++abi-$CLANG_VERSION-dev
-          #     # fi
-          # fi
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
