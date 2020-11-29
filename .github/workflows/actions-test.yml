@@ -1,4 +1,4 @@
-name: check, build and test SuperCollider
+name: check, build, test
 on: [push]
 jobs:
   linter:
@@ -14,6 +14,8 @@ jobs:
       #     # path: '${{ github.workspace }}/../downloads'
       #     path: '../downloads'
       #     key: ${{ runner.os }}-${{ github.job }}-v1-${{ hashFiles('README.md') }}
+      - name: debug with tmate # live debugging
+        uses: mxschmitt/action-tmate@v3.1
       - name: lint class library
         if: 'false' # temporary disable
         run: |
