@@ -143,12 +143,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-    - name: cache
-      uses: actions/cache@v1
-      with:
-        path: |
-          # '../downloads'
-          .ccache
+      - name: cache
+        uses: actions/cache@v1
+        with:
+          path: |
+            # '../downloads'
+            .ccache
         key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.se-syslibs }}-${{ matrix.shared-libscsynth }} # -${{ hashFiles('README.md') }}
       - name: install dependencies
         run: |
