@@ -11,7 +11,7 @@ jobs:
       - name: cache
         uses: actions/cache@v2
         with:
-          path: ../downloads
+          path: ~/../downloads
           key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('README.md') }}
       - name: lint
         run: |
