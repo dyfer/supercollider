@@ -175,7 +175,7 @@ jobs:
           #     # fi
           # fi
       - name: install system libraries
-        if: ${{ env.USE_SYSLIBS }} == 'true'
+        if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt
         run: |
@@ -190,7 +190,7 @@ jobs:
           echo "CC:" "$CC"
           echo "CXX:" "$CXX"
           
-          EXTRA_CMAKE_FLAGS=
+          export EXTRA_CMAKE_FLAGS=
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
