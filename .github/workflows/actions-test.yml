@@ -1,7 +1,7 @@
 name: check, build and test SuperCollider
 on: [push]
 jobs:
-  lint:
+  linter:
     # TODO: add lintspaces step here as well
     runs-on: ubuntu-18.04
     steps:
@@ -41,7 +41,7 @@ jobs:
           tools/clang-format.py lintall || exit 1
           echo "Lint successful"
 
-  build Linux:
+  Linux:
     needs: lint
     runs-on: ubuntu-${{ matrix.os-version }} 
     # on 18.04
@@ -217,7 +217,7 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
-  build macOS:
+  macOS:
     needs: lint
     runs-on: macos-10.15
     env: 
