@@ -190,7 +190,7 @@ jobs:
           echo "CC:" "$CC"
           echo "CXX:" "$CXX"
           
-          export EXTRA_CMAKE_FLAGS=
+          EXTRA_CMAKE_FLAGS=
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
@@ -198,7 +198,7 @@ jobs:
           
           echo "EXTRA_CMAKE_FLAGS:" "$EXTRA_CMAKE_FLAGS"
 
-          cmake -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output #FIXME: turn EL/VIM/ED back on
+          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
         run: |
           cd $BUILD_PATH
