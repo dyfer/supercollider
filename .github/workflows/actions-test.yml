@@ -11,12 +11,12 @@ jobs:
       - name: cache
         uses: actions/cache@v2
         with:
-          path: ~/../downloads
+          path: downloads
           key: ${{ runner.os }}-${{ github.job }}-${{ hashFiles('README.md') }}
       - name: lint
         run: |
           pushd . >/dev/null
-          cd ..
+          # cd .. # tirhub cache action can't traverse up, so we don't go up
           if ! [[ -d "downloads" ]]
           then
              mkdir downloads
