@@ -183,6 +183,7 @@ jobs:
         run: |
           # if [[ `lsb_release -cs` != "xenial" ]]; then QTWEBENGINE_DEV="qtwebengine5-dev"; fi 
           sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+
       - name: install importlib-metadata # ubuntu-16.04 only - needed by jurplel/install-qt-action@v2, see https://github.com/jurplel/install-qt-action/issues/65
          if: matrix.config.os == 'ubuntu-16.04'
          run: pip3 install importlib-metadata==2.1.0
