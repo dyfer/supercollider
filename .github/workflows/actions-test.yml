@@ -247,14 +247,14 @@ jobs:
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.xcode-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
         if: matrix.qt-version
         with:
           path: ../Qt
-          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt
+          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: install dependencies
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
@@ -262,11 +262,9 @@ jobs:
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
           # To get less noise in xcode output
           gem install xcpretty
-          # update pip for install-qt-action
-          if [[ -z "${{ matrix.qt-version }}" ]]; then pip3 install --upgrade pip; fi
       - name: install syslibs
         if: env.USE_SYSLIBS == 'true'
-        run: brew install yaml-cpp
+        run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
