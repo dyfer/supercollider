@@ -225,7 +225,7 @@ jobs:
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-v2-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-v2-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: install dependencies
         run: brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
       - name: install qt from homebrew
@@ -242,6 +242,9 @@ jobs:
           mkdir $BUILD_PATH && cd $BUILD_PATH
           # cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON .. --debug-output
           # add switching qt path here
+          
+          # according to https://docs.travis-ci.com/user/caching#ccache-cache
+          export PATH="/usr/local/opt/ccache/libexec:$PATH"
           cmake -G"Ninja" -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
