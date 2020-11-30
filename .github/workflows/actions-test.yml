@@ -224,13 +224,13 @@ jobs:
       - name: cache
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
-          path: ~/.ccache
-          key: ${{ runner.os }}-v6-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          path: Library/Caches/ccache
+          key: ${{ runner.os }}-v7-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: install dependencies
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions and  https://docs.travis-ci.com/user/caching#ccache-cache
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          # echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
@@ -246,6 +246,9 @@ jobs:
           # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. # --debug-output
           
           # add switching qt path here
+          
+          echo "which ccache:"
+          which ccache
 
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
