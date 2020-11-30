@@ -260,8 +260,8 @@ jobs:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+      # - name: debug with tmate # live debugging
+      #   uses: mxschmitt/action-tmate@v3.1
 
 
 # notes:
