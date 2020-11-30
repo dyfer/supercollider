@@ -143,7 +143,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: cache
+      - name: cache ccache
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/.ccache
@@ -207,6 +207,14 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+
+          - job-name: 'macOS legacy'
+            os-version: '10.15'
+            xcode-version: '10.3'
+            qt-version: '5.9.3'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
@@ -221,16 +229,28 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: cache
+      - name: cache ccache
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        if: matrix.qt-version
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt
       - name: install dependencies
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
-          # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions and  https://docs.travis-ci.com/user/caching#ccache-cache
+          # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          # To get less noise in xcode output
+          gem install xcpretty
+      - name: install syslibs
+        if: env.USE_SYSLIBS
+        run: brew install yaml-cpp
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
@@ -240,12 +260,23 @@ jobs:
         with:
           modules: qtwebengine
           version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
           # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. # --debug-output
           
           # add switching qt path here
+          
+          EXTRA_CMAKE_FLAGS=
+          
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
+          
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+          
+          if [[ -z ${{ matrix.qt-version }} ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+
+          echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
