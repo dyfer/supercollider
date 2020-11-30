@@ -225,7 +225,7 @@ jobs:
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-v2-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-v3-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: install dependencies
         run: brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
       - name: install qt from homebrew
