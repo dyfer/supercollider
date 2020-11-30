@@ -230,7 +230,7 @@ jobs:
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
           # add ccamke to path - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions and  https://docs.travis-ci.com/user/caching#ccache-cache
-          echo "{/usr/local/opt/ccache/libexec:}" >> $GITHUB_PATH
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
