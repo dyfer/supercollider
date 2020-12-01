@@ -275,6 +275,7 @@ jobs:
           modules: qtwebengine
           version: ${{ matrix.qt-version }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          aqtversion: '==0.9.6'
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
