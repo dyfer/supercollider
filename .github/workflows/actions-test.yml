@@ -262,6 +262,8 @@ jobs:
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
           # To get less noise in xcode output
           gem install xcpretty
+          # upgrade pip
+          pip3 --upgrade install pip
       - name: install syslibs
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
@@ -272,10 +274,10 @@ jobs:
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
         with:
-          modules: qtwebengine
+          modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-          aqtversion: '==0.9.6'
+          # aqtversion: '==0.9.6'
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
