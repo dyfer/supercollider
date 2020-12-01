@@ -243,15 +243,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - uses: olegtarasov/get-tag@v2
-        id: get-tag
-        with:
-          tagRegex: "Version-(.*)"  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
       - name: set variables
         run: |
+          # set SC_VERSION to tag (if present) or to commit SHA
+          FULL_TAG=${GITHUB_REF#refs/tags/}
+          TAG=${TRAVIS_TAG##Version-}
           SC_VERSION=
-          if [[ -n "$GIT_TAG_NAME" ]]; then 
-            SC_VERSION=$GIT_TAG_NAME
+          if [[ -n "$TAG" ]]; then 
+            SC_VERSION=$TAG
           else
             SC_VERSION=$GITHUB_SHA
           fi
@@ -268,9 +267,9 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
-        if: matrix.qt-version
+      # - name: debug with tmate # live debugging
+      #   uses: mxschmitt/action-tmate@v3.1
+      #   if: matrix.qt-version
       - name: install qt - specific version
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -289,10 +288,9 @@ jobs:
       - name: install syslibs
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
-
-      - name: upgrade packages for install-qt-action
-        run: pip3 install --upgrade pip
-        if: matrix.qt-version
+      # - name: upgrade packages for install-qt-action
+      #   run: pip3 install --upgrade pip
+      #   if: matrix.qt-version
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
