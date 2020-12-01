@@ -250,7 +250,7 @@ jobs:
       - name: set variables
         run: |
           SC_VERSION=
-          if [[ -z "$GIT_TAG_NAME" ]]; then 
+          if [[ -n "$GIT_TAG_NAME" ]]; then 
             SC_VERSION=$GIT_TAG_NAME
           else
             SC_VERSION=$GITHUB_SHA
