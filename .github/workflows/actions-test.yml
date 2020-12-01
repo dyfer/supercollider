@@ -255,6 +255,9 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: debug with tmate # live debugging
+        uses: mxschmitt/action-tmate@v3.1
+        if: matrix.qt-version
       - name: install qt - specific version
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -273,9 +276,7 @@ jobs:
       - name: install syslibs
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
-      # - name: debug with tmate # live debugging
-      #   uses: mxschmitt/action-tmate@v3.1
-      #   if: matrix.qt-version
+
       - name: upgrade packages for install-qt-action
         run: pip3 install --upgrade pip
         if: matrix.qt-version
