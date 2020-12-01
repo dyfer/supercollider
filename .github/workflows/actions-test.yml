@@ -238,18 +238,19 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
-      # ARTIFACT_FILE: 'SuperCollider-${{ github.sha }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set variables
+      - name: set version
         run: |
           # set SC_VERSION to tag (if present) or to commit SHA
-          FULL_TAG=${GITHUB_REF#refs/tags/}
-          TAG=${TRAVIS_TAG##Version-}
           SC_VERSION=
-          if [[ -n "$TAG" ]]; then 
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            echo "FULL_TAG:" $FULL_TAG
+            TAG=${TRAVIS_TAG##Version-}
+            echo "TAG:" $TAG
             SC_VERSION=$TAG
           else
             SC_VERSION=$GITHUB_SHA
@@ -259,7 +260,7 @@ jobs:
         uses: actions/cache@v2 # v1 allows for traversing up the directory tree (..); v2 allows for multiple paths... (I think)
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.qt-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.xcode-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
