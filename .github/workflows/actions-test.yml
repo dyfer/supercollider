@@ -262,11 +262,15 @@ jobs:
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
           # To get less noise in xcode output
           gem install xcpretty
-          # upgrade pip
-          pip3 install --upgrade pip
       - name: install syslibs
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
+      - name: debug with tmate # live debugging
+        uses: mxschmitt/action-tmate@v3.1
+        if: matrix.qt-version
+      - name: upgrade packages for install-qt-action
+        run: pip3 install --upgrade pip
+        if: matrix.qt-version
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
