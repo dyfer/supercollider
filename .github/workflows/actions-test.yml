@@ -237,7 +237,7 @@ jobs:
           #   xcode-version: '11.7'
           #   use-syslibs: false
           #   shared-libscsynth: true
-
+    name: ${{ matrix.job-name }}
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
@@ -279,7 +279,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3.1
       #   if: matrix.qt-version
       - name: install qt - specific version
-        uses: jurplel/install-qt-action@v2.11.1
+        uses: jurplel/install-qt-action@v2.11.0
         if: matrix.qt-version
         with:
           modules: 'qtwebengine'
