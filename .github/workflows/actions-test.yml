@@ -220,8 +220,8 @@ jobs:
 
           - job-name: 'macOS legacy'
             os-version: '10.15'
-            xcode-version: '11.7'
-            qt-version: '5.9' # will use qt not from homebrew
+            xcode-version: '10.3'
+            qt-version: '5.9.3' # will use qt not from homebrew
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
