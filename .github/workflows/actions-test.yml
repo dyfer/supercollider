@@ -278,16 +278,6 @@ jobs:
       # - name: debug with tmate # live debugging
       #   uses: mxschmitt/action-tmate@v3.1
       #   if: matrix.qt-version
-      - name: install qt - specific version
-        uses: jurplel/install-qt-action@v2.11.0
-        if: matrix.qt-version
-        env:
-          DEVELOPER_DIR: '' # unset so it doesn't interfere with python's wheel installation
-        with:
-          modules: 'qtwebengine'
-          version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
-          # aqtversion: '==0.9.6'
       - name: install dependencies
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
@@ -304,7 +294,15 @@ jobs:
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
-  
+      - name: install qt - specific version
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        env:
+          DEVELOPER_DIR: '' # unset so it doesn't interfere with python's wheel installation
+        with:
+          modules: 'qtwebengine'
+          version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -315,7 +313,11 @@ jobs:
           
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
           
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then 
+            EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"
+          else
+            EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=$Qt5_DIR $EXTRA_CMAKE_FLAGS"
+          fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
