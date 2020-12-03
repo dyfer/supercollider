@@ -246,7 +246,7 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      # DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -272,6 +272,7 @@ jobs:
         id: cache-qt
         uses: actions/cache@v1
         if: matrix.qt-version
+        env: DEVELOPER_DIR='' #unse so this doesn't interfere with python installation
         with:
           path: ../Qt
           key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
