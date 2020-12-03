@@ -272,7 +272,8 @@ jobs:
         id: cache-qt
         uses: actions/cache@v1
         if: matrix.qt-version
-        env: DEVELOPER_DIR='' #unse so this doesn't interfere with python installation
+        env:
+          DEVELOPER_DIR: '' # unset so it doesn't interfere with python's wheel installation
         with:
           path: ../Qt
           key: ${{ runner.os }}-v8-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
