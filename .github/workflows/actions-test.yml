@@ -58,37 +58,37 @@ jobs:
             shared-libscsynth: false
             # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
-          - job-name: 'bionic gcc8'
-            os-version: '18.04'
-            c-compiler: 'gcc-8'
-            cxx-compiler: 'g++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic gcc9'
-            os-version: '18.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-            artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic gcc9 shared libscsynth'
-            os-version: '18.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: true
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic gcc10'
-            os-version: '18.04'
-            c-compiler: 'gcc-10'
-            cxx-compiler: 'g++-10'
-            use-syslibs: false
-            shared-libscsynth: false
-            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+          # - job-name: 'bionic gcc8'
+          #   os-version: '18.04'
+          #   c-compiler: 'gcc-8'
+          #   cxx-compiler: 'g++-8'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'bionic gcc9'
+          #   os-version: '18.04'
+          #   c-compiler: 'gcc-9'
+          #   cxx-compiler: 'g++-9'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'bionic gcc9 shared libscsynth'
+          #   os-version: '18.04'
+          #   c-compiler: 'gcc-9'
+          #   cxx-compiler: 'g++-9'
+          #   use-syslibs: false
+          #   shared-libscsynth: true
+          #   # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'bionic gcc10'
+          #   os-version: '18.04'
+          #   c-compiler: 'gcc-10'
+          #   cxx-compiler: 'g++-10'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
           # - job-name: 'focal gcc10 use syslibs' # disabled - boost version incompatible
           #   os-version: '20.04'
@@ -98,37 +98,37 @@ jobs:
           #   shared-libscsynth: false
             # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
-          - job-name: 'bionic clang6.0'
-            os-version: '18.04'
-            c-compiler: 'clang-6.0'
-            cxx-compiler: 'clang++-6.0'
-            use-syslibs: false
-            shared-libscsynth: false
-            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic clang8'
-            os-version: '18.04'
-            c-compiler: 'clang-8'
-            cxx-compiler: 'clang++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic clang9'
-            os-version: '18.04'
-            c-compiler: 'clang-9'
-            cxx-compiler: 'clang++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-
-          - job-name: 'focal clang10'
-            os-version: '20.04'
-            c-compiler: 'clang-10'
-            cxx-compiler: 'clang++-10'
-            use-syslibs: false
-            shared-libscsynth: false
-            # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+          # - job-name: 'bionic clang6.0'
+          #   os-version: '18.04'
+          #   c-compiler: 'clang-6.0'
+          #   cxx-compiler: 'clang++-6.0'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'bionic clang8'
+          #   os-version: '18.04'
+          #   c-compiler: 'clang-8'
+          #   cxx-compiler: 'clang++-8'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'bionic clang9'
+          #   os-version: '18.04'
+          #   c-compiler: 'clang-9'
+          #   cxx-compiler: 'clang++-9'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+          # 
+          # - job-name: 'focal clang10'
+          #   os-version: '20.04'
+          #   c-compiler: 'clang-10'
+          #   cxx-compiler: 'clang++-10'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
@@ -218,25 +218,25 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
-          # - job-name: 'macOS legacy'
-          #   os-version: '10.15'
-          #   xcode-version: '10.3'
-          #   qt-version: '5.9' # will use qt not from homebrew
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
-
-          - job-name: 'macOS use syslibs'
+          - job-name: 'macOS legacy'
             os-version: '10.15'
-            xcode-version: '11.7'
-            use-syslibs: true
-            shared-libscsynth: false
-
-          - job-name: 'macOS shared libscsynth'
-            os-version: '10.15'
-            xcode-version: '11.7'
+            xcode-version: '10.3'
+            qt-version: '5.9' # will use qt not from homebrew
             use-syslibs: false
-            shared-libscsynth: true
+            shared-libscsynth: false
+            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+
+          # - job-name: 'macOS use syslibs'
+          #   os-version: '10.15'
+          #   xcode-version: '11.7'
+          #   use-syslibs: true
+          #   shared-libscsynth: false
+          # 
+          # - job-name: 'macOS shared libscsynth'
+          #   os-version: '10.15'
+          #   xcode-version: '11.7'
+          #   use-syslibs: false
+          #   shared-libscsynth: true
 
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
@@ -279,7 +279,7 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3.1
       #   if: matrix.qt-version
       - name: install qt - specific version
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v2.11.1
         if: matrix.qt-version
         with:
           modules: 'qtwebengine'
