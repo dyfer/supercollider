@@ -130,6 +130,7 @@ jobs:
           #   shared-libscsynth: false
           #   # artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
+    name: Linux ${{ matrix.job-name }}
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
