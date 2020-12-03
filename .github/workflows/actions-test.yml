@@ -211,14 +211,14 @@ jobs:
       matrix:
         include:
 
-          - job-name: 'macOS'
+          - job-name: ''
             os-version: '10.15'
             xcode-version: '11.7'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
-          - job-name: 'macOS legacy'
+          - job-name: 'legacy'
             os-version: '10.15'
             xcode-version: '10.3'
             qt-version: '5.9.3' # will use qt not from homebrew
@@ -226,18 +226,18 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
-          # - job-name: 'macOS use syslibs'
+          # - job-name: 'use syslibs'
           #   os-version: '10.15'
           #   xcode-version: '11.7'
           #   use-syslibs: true
           #   shared-libscsynth: false
           # 
-          # - job-name: 'macOS shared libscsynth'
+          # - job-name: 'shared libscsynth'
           #   os-version: '10.15'
           #   xcode-version: '11.7'
           #   use-syslibs: false
           #   shared-libscsynth: true
-    name: ${{ matrix.job-name }}
+    name: macOS ${{ matrix.job-name }}
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
