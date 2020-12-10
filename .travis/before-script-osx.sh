@@ -16,4 +16,4 @@ cmake -G"Xcode" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
     -DSUPERNOVA=ON \
     $EXTRA_CMAKE_FLAGS \
-    $TRAVIS_BUILD_DIR --debug-output
+    # $TRAVIS_BUILD_DIR --debug-output
