@@ -133,14 +133,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-v1 # -v1 etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
         if: matrix.qt-version
         with:
           path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}-v1
       - name: install dependencies
         run: |
           sudo apt-get update
@@ -245,18 +245,20 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
-      - name: cache ccache
+      - name: cache ccache and homebrew downloads
         uses: actions/cache@v2
         with:
-          path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          path: 
+            ~/Library/Caches/ccache
+            ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-v2 # -v1 etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
         if: matrix.qt-version
         with:
           path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}-v1
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
