@@ -204,10 +204,9 @@ jobs:
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
-            os-version: '10.13'
-            xcode-version: '10.1'
-            # qt-version: '5.9' # will use qt not from homebrew
-            custom-homebrew-qt: 'supercollider/formulae/qt@5.9.3'
+            os-version: '10.15'
+            xcode-version: '10.3'
+            custom-homebrew-qt: 'dyfer/formulae/qt@5.9.3'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
@@ -301,12 +300,10 @@ jobs:
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
           
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-          
-          # if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS $EXTRA_CMAKE_FLAGS .. # --debug-output
+          # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS $EXTRA_CMAKE_FLAGS .. # --debug-output
 
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
