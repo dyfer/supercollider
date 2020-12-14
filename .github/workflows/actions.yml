@@ -300,10 +300,14 @@ jobs:
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
           
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+          
+          # if [[ -z "${{ matrix.qt-version }}" ]]; then 
+          EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"
+          # ; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS $EXTRA_CMAKE_FLAGS .. # --debug-output
+          # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS $EXTRA_CMAKE_FLAGS .. # --debug-output
 
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
