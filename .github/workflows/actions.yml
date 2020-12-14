@@ -206,7 +206,7 @@ jobs:
           - job-name: 'legacy'
             os-version: '10.15'
             xcode-version: '10.3'
-            custom-homebrew-qt: 'dyfer/formulae/qt@5.9.3'
+            custom-homebrew-qt-bottle: 'https://homebrew.bintray.com/bottles/qt-5.9.3.high_sierra.bottle.tar.gz'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
@@ -281,14 +281,14 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        # if: '!matrix.qt-version'
+        if: '!matrix.custom-homebrew-qt-bottle'
+        run: brew install qt
+      - name: install qt from custom bottle
+        if: 'matrix.custom-homebrew-qt-bottle'
         run: |
-          if [[ -n "${{ matrix.custom-homebrew-qt }}" ]]; then 
-            QT_FORMULA="${{ matrix.custom-homebrew-qt }}"
-          else
-            QT_FORMULA=qt
-          fi
-          brew install $QT_FORMULA
+          cd ~/Library/Caches/Homebrew/downloads
+          curl -L ${{ matrix.custom-homebrew-qt-bottle }} -o qt.tar.gz
+          brew install -f qt.tar.gz
       - name: configure
         env: 
           DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
