@@ -203,13 +203,14 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
-          # - job-name: 'legacy'
-          #   os-version: '10.15'
-          #   xcode-version: '10.3'
-          #   qt-version: '5.9' # will use qt not from homebrew
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+          - job-name: 'legacy'
+            os-version: '10.13'
+            xcode-version: '10.1'
+            # qt-version: '5.9' # will use qt not from homebrew
+            custom-homebrew-qt: 'supercollider/formulae/qt@5.9.3'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
             os-version: '10.15'
@@ -232,7 +233,6 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
@@ -256,20 +256,20 @@ jobs:
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
-      - name: cache qt
-        id: cache-qt
-        uses: actions/cache@v1
-        if: matrix.qt-version
-        with:
-          path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
-      - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
-        if: matrix.qt-version
-        with:
-          modules: 'qtwebengine'
-          version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      # - name: cache qt
+      #   id: cache-qt
+      #   uses: actions/cache@v1
+      #   if: matrix.qt-version
+      #   with:
+      #     path: ../Qt
+      #     key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      # - name: install qt using aqtinstall
+      #   uses: jurplel/install-qt-action@v2
+      #   if: matrix.qt-version
+      #   with:
+      #     modules: 'qtwebengine'
+      #     version: ${{ matrix.qt-version }}
+      #     cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
         if: '!steps.cache-homebrew.outputs.cache-hit'
         run: rm -rf $(brew --cache)
@@ -282,10 +282,17 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        if: '!matrix.qt-version'
-        run: brew install qt
-  
+        # if: '!matrix.qt-version'
+        run: |
+          if [[ -n "${{ matrix.custom-homebrew-qt }}" ]]; then 
+            QT_FORMULA="${{ matrix.custom-homebrew-qt }}"
+          else
+            QT_FORMULA=qt
+          fi
+          brew install $QT_FORMULA
       - name: configure
+        env: 
+          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
           
@@ -295,7 +302,7 @@ jobs:
           
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
           
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          # if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
