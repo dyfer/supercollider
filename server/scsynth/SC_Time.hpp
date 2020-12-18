@@ -31,9 +31,9 @@ const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits = 4.294967296; // pow(2,32)/1e9
 
-typedef std::chrono::system_clock::time_point HostTime;
+typedef std::chrono::high_resolution_clock::time_point HostTime;
 
-static inline HostTime getTime() { return std::chrono::system_clock::now(); }
+static inline HostTime getTime() { return std::chrono::high_resolution_clock::now(); }
 
 template <typename TimePoint> static inline double secondsSinceEpoch(TimePoint const& tp) {
     return std::chrono::duration_cast<std::chrono::duration<double>>(tp.time_since_epoch()).count();
