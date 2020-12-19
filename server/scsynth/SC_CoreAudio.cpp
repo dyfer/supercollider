@@ -108,8 +108,12 @@ static void syncOSCOffsetWithTimeOfDay() {
 
 static void resyncThreadFunc() {
 #    ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
+    // std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+    double blocksize = 64;
+    double samplerate = 48000;
+    double ns_per_block = 1e9 / samplerate * blocksize;
+    nova::thread_set_priority_rt(samplerate/blocksize, AudioConvertNanosToHostTime(ns_per_block - 5000),
+AudioConvertNanosToHostTime(ns_per_block), true);
 #    else
     std::pair<int, int> priorities = nova::thread_priority_interval();
     nova::thread_set_priority(priorities.second);
@@ -344,8 +348,13 @@ SC_AudioDriver::~SC_AudioDriver() {
 
 void SC_AudioDriver::RunThread() {
 #ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
+    // std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+    // std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+    double blocksize = 64;
+    double samplerate = 48000;
+    double ns_per_block = 1e9 / samplerate * blocksize;
+    nova::thread_set_priority_rt(samplerate/blocksize, AudioConvertNanosToHostTime(ns_per_block - 5000),
+AudioConvertNanosToHostTime(ns_per_block), true);
 #else
     std::pair<int, int> priorities = nova::thread_priority_interval();
     nova::thread_set_priority(priorities.second);
