@@ -64,10 +64,10 @@ int32 server_timeseed() {
 }
 
 inline int64 CoreAudioHostTimeToOSC(int64 hostTime) {
-    return (int64)((double)AudioConvertHostTimeToNanos(hostTime) * kNanosToOSCunits) + gOSCoffset;
+    return (int64)((double)(hostTime)*kNanosToOSCunits) + gOSCoffset;
 }
 
-int64 oscTimeNow() { return CoreAudioHostTimeToOSC(AudioGetCurrentHostTime()); }
+int64 oscTimeNow() { return CoreAudioHostTimeToOSC(clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW)); }
 
 static void syncOSCOffsetWithTimeOfDay() {
     // generate a value gOSCoffset such that
@@ -698,7 +698,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
     AudioTimeStamp now;
     now.mFlags = kAudioTimeStampHostTimeValid;
-    now.mHostTime = AudioGetCurrentHostTime();
+    now.mHostTime = clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW);
     if (mPreferredHardwareBufferFrameSize) {
         count = sizeof(UInt32);
         //		err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyBufferFrameSize, count,
@@ -1230,7 +1230,7 @@ OSStatus appIOProc(AudioDeviceID device, const AudioTimeStamp* inNow, const Audi
     SC_CoreAudioDriver* def = (SC_CoreAudioDriver*)defptr;
     int64 oscTime = CoreAudioHostTimeToOSC(inOutputTime->mHostTime);
 
-    double hostSecs = (double)AudioConvertHostTimeToNanos(inOutputTime->mHostTime) * 1e-9;
+    double hostSecs = (double)(inOutputTime->mHostTime) * 1e-9;
     double sampleTime = inOutputTime->mSampleTime;
     if (def->mStartHostSecs == 0) {
         def->mStartHostSecs = hostSecs;
