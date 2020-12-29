@@ -43,7 +43,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             qt-version: '5.9.3' # manually install requested version of qt
-            run-tests: true
+            # run-tests: true
 
           - job-name: 'bionic gcc7'
             os-version: '18.04'
@@ -51,6 +51,7 @@ jobs:
             cxx-compiler: 'g++-7'
             use-syslibs: false
             shared-libscsynth: false
+            run-tests: true
 
           - job-name: 'bionic gcc8'
             os-version: '18.04'
