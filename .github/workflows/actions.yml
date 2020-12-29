@@ -192,7 +192,7 @@ jobs:
         run: |
           which python
           python --version
-          python -m pip install https://github.com/supercollider/qpm.git
+          sudo pip install https://github.com/supercollider/qpm.git
           
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
