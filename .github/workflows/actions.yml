@@ -187,14 +187,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '2.x'
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+      # - name: debug with tmate # live debugging
+        # uses: mxschmitt/action-tmate@v3.1
       - name: prepare tests
         if: env.RUN_TESTS == 'true'
         run: |
-          which python
-          python --version
-          sudo pip install https://github.com/supercollider/qpm.git
+          python --version # check version
+          sudo pip install git+https://github.com/supercollider/qpm.git
           
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
@@ -203,9 +202,12 @@ jobs:
           # add bin to PATH so qpm can find sc_synth
           echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
           
+          # install jack
+          sudo apt install jackd1
+          
           # start jack
-          eval dbus-launch --auto-syntax
-          export DBUS_SESSION_BUS_PID DBUS_SESSION_BUS_ADDRESS
+          # eval dbus-launch --auto-syntax
+          # export DBUS_SESSION_BUS_PID DBUS_SESSION_BUS_ADDRESS
           jackd --no-realtime -d dummy
       - name: run tests
         if: env.RUN_TESTS == 'true'
