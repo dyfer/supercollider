@@ -243,12 +243,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: prepare daily timestamp for cache
+      - name: prepare timestamp for cache
         id: current-date
-        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
-      - name: prepare monthly timestamp for cache
-        id: current-month
-        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
+        run: |
+          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+          echo "::set-output name=week::$(date '+%V')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
@@ -260,7 +259,7 @@ jobs:
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-date.outputs.week }}
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
