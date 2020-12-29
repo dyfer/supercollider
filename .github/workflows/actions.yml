@@ -202,12 +202,10 @@ jobs:
           # add bin to PATH so qpm can find sc_synth
           echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
           
-          # install jack
+          # install jack1
           sudo apt-get install --yes jackd1
           
           # start jack
-          # eval dbus-launch --auto-syntax
-          # export DBUS_SESSION_BUS_PID DBUS_SESSION_BUS_ADDRESS
           jackd --no-realtime -d dummy &
       - name: run tests
         if: env.RUN_TESTS == 'true'
