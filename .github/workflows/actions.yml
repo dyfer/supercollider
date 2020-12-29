@@ -188,7 +188,7 @@ jobs:
         with:
           python-version: '2.x'
       - name: debug with tmate # live debugging
-          uses: mxschmitt/action-tmate@v3.1
+        uses: mxschmitt/action-tmate@v3.1
       - name: prepare tests
         if: env.RUN_TESTS == 'true'
         run: |
