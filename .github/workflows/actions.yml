@@ -186,7 +186,7 @@ jobs:
           cd $BUILD_PATH
           make install -j2
       - name: prepare tests
-        if: ${{ matrix.run-tests == 'true' }}
+        if: ${{ matrix.run-tests }} == 'true'
         run: |
           pip install https://github.com/supercollider/qpm.git
           
@@ -202,7 +202,7 @@ jobs:
           export DBUS_SESSION_BUS_PID DBUS_SESSION_BUS_ADDRESS
           jackd --no-realtime -d dummy
       - name: run tests
-        if: ${{ matrix.run-tests == 'true' }}
+        if: ${{ matrix.run-tests }} == 'true'
         run: |
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
