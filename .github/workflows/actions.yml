@@ -36,14 +36,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'xenial gcc5'
+          - job-name: 'xenial gcc5 with tests'
             os-version: '16.04'
             c-compiler: 'gcc-5'
             cxx-compiler: 'g++-5'
             use-syslibs: false
             shared-libscsynth: false
             qt-version: '5.9.3' # manually install requested version of qt
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+            run-tests: true
 
           - job-name: 'bionic gcc7'
             os-version: '18.04'
@@ -125,6 +125,10 @@ jobs:
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      # for testsuite:
+      QUARKS_PATH: ${{ github.workspace }}/build/Quarks
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
     steps:
       - uses: actions/checkout@v2
         with:
@@ -145,6 +149,10 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
       - name: install dependencies
         run: |
           sudo apt-get update
@@ -177,6 +185,27 @@ jobs:
         run: |
           cd $BUILD_PATH
           make install -j2
+      - name: prepare tests
+        if: matrix.run-tests == 'true'
+        run: |
+          pip install https://github.com/supercollider/qpm.git
+          
+          # install API quark
+          mkdir $QUARKS_PATH && cd $QUARKS_PATH
+          git clone --depth=1 https://github.com/supercollider-quarks/API
+          
+          # add bin to PATH so qpm can find sc_synth
+          echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
+          
+          # start jack
+          eval dbus-launch --auto-syntax
+          export DBUS_SESSION_BUS_PID DBUS_SESSION_BUS_ADDRESS
+          jackd --no-realtime -d dummy
+      - name: run tests
+        if: matrix.run-tests == 'true'
+        run: |
+          QPM_DEBUG=1
+          qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
