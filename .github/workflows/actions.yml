@@ -203,7 +203,7 @@ jobs:
           echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
           
           # install jack
-          sudo apt install --yes jackd1
+          sudo apt-get install --yes jackd1
           
           # start jack
           # eval dbus-launch --auto-syntax
