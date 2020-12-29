@@ -187,8 +187,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '2.x'
-      # - name: debug with tmate # live debugging
-        # uses: mxschmitt/action-tmate@v3.1
       - name: prepare tests
         if: env.RUN_TESTS == 'true'
         run: |
@@ -207,6 +205,9 @@ jobs:
           
           # start jack
           jackd --no-realtime -d dummy &
+      - name: debug with tmate # live debugging
+        if: env.RUN_TESTS == 'true'
+        uses: mxschmitt/action-tmate@v3.1
       - name: run tests
         if: env.RUN_TESTS == 'true'
         run: |
