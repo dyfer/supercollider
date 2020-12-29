@@ -205,14 +205,16 @@ jobs:
           
           # start jack
           jackd --no-realtime -d dummy &
-      - name: debug with tmate # live debugging
-        if: env.RUN_TESTS == 'true'
-        uses: mxschmitt/action-tmate@v3.1
+      # - name: debug with tmate # live debugging
+        # if: env.RUN_TESTS == 'true'
+        # uses: mxschmitt/action-tmate@v3.1
       - name: run tests
+        uses: GabrielBB/xvfb-action@v1
         if: env.RUN_TESTS == 'true'
-        run: |
-          QPM_DEBUG=1
-          qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+        with:
+          run: |
+            QPM_DEBUG=1
+            qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
