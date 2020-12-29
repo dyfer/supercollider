@@ -202,19 +202,20 @@ jobs:
           
           # install jack1
           sudo apt-get install --yes jackd1
-          
-          # start jack
-          jackd --no-realtime -d dummy &
-          
-          # start xfvb
-          Xvfb :99 &
-          echo ":99" >> $DISPLAY
       # - name: debug with tmate # live debugging
         # if: env.RUN_TESTS == 'true'
         # uses: mxschmitt/action-tmate@v3.1
       - name: run tests
         if: env.RUN_TESTS == 'true'
         run: |
+          # start jack
+          jackd --no-realtime -d dummy &
+          
+          # start xfvb
+          Xvfb :99 &
+          export DISPLAY=:99
+          
+          # run tests
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
       - name: create archive
