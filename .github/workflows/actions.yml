@@ -196,7 +196,7 @@ jobs:
       matrix:
         include:
 
-          - job-name: 'with tests'
+          - job-name: ''
             os-version: '10.15'
             xcode-version: '11.7'
             use-syslibs: false
@@ -339,11 +339,11 @@ jobs:
   test-macos:
     runs-on: macos-10.15
     name: test on macOS
-    needs: macOS
+    needs: [lint, macOS]
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ needs.macOS.matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
