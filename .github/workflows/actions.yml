@@ -336,7 +336,7 @@ jobs:
         run: |
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
-  test-macos:
+  test:
     runs-on: macos-10.15
     name: test on macOS
     needs: [lint, macOS]
@@ -351,15 +351,15 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: false # don't need submodules for testing
-      - name: make directories
-        run: |
-          mkdir $BUILD_PATH
-          mkdir $INSTALL_PATH
+      # - name: make directories
+      #   run: |
+      #     mkdir $BUILD_PATH
+      #     mkdir $INSTALL_PATH
       - name: download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_FILE }}.zip # note that we expect .zip.zip file here
-          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+          name: ${{ env.ARTIFACT_FILE }} # note that we expect .zip.zip file here
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
       # - name: debug with tmate # live debugging
         # uses: mxschmitt/action-tmate@v3.1
       - name: extract artifact
@@ -367,9 +367,8 @@ jobs:
           cd $INSTALL_PATH
           echo `pwd`
           echo `ls -s`
-          # workaround for double-zipped file
           unzip $ARTIFACT_FILE
-          rm $ARTIFACT_FILE.zip
+          # workaround for double-zipped file
           unzip $ARTIFACT_FILE
       - name: setup python
         uses: actions/setup-python@v2
