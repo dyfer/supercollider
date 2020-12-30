@@ -363,6 +363,8 @@ jobs:
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
+          pwd
+          ls
           unzip $ARTIFACT_FILE
           ls
       - name: setup python
