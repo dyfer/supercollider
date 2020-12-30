@@ -202,7 +202,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
-            run-tests: true
 
           # - job-name: 'legacy'
           #   os-version: '10.15'
@@ -334,6 +333,51 @@ jobs:
           git clone --depth=1 https://github.com/supercollider-quarks/API
       - name: run tests
         if: env.RUN_TESTS == 'true'
+        run: |
+          QPM_DEBUG=1
+          qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+  test-macos:
+    runs-on: macos-10.15
+    name: test on macOS
+    needs: macOS
+    env: 
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ needs.macOS.matrix.artifact-suffix }}.zip'
+      QUARKS_PATH: ${{ github.workspace }}/build/Quarks
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # don't need submodules for testing
+      - name: make directories
+        run: |
+          mkdir $BUILD_PATH
+          mkdir $INSTALL_PATH
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+      - name: extract artifact
+        run: |
+          cd $INSTALL_PATH
+          unzip $ARTIFACT_FILE
+          ls
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+      - name: prepare tests
+        run: |
+          python --version # check version
+          sudo pip install git+https://github.com/supercollider/qpm.git
+          
+          # install API quark
+          mkdir $QUARKS_PATH && cd $QUARKS_PATH
+          git clone --depth=1 https://github.com/supercollider-quarks/API
+      - name: run tests
         run: |
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
