@@ -336,4 +336,4 @@ jobs:
         if: env.RUN_TESTS == 'true'
         run: |
           QPM_DEBUG=1
-          qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+          qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
