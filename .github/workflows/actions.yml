@@ -363,10 +363,9 @@ jobs:
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
-          pwd
-          ls
+          echo `pwd`
+          echo `ls`
           unzip $ARTIFACT_FILE
-          ls
       - name: setup python
         uses: actions/setup-python@v2
         with:
