@@ -361,7 +361,6 @@ jobs:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
       - name: debug with tmate # live debugging
-        if: env.RUN_TESTS == 'true'
         uses: mxschmitt/action-tmate@v3.1
       - name: extract artifact
         run: |
