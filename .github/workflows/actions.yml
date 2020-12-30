@@ -367,6 +367,9 @@ jobs:
           cd $INSTALL_PATH
           echo `pwd`
           echo `ls -s`
+          # workaround for double-zipped file
+          unzip $ARTIFACT_FILE
+          rm $ARTIFACT_FILE.zip
           unzip $ARTIFACT_FILE
       - name: setup python
         uses: actions/setup-python@v2
