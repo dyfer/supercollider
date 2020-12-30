@@ -312,6 +312,13 @@ jobs:
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          retention-days: 7 # quickly remove test artifacts
       - name: setup python
         if: env.RUN_TESTS == 'true'
         uses: actions/setup-python@v2
@@ -331,10 +338,3 @@ jobs:
         run: |
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/travis_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
-        if: matrix.artifact-suffix
-        with:
-          name: ${{ env.ARTIFACT_FILE }}
-          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
-          retention-days: 7 # quickly remove test artifacts
