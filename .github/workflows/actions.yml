@@ -1,7 +1,7 @@
 name: check, build, test
 on: [push, pull_request]
 jobs:
-  linter:
+  lint:
     runs-on: ubuntu-18.04
     outputs: 
       sc-version: ${{ steps.set-version.outputs.version }}
@@ -30,7 +30,7 @@ jobs:
           echo "::set-output name=version::$SC_VERSION"
 
   Linux:
-    needs: linter
+    needs: lint
     runs-on: ubuntu-${{ matrix.os-version }} 
     strategy:
       fail-fast: false
@@ -124,7 +124,7 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -189,7 +189,7 @@ jobs:
           retention-days: 7 # quickly remove test artifacts
 
   macOS:
-    needs: linter
+    needs: lint
     runs-on: macos-${{ matrix.os-version }} 
     strategy:
       fail-fast: false
@@ -232,7 +232,7 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
       # for testsuite:
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
