@@ -359,14 +359,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ env.ARTIFACT_FILE }}
-          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+      # - name: debug with tmate # live debugging
+        # uses: mxschmitt/action-tmate@v3.1
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
           echo `pwd`
-          echo `ls`
+          echo `ls -s`
           unzip $ARTIFACT_FILE
       - name: setup python
         uses: actions/setup-python@v2
