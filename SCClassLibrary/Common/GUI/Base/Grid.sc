@@ -341,6 +341,10 @@ GridLines {
 
 				} {
 					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
+					numTicks ?? {
+						numTicks = (pixRange / pixSpacing);
+						numTicks = numTicks.max(3).round(1);
+					}; // set numTicks regardless to avoid errors
 				};
 			},
 			{
