@@ -375,8 +375,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
