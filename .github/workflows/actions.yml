@@ -347,6 +347,8 @@ jobs:
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+      SCRIPT_PROTO: $GITHUB_WORKSPACE/testsuite/scripts/gha_test_run_proto.json
+      SCRIPT_RUN: $GITHUB_WORKSPACE/testsuite/scripts/run/gha_test_run.json
     steps:
       - uses: actions/checkout@v2
         with:
@@ -380,7 +382,10 @@ jobs:
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
           git clone --depth=1 https://github.com/supercollider-quarks/API
+
+          # make working copy of the script
+          cp $SCRIPT_PROTO $SCRIPT_RUN
       - name: run tests
         run: |
           QPM_DEBUG=1
-          qpm test.run -l $GITHUB_WORKSPACE/testsuite_scripts/gha_test_run_all.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+          qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
