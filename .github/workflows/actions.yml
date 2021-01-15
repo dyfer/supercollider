@@ -337,6 +337,8 @@ jobs:
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
   test:
+    runs-on: ${{ matrix.runs_on }}
+    needs: [lint, ${{ matrix.needs }}]
     strategy:
       fail-fast: false
       matrix:
@@ -347,9 +349,8 @@ jobs:
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
 
-    runs-on: ${{ matrix.runs_on }}
+
     name: 'test on' ${{ matrix.needs }}
-    needs: [lint, ${{ matrix.needs }}]
     env:
       # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
