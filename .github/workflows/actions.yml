@@ -348,6 +348,10 @@ jobs:
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact-suffix: macOS
 
+          - name: Linux
+            runs-on: ubuntu-18.04
+            sclang: 'build/Install/bin/sclang'
+            artifact-suffix: linux-bionic-gcc10
 
     needs: [lint, Linux, macOS] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
     runs-on: '${{ matrix.runs-on }}'
@@ -380,6 +384,11 @@ jobs:
           echo `pwd`
           echo `ls -s`
           unzip $ARTIFACT_FILE
+      - name: install Linux dependencies
+        if: ${{ runner.os }} == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs qt5-default
       - name: setup python
         uses: actions/setup-python@v2
         with:
