@@ -224,7 +224,6 @@ jobs:
           #   shared-libscsynth: true
 
     name: macOS ${{ matrix.job-name }}
-    job_id: macOS ${{ matrix.job-name }}
     env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
