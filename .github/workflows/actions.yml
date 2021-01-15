@@ -380,8 +380,6 @@ jobs:
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
           git clone --depth=1 https://github.com/supercollider-quarks/API
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
       - name: run tests
         run: |
           QPM_DEBUG=1
