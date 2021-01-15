@@ -350,7 +350,8 @@ jobs:
             # artifact: 'SuperCollider-${{ jobs.lint.outputs.sc-version }}-macOS.zip'
 
     # needs: '${{ matrix.needs }}'
-    needs: [lint, macOS]
+    needs: [lint, '${{ matrix.needs }}']
+    # needs: [lint, macOS]
     runs-on: macos-10.15
     name: 'test on ${{ matrix.needs }}'
     env:
