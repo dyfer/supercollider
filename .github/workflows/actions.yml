@@ -358,10 +358,10 @@ jobs:
       - name: download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_FILE }} # note that we expect .zip.zip file here
-          # path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
-      - name: debug with tmate # live debugging
-        uses: mxschmitt/action-tmate@v3.1
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+      # - name: debug with tmate # live debugging
+        # uses: mxschmitt/action-tmate@v3.1
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
