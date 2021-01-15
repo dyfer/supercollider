@@ -344,19 +344,18 @@ jobs:
         include:
 
           - name: macOS
-            needs: [lint, macOS]
             runs-on: macos-10.15
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact-suffix: macOS
 
 
-    needs: [lint, Linux, macOS]
+    needs: [lint, Linux, macOS] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
     runs-on: '${{ matrix.runs-on }}'
-    name: 'test on ${{ matrix.needs }}'
+    name: 'test on ${{ matrix.name }}'
     env:
       # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.needs }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
