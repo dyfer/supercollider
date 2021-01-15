@@ -374,7 +374,7 @@ jobs:
           python-version: '2.x'
       - name: prepare tests
         run: |
-          python --version # check version
+          echo `python --version` # check version
           sudo pip install git+https://github.com/supercollider/qpm.git
 
           # install API quark
