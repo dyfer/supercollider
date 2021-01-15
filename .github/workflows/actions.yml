@@ -348,7 +348,7 @@ jobs:
             artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
 
     runs-on: matrix.runs-on
-    name: test on ${{ matrix.needs }}
+    name: 'test on' ${{ matrix.needs }}
     needs: [lint, ${{ matrix.needs }}]
     env:
       # BUILD_PATH: ${{ github.workspace }}/build
@@ -372,8 +372,8 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
-      # - name: debug with tmate # live debugging
-        # uses: mxschmitt/action-tmate@v3.1
+      - name: debug with tmate # live debugging
+        uses: mxschmitt/action-tmate@v3
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
