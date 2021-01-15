@@ -384,11 +384,18 @@ jobs:
           echo `pwd`
           echo `ls -s`
           unzip $ARTIFACT_FILE
-      - name: install Linux dependencies
+      - name: setup Linux environment
         if: ${{ runner.os }} == 'Linux'
         run: |
+          # install dependencies
           sudo apt-get update
-          sudo apt-get install --yes libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs qt5-default
+          sudo apt-get install --yes libsndfile1 libasound2 libavahi-client libreadline6 libfftw3 libicu libxt libudev qt5-default jackd1
+
+          # add bin to PATH so qpm can find sc_synth
+          echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
+
+          # start jack
+          jackd --no-realtime -d dummy &
       - name: setup python
         uses: actions/setup-python@v2
         with:
@@ -396,7 +403,7 @@ jobs:
       - name: prepare tests
         run: |
           echo `python --version` # check version
-          sudo pip install git+https://github.com/supercollider/qpm.git
+          sudo pip install git+https://github.com/supercollider/qpm.git@topic/xvbf_path_in_conf
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
