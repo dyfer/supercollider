@@ -347,18 +347,16 @@ jobs:
             needs: [lint, macOS]
             runs-on: macos-10.15
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            # artifact: 'SuperCollider-${{ jobs.lint.outputs.sc-version }}-macOS.zip'
+            artifact-suffix: macOS
 
-    needs: '${{ matrix.needs }}'
-    # needs: '[lint, ${{ matrix.needs }}]'
-    # needs: [lint, macOS]
-    # runs-on: macos-10.15
+
+    needs: [lint, Linux, macOS]
     runs-on: '${{ matrix.runs-on }}'
     name: 'test on ${{ matrix.needs }}'
     env:
       # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.needs }}.zip'
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
