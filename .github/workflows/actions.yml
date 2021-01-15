@@ -380,11 +380,11 @@ jobs:
           echo `ls -s`
           unzip $ARTIFACT_FILE
       - name: setup Linux environment
-        if: ${{ runner.os }} == 'Linux'
+        if: runner.os == 'Linux'
         run: |
           # install dependencies
           sudo apt-get update
-          sudo apt-get install --yes libsndfile1 libasound2 libavahi-client libreadline6 libfftw3 libicu libxt libudev qt5-default jackd1
+          sudo apt-get install --yes libsndfile1 libasound2 libavahi-client libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev qt5-default jackd1
 
           # add bin to PATH so qpm can find sc_synth
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
