@@ -347,8 +347,8 @@ jobs:
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
-      SCRIPT_PROTO: $GITHUB_WORKSPACE/testsuite/scripts/gha_test_run_proto.json
-      SCRIPT_RUN: $GITHUB_WORKSPACE/testsuite/scripts/run/gha_test_run.json
+      SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
+      SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
     steps:
       - uses: actions/checkout@v2
         with:
