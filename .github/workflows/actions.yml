@@ -336,7 +336,9 @@ jobs:
         run: |
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+
   test:
+
     needs: [lint, ${{ matrix.needs }}]
     runs-on: macos-10.15
     strategy:
