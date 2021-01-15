@@ -347,12 +347,13 @@ jobs:
       matrix:
         include:
 
-          - needs: 'macOS'
+          - name: macOS
+            needs: 'macOS'
             # runs_on: macos-10.15
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
 
-    name: 'test on' ${{ matrix.needs }}
+    name: 'test on ${{ matrix.needs }}'
     env:
       # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
