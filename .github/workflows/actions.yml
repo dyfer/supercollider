@@ -369,10 +369,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: false # don't need submodules for testing
-      # - name: make directories
-      #   run: |
-      #     mkdir $BUILD_PATH
-      #     mkdir $INSTALL_PATH
       - name: download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -392,7 +388,7 @@ jobs:
           sudo apt-get install --yes libsndfile1 libasound2 libavahi-client libreadline6 libfftw3 libicu libxt libudev qt5-default jackd1
 
           # add bin to PATH so qpm can find sc_synth
-          echo "$BUILD_PATH/Install/bin" >> $GITHUB_PATH
+          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
 
           # start jack
           jackd --no-realtime -d dummy &
