@@ -347,7 +347,7 @@ jobs:
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
 
-    runs-on: matrix.runs-on
+    runs-on: ${{ matrix.runs-on }}
     name: 'test on' ${{ matrix.needs }}
     needs: [lint, ${{ matrix.needs }}]
     env:
