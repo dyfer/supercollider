@@ -344,7 +344,7 @@ jobs:
       matrix:
         include:
 
-          - needs: macOS
+          - needs: 'macOS'
             # runs_on: macos-10.15
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
