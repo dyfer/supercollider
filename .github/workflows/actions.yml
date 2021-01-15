@@ -357,7 +357,6 @@ jobs:
     runs-on: '${{ matrix.runs-on }}'
     name: 'test on ${{ matrix.name }}'
     env:
-      # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
