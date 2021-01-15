@@ -337,16 +337,26 @@ jobs:
           QPM_DEBUG=1
           qpm test.run -l $GITHUB_WORKSPACE/gha_test_run_proto.json --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
   test:
-    runs-on: macos-10.15
-    name: test on macOS
-    needs: [lint, macOS]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - needs: macOS
+            runs-on: macos-10.15
+            sclang: build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+            artifact: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
+
+    runs-on: matrix.runs-on
+    name: test on ${{ matrix.needs }}
+    needs: [lint, ${{ matrix.needs }}]
     env:
-      BUILD_PATH: ${{ github.workspace }}/build
+      # BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-macOS.zip'
+      ARTIFACT_FILE: matrix.artifact
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
-      SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+      SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
     steps:
