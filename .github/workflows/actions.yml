@@ -339,7 +339,8 @@ jobs:
 
   test:
 
-    needs: [lint, ${{ matrix.needs }}]
+    # needs: [lint, ${{ matrix.needs }}]
+    needs: [lint, macOS]
     runs-on: macos-10.15
     strategy:
       fail-fast: false
