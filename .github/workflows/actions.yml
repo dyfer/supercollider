@@ -364,6 +364,7 @@ jobs:
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/travis_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-temp-fix
     steps:
       - uses: actions/checkout@v2
         with:
@@ -398,7 +399,7 @@ jobs:
       - name: prepare tests
         run: |
           echo `python --version` # check version
-          sudo pip install git+https://github.com/supercollider/qpm.git@topic/xvfb-temp-fix
+          sudo pip install $QPM_URL
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
