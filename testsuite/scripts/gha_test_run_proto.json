@@ -122,7 +122,9 @@
     },
     {
       "test":"*",
-      "suite":"TestEnvironmentDocument"
+      "suite":"TestEnvironmentDocument",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -184,7 +186,9 @@
     },
     {
       "test":"*",
-      "suite":"TestLcmGcd"
+      "suite":"TestLcmGcd",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
