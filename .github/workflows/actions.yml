@@ -387,7 +387,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes libsndfile1 libasound2 libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev qt5-default jackd1
 
-          # add bin to PATH so qpm can find sc_synth
+          # add bin to PATH so qpm can find scsynth
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
 
           # start jack
