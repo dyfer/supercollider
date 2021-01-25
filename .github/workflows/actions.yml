@@ -398,7 +398,7 @@ jobs:
       - name: prepare tests
         run: |
           echo `python --version` # check version
-          sudo pip install git+https://github.com/supercollider/qpm.git@topic/xvbf_path_in_conf
+          sudo pip install git+https://github.com/supercollider/qpm.git@topic/xvfb-temp-fix
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
