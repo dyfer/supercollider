@@ -388,7 +388,9 @@
     },
     {
       "test":"*",
-      "suite":"TestServer_boot"
+      "suite":"TestServer_boot",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
