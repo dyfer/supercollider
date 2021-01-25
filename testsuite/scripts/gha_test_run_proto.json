@@ -1,11 +1,11 @@
 {
   "tests": [
     {
-      "test": "*",
+      "test": "*", 
       "suite": "TestAbstractFunction"
     },
     {
-      "test": "*",
+      "test": "*", 
       "suite": "TestArray"
     }
   ]
