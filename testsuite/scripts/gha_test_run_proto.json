@@ -2,9 +2,9 @@
   "tests":[
     {
       "test":"*",
-      "suite":"TestAbstractFunction"
-      "skip": true,
-      "skipReason": "QPM seems to have a problem with the output from this test (FIXME)"
+      "suite":"TestAbstractFunction",
+      "skip":true,
+      "skipReason":"QPM seems to have a problem with the output from this test (FIXME)"
     },
     {
       "test":"*",
@@ -68,9 +68,9 @@
     },
     {
       "test":"*",
-      "suite":"TestCoreUGens"
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "suite":"TestCoreUGens",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -230,9 +230,9 @@
     },
     {
       "test":"*",
-      "suite":"TestNodeProxy"
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "suite":"TestNodeProxy",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -240,9 +240,9 @@
     },
     {
       "test":"*",
-      "suite":"TestNodeProxy_Server"
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "suite":"TestNodeProxy_Server",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -270,9 +270,9 @@
     },
     {
       "test":"*",
-      "suite":"TestPanAz"
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "suite":"TestPanAz",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
