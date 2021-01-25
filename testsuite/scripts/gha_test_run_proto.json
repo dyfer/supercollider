@@ -3,7 +3,7 @@
     {
       "test": "*", 
       "suite": "TestAbstractFunction"
-    },
+    }, 
     {
       "test": "*", 
       "suite": "TestArray"
