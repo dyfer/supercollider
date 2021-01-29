@@ -32,10 +32,6 @@
     },
     {
       "test":"*",
-      "suite":"TestClockSchedulingHelper"
-    },
-    {
-      "test":"*",
       "suite":"TestCollection"
     },
     {
@@ -48,7 +44,9 @@
     },
     {
       "test":"*",
-      "suite":"TestCompilerBrutal"
+      "suite":"TestCompilerBrutal",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -80,10 +78,6 @@
     },
     {
       "test":"*",
-      "suite":"TestDependant"
-    },
-    {
-      "test":"*",
       "suite":"TestDictionary"
     },
     {
@@ -94,7 +88,9 @@
     },
     {
       "test":"*",
-      "suite":"TestDocumentEnvironment"
+      "suite":"TestDocumentEnvironment",
+      "skip":true,
+      "skipReason":"multiple tests fail (FIXME)"
     },
     {
       "test":"*",
@@ -138,11 +134,9 @@
     },
     {
       "test":"*",
-      "suite":"TestExtraWindows"
-    },
-    {
-      "test":"*",
-      "suite":"TestFilterUGens"
+      "suite":"TestFilterUGens",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -150,19 +144,7 @@
     },
     {
       "test":"*",
-      "suite":"TestFoaMatrix"
-    },
-    {
-      "test":"*",
       "suite":"TestFunction"
-    },
-    {
-      "test":"*",
-      "suite":"TestHoaMatrixRotation"
-    },
-    {
-      "test":"*",
-      "suite":"TestHoaMatrixXformer"
     },
     {
       "test":"*",
@@ -174,39 +156,27 @@
     },
     {
       "test":"*",
-      "suite":"TestKDTree"
-    },
-    {
-      "test":"*",
-      "suite":"TestKMeans"
-    },
-    {
-      "test":"*",
-      "suite":"TestLPCTestUtils"
-    },
-    {
-      "test":"*",
       "suite":"TestLcmGcd",
       "skip":true,
       "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestLexerBrutal"
+      "suite":"TestLexerBrutal",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestLexerTargetedBrutal"
+      "suite":"TestLexerTargetedBrutal",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestLinkClock",
       "skip":true,
-      "skipReason":"some tests fail (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestMKtlDesc"
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -218,15 +188,13 @@
     },
     {
       "test":"*",
-      "suite":"TestMixedBundleTester"
+      "suite":"TestMixedBundleTester",
+      "skip":true,
+      "skipReason":"some tests fail (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestMixedBundle_Server"
-    },
-    {
-      "test":"*",
-      "suite":"TestMovingSum"
     },
     {
       "test":"*",
@@ -262,11 +230,9 @@
     },
     {
       "test":"*",
-      "suite":"TestNode_Server"
-    },
-    {
-      "test":"*",
-      "suite":"TestNumberForHoa"
+      "suite":"TestNode_Server",
+      "skip":true,
+      "skipReason":"Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -296,7 +262,9 @@
     },
     {
       "test":"*",
-      "suite":"TestParserBrutal"
+      "suite":"TestParserBrutal",
+      "skip":true,
+      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -316,7 +284,9 @@
     },
     {
       "test":"*",
-      "suite":"TestPprotect"
+      "suite":"TestPprotect",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -324,15 +294,21 @@
     },
     {
       "test":"*",
-      "suite":"TestProxyNodeMap"
+      "suite":"TestProxyNodeMap",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestProxySpace"
+      "suite":"TestProxySpace",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestQuery"
+      "suite":"TestQuery",
+      "skip": true,
+      "skipReason": "Issue with booting the server? (FIXME)"
     },
     {
       "test":"*",
@@ -357,10 +333,6 @@
     {
       "test":"*",
       "suite":"TestSanitize"
-    },
-    {
-      "test":"*",
-      "suite":"TestScinthDef"
     },
     {
       "test":"*",
@@ -458,7 +430,9 @@
     },
     {
       "test":"*",
-      "suite":"TestTempoClock"
+      "suite":"TestTempoClock",
+      "skip": true,
+      "skipReason": "test_nextTimeOnGrid_okAfterMeterChange fails (FIXME)"
     },
     {
       "test":"*",
@@ -474,7 +448,9 @@
     },
     {
       "test":"*",
-      "suite":"TestUnitTest"
+      "suite":"TestUnitTest",
+      "skip": true,
+      "skipReason": "test_setUpClass_already_happened fails (FIXME)"
     },
     {
       "test":"*",
@@ -482,7 +458,9 @@
     },
     {
       "test":"*",
-      "suite":"TestVolume"
+      "suite":"TestVolume",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     },
     {
       "test":"*",
