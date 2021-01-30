@@ -2,25 +2,13 @@
   "tests":[
     {
       "test":"*",
-      "suite":"TestAbstractFunction",
-      "skip":true,
-      "skipReason":"QPM seems to have a problem with the output from this test (FIXME)"
-    },
-    {
-      "test":"*",
       "suite":"*"
     },
     {
-      "test":"*",
-      "suite":"TestCompilerBrutal",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
+      "test":"test_timeout",
       "suite":"TestCondition",
       "skip":true,
-      "skipReason":"test_timeout fails (FIXME)"
+      "skipReason":"UnitTest bug (FIXME)"
     },
     {
       "test":"*",
@@ -82,18 +70,6 @@
     },
     {
       "test":"*",
-      "suite":"TestLexerBrutal",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestLexerTargetedBrutal",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
       "suite":"TestLinkClock",
       "skip":true,
       "skipReason":"unknown UnitTest bug (FIXME)"
@@ -133,12 +109,6 @@
       "suite":"TestPanAz",
       "skip":true,
       "skipReason":"Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestParserBrutal",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
     },
     {
       "test":"*",
