@@ -8,39 +8,7 @@
     },
     {
       "test":"*",
-      "suite":"TestArray"
-    },
-    {
-      "test":"*",
-      "suite":"TestArrayLace"
-    },
-    {
-      "test":"*",
-      "suite":"TestBuffer"
-    },
-    {
-      "test":"*",
-      "suite":"TestBuffer_Server"
-    },
-    {
-      "test":"*",
-      "suite":"TestBus"
-    },
-    {
-      "test":"*",
-      "suite":"TestClockScheduling"
-    },
-    {
-      "test":"*",
-      "suite":"TestCollection"
-    },
-    {
-      "test":"*",
-      "suite":"TestCollectionConversions"
-    },
-    {
-      "test":"*",
-      "suite":"TestCollectionEquality"
+      "suite":"*"
     },
     {
       "test":"*",
@@ -50,35 +18,15 @@
     },
     {
       "test":"*",
-      "suite":"TestComplex"
-    },
-    {
-      "test":"*",
       "suite":"TestCondition",
       "skip":true,
       "skipReason":"test_timeout fails (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestContiguousBlockAllocator"
-    },
-    {
-      "test":"*",
-      "suite":"TestControlSpec"
-    },
-    {
-      "test":"*",
       "suite":"TestCoreUGens",
       "skip":true,
       "skipReason":"Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestCurveWarp"
-    },
-    {
-      "test":"*",
-      "suite":"TestDictionary"
     },
     {
       "test":"*",
@@ -94,21 +42,9 @@
     },
     {
       "test":"*",
-      "suite":"TestDoesNotUnderstandError"
-    },
-    {
-      "test":"*",
       "suite":"TestDoneActions",
       "skip":true,
       "skipReason":"test_freeSelfAndResumeNext fails (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestEnv"
-    },
-    {
-      "test":"*",
-      "suite":"TestEnvGate"
     },
     {
       "test":"*",
@@ -140,22 +76,6 @@
     },
     {
       "test":"*",
-      "suite":"TestFloat"
-    },
-    {
-      "test":"*",
-      "suite":"TestFunction"
-    },
-    {
-      "test":"*",
-      "suite":"TestIndexUGenRates"
-    },
-    {
-      "test":"*",
-      "suite":"TestInteger"
-    },
-    {
-      "test":"*",
       "suite":"TestLcmGcd",
       "skip":true,
       "skipReason":"unknown UnitTest bug (FIXME)"
@@ -180,37 +100,9 @@
     },
     {
       "test":"*",
-      "suite":"TestMain"
-    },
-    {
-      "test":"*",
-      "suite":"TestMethod"
-    },
-    {
-      "test":"*",
       "suite":"TestMixedBundleTester",
       "skip":true,
       "skipReason":"some tests fail (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestMixedBundle_Server"
-    },
-    {
-      "test":"*",
-      "suite":"TestNamedControl"
-    },
-    {
-      "test":"*",
-      "suite":"TestNetAddr"
-    },
-    {
-      "test":"*",
-      "suite":"TestNoOps"
-    },
-    {
-      "test":"*",
-      "suite":"TestNode"
     },
     {
       "test":"*",
@@ -238,29 +130,9 @@
     },
     {
       "test":"*",
-      "suite":"TestOSCBundle"
-    },
-    {
-      "test":"*",
-      "suite":"TestOSCFunc"
-    },
-    {
-      "test":"*",
-      "suite":"TestObject"
-    },
-    {
-      "test":"*",
-      "suite":"TestPV_ChainUGen"
-    },
-    {
-      "test":"*",
       "suite":"TestPanAz",
       "skip":true,
       "skipReason":"Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestParser"
     },
     {
       "test":"*",
@@ -270,29 +142,9 @@
     },
     {
       "test":"*",
-      "suite":"TestPattern"
-    },
-    {
-      "test":"*",
-      "suite":"TestPatternProxy"
-    },
-    {
-      "test":"*",
-      "suite":"TestPlotter"
-    },
-    {
-      "test":"*",
-      "suite":"TestPmono"
-    },
-    {
-      "test":"*",
       "suite":"TestPprotect",
       "skip": true,
       "skipReason": "Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestProcessCreation"
     },
     {
       "test":"*",
@@ -314,57 +166,9 @@
     },
     {
       "test":"*",
-      "suite":"TestRangeSlider"
-    },
-    {
-      "test":"*",
-      "suite":"TestReadableNodeIDAllocator"
-    },
-    {
-      "test":"*",
-      "suite":"TestRecorder"
-    },
-    {
-      "test":"*",
       "suite":"TestSCDoc",
       "skip": true,
       "skipReason": "test_helpSourceDirs_includedExtensions fails on macOS (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestSCDocHTMLRenderer"
-    },
-    {
-      "test":"*",
-      "suite":"TestSanitize"
-    },
-    {
-      "test":"*",
-      "suite":"TestScore"
-    },
-    {
-      "test":"*",
-      "suite":"TestSerialPort"
-    },
-    {
-      "test":"*",
-      "suite":"TestServer"
-    },
-    {
-      "test":"*",
-      "suite":"TestServerOptions"
-    },
-    {
-      "test":"*",
-      "suite":"TestServer_GUI"
-    },
-    {
-      "test":"*",
-      "suite":"TestServer_ServerGUI"
-    },
-    {
-      "test":"*",
-      "suite":"TestServer_SynthDefVersion1"
     },
     {
       "test":"*",
@@ -374,91 +178,15 @@
     },
     {
       "test":"*",
-      "suite":"TestServer_clientID"
-    },
-    {
-      "test":"*",
-      "suite":"TestServer_clientID_booted"
-    },
-    {
-      "test":"*",
-      "suite":"TestSignal"
-    },
-    {
-      "test":"*",
-      "suite":"TestSimpleNumber"
-    },
-    {
-      "test":"*",
-      "suite":"TestSoundFile"
-    },
-    {
-      "test":"*",
-      "suite":"TestSoundFile_Normalize"
-    },
-    {
-      "test":"*",
-      "suite":"TestSoundFile_Server"
-    },
-    {
-      "test":"*",
-      "suite":"TestStream"
-    },
-    {
-      "test":"*",
-      "suite":"TestString"
-    },
-    {
-      "test":"*",
-      "suite":"TestSymbol"
-    },
-    {
-      "test":"*",
-      "suite":"TestSynthDefOptimizations"
-    },
-    {
-      "test":"*",
-      "suite":"TestSynthDescMetadata"
-    },
-    {
-      "test":"*",
-      "suite":"TestTWindex"
-    },
-    {
-      "test":"*",
-      "suite":"TestTask"
-    },
-    {
-      "test":"*",
-      "suite":"TestTaskProxy"
-    },
-    {
-      "test":"*",
       "suite":"TestTempoClock",
       "skip": true,
       "skipReason": "test_nextTimeOnGrid_okAfterMeterChange fails (FIXME)"
     },
     {
       "test":"*",
-      "suite":"TestThrow"
-    },
-    {
-      "test":"*",
-      "suite":"TestUGenMathOptimization"
-    },
-    {
-      "test":"*",
-      "suite":"TestUGen_Duty"
-    },
-    {
-      "test":"*",
       "suite":"TestUnitTest",
       "skip": true,
       "skipReason": "test_setUpClass_already_happened fails (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestView"
     },
     {
       "test":"*",
