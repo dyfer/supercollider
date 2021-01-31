@@ -89,16 +89,16 @@
       "skipReason":"UnitTest fails (FIXME)"
     },    
     {
-      "test":"*",
+      "test":"test_synthDef_isReleased_afterFree",
       "suite":"TestNodeProxy_Server",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
+      "skipReason":"UnitTest fails (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestNode_Server",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
       "test":"test_argSizeMatching_Succeeds",
@@ -110,13 +110,7 @@
       "test":"*",
       "suite":"TestPanAz",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestPprotect",
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "skipReason":"UnitTest fails (FIXME)"
     },
     {
       "test":"*",
