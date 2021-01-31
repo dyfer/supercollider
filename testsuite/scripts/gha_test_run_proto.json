@@ -5,6 +5,12 @@
       "suite":"*"
     },
     {
+      "test":"test_get",
+      "suite":"TestBus",
+      "skip":true,
+      "skipReason":"UnitTest sometimes fails when run in qpm (FIXME)"
+    },
+    {
       "test":"*",
       "suite":"TestCondition",
       "skip":true,
@@ -159,6 +165,12 @@
       "suite":"TestUnitTest",
       "skip": true,
       "skipReason": "UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_findText_found",
+      "suite":"TestWebView",
+      "skip": true,
+      "skipReason": "UnitTest sometimes fails when run in qpm on Linux (FIXME)"
     }
   ]
 }
