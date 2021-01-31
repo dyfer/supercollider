@@ -29,10 +29,10 @@
       "skipReason":"UnitTest creates issues when run in qpm (FIXME)"
     },
     {
-      "test":"test_unlinkDoc",
+      "test":"*",
       "suite":"TestEnvironmentDocument",
       "skip":true,
-      "skipReason":"UnitTest fails (FIXME)"
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
     },
     {
       "test":"test_freeSelfAndResumeNext",
@@ -115,9 +115,15 @@
     },
     {
       "test":"*",
+      "suite":"TestPV_ChainUGen",
+      "skip": true,
+      "skipReason": "Server might hang after these tests when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
       "suite":"TestQuery",
       "skip": true,
-      "skipReason": "Issue with booting the server? (FIXME)"
+      "skipReason": "Issue with booting the server (FIXME)"
     },
     {
       "test":"*",
