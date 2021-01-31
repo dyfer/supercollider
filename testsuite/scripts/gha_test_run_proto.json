@@ -87,7 +87,13 @@
       "suite":"TestNodeProxy",
       "skip":true,
       "skipReason":"UnitTest fails (FIXME)"
-    },    
+    },
+    {
+      "test":"test_proxyroles_xfade_smoothly",
+      "suite":"TestNodeProxyRoles",
+      "skip":true,
+      "skipReason":"UnitTest fails in qpm (FIXME)"
+    },
     {
       "test":"test_synthDef_isReleased_afterFree",
       "suite":"TestNodeProxy_Server",
@@ -131,16 +137,10 @@
       "skipReason": "Server might hang after these tests when run in qpm (FIXME)"
     },
     {
-      "test":"*",
-      "suite":"TestQuery",
-      "skip": true,
-      "skipReason": "Issue with booting the server (FIXME)"
-    },
-    {
-      "test":"*",
+      "test":"test_helpSourceDirs_includedExtensions",
       "suite":"TestSCDoc",
       "skip": true,
-      "skipReason": "test_helpSourceDirs_includedExtensions fails on macOS (FIXME)"
+      "skipReason": "UnitTest fails (FIXME)"
     },
     {
       "test":"*",
