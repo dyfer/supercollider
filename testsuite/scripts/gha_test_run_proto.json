@@ -1,0 +1,188 @@
+{
+  "tests":[
+    {
+      "test":"*",
+      "suite":"*"
+    },
+    {
+      "test":"test_get",
+      "suite":"TestBus",
+      "skip":true,
+      "skipReason":"UnitTest sometimes fails when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestCondition",
+      "skip":true,
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestCoreUGens",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestDocument",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestDocumentEnvironment",
+      "skip":true,
+      "skipReason":"UnitTest creates issues when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestEnvironmentDocument",
+      "skip":true,
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
+    },
+    {
+      "test":"test_freeSelfAndResumeNext",
+      "suite":"TestDoneActions",
+      "skip":true,
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
+    },
+    {
+      "test":"test_zero_gate_n_off_not_sent",
+      "suite":"TestEnvGen_server",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"test_trig_gate_nonsustain_env",
+      "suite":"TestEnvGen_server",
+      "skip":true,
+      "skipReason":"UnitTest fails on supernova in qpm on Linux (FIXME)"
+    },
+    {
+      "test":"test_shapeHold_setEndValue",
+      "suite":"TestEnvGen_server",
+      "skip":true,
+      "skipReason":"UnitTest fails on when run in qpm on Linux (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestFilterUGens",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestFilterUGens",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestLinkClock",
+      "skip":true,
+      "skipReason":"UnitTest has unknown issues when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestMixedBundleTester",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"test_copy_nodeMapIsCopied",
+      "suite":"TestNodeProxy",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_audiorate_mapping",
+      "suite":"TestNodeProxyBusMapping",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_audiorate_mapping_elasticity",
+      "suite":"TestNodeProxyBusMapping",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_proxyroles_xfade_smoothly",
+      "suite":"TestNodeProxyRoles",
+      "skip":true,
+      "skipReason":"UnitTest fails in qpm (FIXME)"
+    },
+    {
+      "test":"test_synthDef_isReleased_afterFree",
+      "suite":"TestNodeProxy_Server",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_schedAfterFade_notBeforeQuant",
+      "suite":"TestNodeProxy_Server",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestNode_Server",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"test_argSizeMatching_Succeeds",
+      "suite":"TestOSCFunc",
+      "skip":true,
+      "skipReason":"UnitTest fails when run in qpm on Linux (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestPanAz",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestProxyNodeMap",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestPV_ChainUGen",
+      "skip":true,
+      "skipReason":"Server might hang after these tests when run in qpm (FIXME)"
+    },
+    {
+      "test":"test_helpSourceDirs_includedExtensions",
+      "suite":"TestSCDoc",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestServer_boot",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"test_nextTimeOnGrid_okAfterMeterChange",
+      "suite":"TestTempoClock",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"test_setUpClass_already_happened",
+      "suite":"TestUnitTest",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestWebView",
+      "skip":true,
+      "skipReason":"UnitTest sometimes fails when run in qpm on Linux (FIXME)"
+    }
+  ]
+}
