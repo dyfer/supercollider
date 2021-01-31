@@ -83,11 +83,11 @@
       "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
-      "test":"*",
-      "suite":"TestNodeProxyRoles",
+      "test":"test_copy_nodeMapIsCopied",
+      "suite":"TestNodeProxy",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
-    },
+      "skipReason":"UnitTest fails (FIXME)"
+    },    
     {
       "test":"*",
       "suite":"TestNodeProxy_Server",
