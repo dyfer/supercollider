@@ -51,13 +51,7 @@
       "test":"*",
       "suite":"TestFilterUGens",
       "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestLinkClock",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
       "test":"*",
