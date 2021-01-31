@@ -159,6 +159,6 @@
       "suite":"TestUnitTest",
       "skip": true,
       "skipReason": "UnitTest fails (FIXME)"
-    },
+    }
   ]
 }
