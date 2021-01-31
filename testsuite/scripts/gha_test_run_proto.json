@@ -146,31 +146,19 @@
       "test":"*",
       "suite":"TestServer_boot",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
-      "test":"*",
+      "test":"test_nextTimeOnGrid_okAfterMeterChange",
       "suite":"TestTempoClock",
       "skip": true,
-      "skipReason": "test_nextTimeOnGrid_okAfterMeterChange fails (FIXME)"
+      "skipReason": "UnitTest fails (FIXME)"
     },
     {
-      "test":"*",
+      "test":"test_setUpClass_already_happened",
       "suite":"TestUnitTest",
       "skip": true,
-      "skipReason": "test_setUpClass_already_happened fails (FIXME)"
+      "skipReason": "UnitTest fails (FIXME)"
     },
-    {
-      "test":"*",
-      "suite":"TestVolume",
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestWebView",
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
-    }
   ]
 }
