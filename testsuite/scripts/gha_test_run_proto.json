@@ -66,6 +66,18 @@
     },
     {
       "test":"*",
+      "suite":"TestFilterUGens",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
+    },
+    {
+      "test":"*",
+      "suite":"TestLinkClock",
+      "skip":true,
+      "skipReason":"UnitTest has unknown issues when run in qpm (FIXME)"
+    },
+    {
+      "test":"*",
       "suite":"TestMixedBundleTester",
       "skip":true,
       "skipReason":"UnitTest has bugs (FIXME)"
