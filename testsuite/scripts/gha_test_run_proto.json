@@ -5,66 +5,51 @@
       "suite":"*"
     },
     {
-      "test":"test_timeout",
+      "test":"*",
       "suite":"TestCondition",
       "skip":true,
-      "skipReason":"UnitTest bug (FIXME)"
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestCoreUGens",
       "skip":true,
-      "skipReason":"Unidentified UnitTest bug (FIXME)"
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestDocument",
       "skip":true,
-      "skipReason":"multiple tests fail (FIXME)"
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestDocumentEnvironment",
       "skip":true,
-      "skipReason":"multiple tests fail (FIXME)"
+      "skipReason":"UnitTest creates issues when run in qpm (FIXME)"
     },
     {
-      "test":"*",
-      "suite":"TestDoneActions",
-      "skip":true,
-      "skipReason":"test_freeSelfAndResumeNext fails (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestEnvGen_server",
-      "skip":true,
-      "skipReason":"test_zero_gate_n_off_not_sent fails (FIXME)"
-    },
-    {
-      "test":"*",
+      "test":"test_unlinkDoc",
       "suite":"TestEnvironmentDocument",
       "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
+      "skipReason":"UnitTest fails (FIXME)"
     },
     {
-      "test":"*",
-      "suite":"TestEvent",
+      "test":"test_freeSelfAndResumeNext",
+      "suite":"TestDoneActions",
       "skip":true,
-      "skipReason":"test fails (FIXME)"
+      "skipReason":"UnitTest fails when run in qpm (FIXME)"
     },
+    
     {
-      "test":"*",
-      "suite":"TestEventPatternProxy"
+      "test":"test_zero_gate_n_off_not_sent",
+      "suite":"TestEnvGen_server",
+      "skip":true,
+      "skipReason":"UnitTest has bugs (FIXME)"
     },
     {
       "test":"*",
       "suite":"TestFilterUGens",
-      "skip":true,
-      "skipReason":"unknown UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestLcmGcd",
       "skip":true,
       "skipReason":"unknown UnitTest bug (FIXME)"
     },
