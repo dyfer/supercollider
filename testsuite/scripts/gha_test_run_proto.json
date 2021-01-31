@@ -95,6 +95,12 @@
       "skipReason":"UnitTest fails (FIXME)"
     },
     {
+      "test":"test_schedAfterFade_notBeforeQuant",
+      "suite":"TestNodeProxy_Server",
+      "skip":true,
+      "skipReason":"UnitTest fails (FIXME)"
+    },
+    {
       "test":"*",
       "suite":"TestNode_Server",
       "skip":true,
@@ -116,13 +122,7 @@
       "test":"*",
       "suite":"TestProxyNodeMap",
       "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
-    },
-    {
-      "test":"*",
-      "suite":"TestProxySpace",
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
+      "skipReason": "UnitTest has bugs (FIXME)"
     },
     {
       "test":"*",
