@@ -95,12 +95,6 @@
       "skipReason":"UnitTest fails (FIXME)"
     },
     {
-      "test":"test_audiorate_mapping",
-      "suite":"TestNodeProxyBusMapping",
-      "skip":true,
-      "skipReason":"UnitTest fails (FIXME)"
-    },
-    {
       "test":"test_proxyroles_xfade_smoothly",
       "suite":"TestNodeProxyRoles",
       "skip":true,
