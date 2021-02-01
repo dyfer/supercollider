@@ -408,6 +408,8 @@ jobs:
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
       - name: run tests
+        env:
+          PYCHARM_HOSTED: 1 # enable color output
         run: |
           QPM_DEBUG=1
           qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
