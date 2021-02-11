@@ -384,9 +384,8 @@ jobs:
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
       - name: run tests
-        uses: GabrielBB/xvfb-action@v1
         env:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
-        with:
-          run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+          QT_PLATFORM_PLUGIN: 'offscreen'
+        run: xvfb-run --server-args="-screen 0, 1280x720x24" -a qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
