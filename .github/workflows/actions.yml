@@ -340,7 +340,7 @@ jobs:
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
-      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-temp-fix
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-off
     steps:
       - uses: actions/checkout@v2
         with:
@@ -384,8 +384,9 @@ jobs:
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
       - name: run tests
+        uses: GabrielBB/xvfb-action@v1
         env:
           PYCHARM_HOSTED: 1 # enable color output
-        run: |
-          QPM_DEBUG=1
-          qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+          QPM_DEBUG: 1
+        with:
+          run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
