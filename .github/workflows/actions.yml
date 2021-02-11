@@ -36,42 +36,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'xenial gcc5'
-            os-version: '16.04'
-            c-compiler: 'gcc-5'
-            cxx-compiler: 'g++-5'
-            use-syslibs: false
-            shared-libscsynth: false
-            qt-version: '5.9.3' # manually install requested version of qt
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
-          - job-name: 'bionic gcc7'
-            os-version: '18.04'
-            c-compiler: 'gcc-7'
-            cxx-compiler: 'g++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'bionic gcc8'
-            os-version: '18.04'
-            c-compiler: 'gcc-8'
-            cxx-compiler: 'g++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'bionic gcc9'
-            os-version: '18.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'bionic gcc9 shared libscsynth'
-            os-version: '18.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: true
 
           - job-name: 'bionic gcc10'
             os-version: '18.04'
@@ -80,41 +44,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-
-          # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
-          #   os-version: '20.04'
-          #   c-compiler: 'gcc-10'
-          #   cxx-compiler: 'g++-10'
-          #   use-syslibs: true
-          #   shared-libscsynth: false
-
-          - job-name: 'bionic clang6.0'
-            os-version: '18.04'
-            c-compiler: 'clang-6.0'
-            cxx-compiler: 'clang++-6.0'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'bionic clang8'
-            os-version: '18.04'
-            c-compiler: 'clang-8'
-            cxx-compiler: 'clang++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'bionic clang9'
-            os-version: '18.04'
-            c-compiler: 'clang-9'
-            cxx-compiler: 'clang++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang10'
-            os-version: '20.04'
-            c-compiler: 'clang-10'
-            cxx-compiler: 'clang++-10'
-            use-syslibs: false
-            shared-libscsynth: false
 
     name: Linux ${{ matrix.job-name }}
     env:
@@ -202,26 +131,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
-
-          # - job-name: 'legacy'
-          #   os-version: '10.15'
-          #   xcode-version: '10.3'
-          #   qt-version: '5.9' # will use qt not from homebrew
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
-
-          - job-name: 'use system libraries'
-            os-version: '10.15'
-            xcode-version: '11.7'
-            use-syslibs: true
-            shared-libscsynth: false
-
-          - job-name: 'shared libscsynth'
-            os-version: '10.15'
-            xcode-version: '11.7'
-            use-syslibs: false
-            shared-libscsynth: true
 
     name: macOS ${{ matrix.job-name }}
     env:
