@@ -18,12 +18,6 @@
     },
     {
       "test":"*",
-      "suite":"TestCoreUGens",
-      "skip":true,
-      "skipReason":"UnitTest has bugs (FIXME)"
-    },
-    {
-      "test":"*",
       "suite":"TestDocument",
       "skip":true,
       "skipReason":"UnitTest has bugs (FIXME)"
@@ -37,12 +31,6 @@
     {
       "test":"*",
       "suite":"TestEnvironmentDocument",
-      "skip":true,
-      "skipReason":"UnitTest fails when run in qpm (FIXME)"
-    },
-    {
-      "test":"test_freeSelfAndResumeNext",
-      "suite":"TestDoneActions",
       "skip":true,
       "skipReason":"UnitTest fails when run in qpm (FIXME)"
     },
