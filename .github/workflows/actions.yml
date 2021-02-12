@@ -189,5 +189,5 @@ jobs:
           QPM_DEBUG: 1
           QT_PLATFORM_PLUGIN: 'offscreen'
         with:
-          working-directory: '/'
+          working-directory: '~/'
           run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
