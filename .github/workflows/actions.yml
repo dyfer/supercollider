@@ -396,3 +396,63 @@ jobs:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
         run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+        
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - artifact-suffix: macOS
+            upload-to-github: true
+            upload-to-s3: true
+            s3-os-name: osx
+            s3-artifact-suffx: ''
+
+    needs: [linter, macOS]
+    runs-on: ubuntu-18.04
+    name: 'deploy ${{ matrix.artifact-suffix }} build'
+    if: ${{ secrets.S3_ACCESS_KEY_ID }} || startsWith(github.ref, 'refs/tags/') 
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      UPLOAD_TO_S3: ${{ secrets.S3_ACCESS_KEY_ID }} && ${{ matrix.upload-to-s3 }}
+      UPLOAD_TO_GH_RELEASE: startsWith(github.ref, 'refs/tags/') && ${{ secrets.GITHUB_TOKEN }} && ${{ matrix.upload-to-github }}
+      S3_ARTIFACT_PATH: ${{ github.workspace }}/build/Install/s3
+      S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.zip
+      S3_BUILD_LOCATION: builds/supercollider/${{ matrix.s3-os-name }}
+    steps:
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+      - name: upload to the release page
+        uses: softprops/action-gh-release@v1
+        if: ${{ env.UPLOAD_TO_GH_RELEASE }}
+        with:
+          files: $INSTALL_PATH/$ARTIFACT_FILE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: preapre s3 upload
+        if: ${{ env.UPLOAD_TO_S3 }}
+        run: |
+          mkdir $S3_ARTIFACT_PATH
+          cp $INSTALL_PATH/$ARTIFACT_FILE $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
+      - uses: jakejarvis/s3-sync-action@master
+        if: ${{ env.UPLOAD_TO_S3 }}
+        with:
+          args: --acl public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: supercollider
+          AWS_S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
+          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: ${{ env.S3_ARTIFACT_PATH }}
+          DEST_DIR: ${{ env.S3_BUILD_LOCATION }}
+      - if: ${{ env.UPLOAD_TO_S3 }}
+        run: |
+          echo "::group::S3 build location"
+          echo "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}"
+          echo "::endgroup::"
