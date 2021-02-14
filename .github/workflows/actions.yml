@@ -430,7 +430,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: ${{ env.UPLOAD_TO_GH_RELEASE }}
         with:
-          files: $INSTALL_PATH/$ARTIFACT_FILE
+          files: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          draft: !startsWith(github.ref, 'refs/tags/Version') 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: preapre s3 upload
