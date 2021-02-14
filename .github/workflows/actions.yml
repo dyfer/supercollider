@@ -433,7 +433,6 @@ jobs:
         if: ${{ env.UPLOAD_TO_GH_RELEASE }}
         with:
           files: ${{ steps.artifact.outputs.path }}
-          draft: !startsWith(github.ref, 'refs/tags/Version') 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: preapre s3 upload
