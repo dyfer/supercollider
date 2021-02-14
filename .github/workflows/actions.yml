@@ -426,11 +426,13 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
+      - run: echo ::set-output name=path::$INSTALL_PATH/$ARTIFACT_FILE
+        id: artifact
       - name: upload to the release page
         uses: softprops/action-gh-release@v1
         if: ${{ env.UPLOAD_TO_GH_RELEASE }}
         with:
-          files: '${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}'
+          files: ${{ steps.artifact.outputs.path }}
           draft: !startsWith(github.ref, 'refs/tags/Version') 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
