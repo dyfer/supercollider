@@ -436,12 +436,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: preapre s3 upload
-        if: ${{ matrix.upload-to-s3 }} && (${{ env.S3_ACCESS }} != 0) 
+        if: ${{ matrix.upload-to-s3 }} && ${{ env.S3_ACCESS }}
         run: |
           mkdir $S3_ARTIFACT_PATH
           cp $INSTALL_PATH/$ARTIFACT_FILE $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
       - uses: jakejarvis/s3-sync-action@master
-        if: ${{ matrix.upload-to-s3 }} && (${{ env.S3_ACCESS }} != 0) 
+        if: ${{ matrix.upload-to-s3 }} && ${{ env.S3_ACCESS }}
         with:
           args: --acl public-read
         env:
@@ -452,7 +452,7 @@ jobs:
           AWS_REGION: 'us-west-2'
           SOURCE_DIR: ${{ env.S3_ARTIFACT_PATH }}
           DEST_DIR: ${{ env.S3_BUILD_LOCATION }}
-      - if: ${{ matrix.upload-to-s3 }} && (${{ env.S3_ACCESS }} != 0) 
+      - if: ${{ matrix.upload-to-s3 }} && ${{ env.S3_ACCESS }}
         run: |
           echo "::group::S3 build location"
           echo "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}"
