@@ -457,3 +457,5 @@ jobs:
           echo "::group::S3 build location"
           echo "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}"
           echo "::endgroup::"
+# NOTE we also need to add "latest" link
+# conditional evaluation for both uploads is still not working
