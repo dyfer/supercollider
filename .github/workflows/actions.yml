@@ -409,7 +409,7 @@ jobs:
             s3-os-name: osx
             s3-artifact-suffx: ''
 
-    needs: [linter, macOS]
+    needs: [lint, macOS]
     runs-on: ubuntu-18.04
     name: 'deploy ${{ matrix.artifact-suffix }} build'
     env:
