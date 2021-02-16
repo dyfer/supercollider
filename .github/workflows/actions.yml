@@ -198,7 +198,7 @@ jobs:
 
           - job-name: ''
             os-version: '10.15'
-            xcode-version: '11.7'
+            xcode-version: '10.3'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
@@ -213,13 +213,13 @@ jobs:
 
           - job-name: 'use system libraries'
             os-version: '10.15'
-            xcode-version: '11.7'
+            xcode-version: '10.3'
             use-syslibs: true
             shared-libscsynth: false
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
-            xcode-version: '11.7'
+            xcode-version: '10.3'
             use-syslibs: false
             shared-libscsynth: true
 
