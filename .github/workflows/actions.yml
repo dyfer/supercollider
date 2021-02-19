@@ -435,10 +435,11 @@ jobs:
       - name: create latest link
         if: matrix.s3-create-latest-link == 'true'
         env:
-          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url='${{ env.S3_BUILD_URL }}'" /></head></html>'
+          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=\'${{ env.S3_BUILD_URL }}\'" /></head></html>'
         run: |
-          # export FWD_HTML='
+          # export FWD_HTML=
           # if [[ ${{ matrix.s3-create-latest-link }} == "true" ]]; then 
+          echo $FWD_HTML
           echo $FWD_HTML > $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
           echo $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
           cat $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
