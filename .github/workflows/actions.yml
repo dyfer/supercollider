@@ -439,9 +439,9 @@ jobs:
         run: |
           # export FWD_HTML=
           # if [[ ${{ matrix.s3-create-latest-link }} == "true" ]]; then 
-          echo $FWD_HTML
+          echo writing $FWD_HTML to $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
           echo $FWD_HTML > $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
-          echo $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
+          echo contents:
           cat $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
           # fi;
       - uses: jakejarvis/s3-sync-action@master
