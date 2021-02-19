@@ -392,6 +392,7 @@ jobs:
             upload-to-s3: true
             s3-os-name: osx
             s3-artifact-suffx: ''
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
     needs: [lint, macOS]
     runs-on: ubuntu-18.04
@@ -425,10 +426,16 @@ jobs:
         run: |
           mkdir $S3_ARTIFACT_PATH
           cp $INSTALL_PATH/$ARTIFACT_FILE $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
+          echo 'S3_BUILD_URL<<EOF' >> $GITHUB_ENV
+          curl "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - name: create latest link
-        if: env.UPLOAD_TO_GH_S3 == 'true'
+        if: matrix.s3-create-latest-link == 'true'
         run: |
-          echo "not implemented yet"
+          export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_BUILD_URL'" /></head></html>'
+          # if [[ ${{ matrix.s3-create-latest-link }} == "true" ]]; then 
+          echo $FWD_HTML > $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html; 
+          # fi;
       - uses: jakejarvis/s3-sync-action@master
         if: env.UPLOAD_TO_GH_S3 == 'true'
         with:
@@ -444,5 +451,5 @@ jobs:
       - if: env.UPLOAD_TO_GH_S3 == 'true'
         run: |
           echo "::group::S3 build location"
-          echo "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}"
+          echo "${{ env.S3_BUILD_URL }}"
           echo "::endgroup::"
