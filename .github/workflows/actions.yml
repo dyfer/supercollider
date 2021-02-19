@@ -434,10 +434,14 @@ jobs:
           echo 'EOF' >> $GITHUB_ENV
       - name: create latest link
         if: matrix.s3-create-latest-link == 'true'
+        env:
+          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url='${{ env.S3_BUILD_URL }}'" /></head></html>'
         run: |
-          export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_BUILD_URL'" /></head></html>'
+          # export FWD_HTML='
           # if [[ ${{ matrix.s3-create-latest-link }} == "true" ]]; then 
-          echo $FWD_HTML > $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html; 
+          echo $FWD_HTML > $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
+          echo $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
+          cat $S3_ARTIFACT_PATH/${GITHUB_REF#refs/heads/}-latest.html
           # fi;
       - uses: jakejarvis/s3-sync-action@master
         if: env.UPLOAD_TO_GH_S3 == 'true'
