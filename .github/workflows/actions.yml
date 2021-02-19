@@ -432,7 +432,7 @@ jobs:
           echo 'EOF' >> $GITHUB_ENV
           
           if [[ $S3_CREATE_LATEST_LINK == true ]]; then
-            # set LATEST_HTML_PATH
+            # set LATEST_HTML_PATH and LATEST_HTML_URL
             echo 'LATEST_HTML_PATH<<EOF' >> $GITHUB_ENV
             echo ${{ env.S3_ARTIFACT_PATH }}/${GITHUB_REF#refs/heads/}-latest.html >> $GITHUB_ENV
             echo 'EOF' >> $GITHUB_ENV
@@ -451,7 +451,8 @@ jobs:
           echo $FWD_HTML > $LATEST_HTML_PATH
           echo html file contents:
           cat $LATEST_HTML_PATH
-      - uses: jakejarvis/s3-sync-action@master
+      - name: upload to S3
+        uses: jakejarvis/s3-sync-action@master
         if: false
         with:
           args: --acl public-read
@@ -468,5 +469,5 @@ jobs:
         run: |
           echo "::group::S3 build location"
           echo $S3_BUILD_URL
-          if [[ $S3_CREATE_LATEST_LINK == true ]]; then echo $LATEST_HTML_URL; fi
+          if [[ -n "$LATEST_HTML_URL" ]]; then echo $LATEST_HTML_URL; fi
           echo "::endgroup::"
