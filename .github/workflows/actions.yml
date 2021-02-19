@@ -431,7 +431,7 @@ jobs:
           echo 'https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}' >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
       - name: create latest link
-        if: (env.S3_CREATE_LATEST_LINK == 'true') && (env.UPLOAD_TO_S3 == 'true')
+        if: (env.S3_CREATE_LATEST_LINK == 'true') && (env.UPLOAD_TO_S3 == 'true') && (!startsWith(github.ref, 'refs/tags/'))
         env:
           FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=''${{ env.S3_BUILD_URL }}''" /></head></html>'
         run: |
