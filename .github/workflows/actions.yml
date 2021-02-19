@@ -429,7 +429,7 @@ jobs:
           
           # set S3_BUILD_LOCATION 
           echo 'S3_BUILD_URL<<EOF' >> $GITHUB_ENV
-          echo 'https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }} >> $GITHUB_ENV
+          echo https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }} >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           
           if [[ $S3_CREATE_LATEST_LINK == true ]]; then
