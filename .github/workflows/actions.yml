@@ -401,8 +401,8 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
       UPLOAD_TO_GH_RELEASE: ${{ startsWith(github.ref, 'refs/tags/') && matrix.upload-to-github }}
-      UPLOAD_TO_S3: ${{ matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) }}
-      S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link }}
+      UPLOAD_TO_S3: ${{ matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
+      S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/Install/s3
       S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.zip
       S3_BUILD_LOCATION: builds/supercollider/${{ matrix.s3-os-name }}
@@ -431,20 +431,25 @@ jobs:
           echo 'https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}' >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           
-          # set BRANCH_NAME - works only for non-tagged commits
-          echo 'BRANCH_NAME<<EOF' >> $GITHUB_ENV
-          echo ${GITHUB_REF#refs/heads/} >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          if [[ $S3_CREATE_LATEST_LINK == true ]]; then
+            # set LATEST_HTML_PATH
+            echo 'LATEST_HTML_PATH<<EOF' >> $GITHUB_ENV
+            echo '${{ env.S3_ARTIFACT_PATH }}/${GITHUB_REF#refs/heads/}-latest.html' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+            echo 'LATEST_HTML_URL<<EOF' >> $GITHUB_ENV
+            echo 'https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${GITHUB_REF#refs/heads/}-latest.html' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+          fi
+            
       - name: create latest link
-        if: (env.S3_CREATE_LATEST_LINK == 'true') && (env.UPLOAD_TO_S3 == 'true') && (!startsWith(github.ref, 'refs/tags/'))
+        if: env.S3_CREATE_LATEST_LINK == 'true'
         env:
           FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=''${{ env.S3_BUILD_URL }}''" /></head></html>'
-          LATEST_HTML_PATH: ${{ env.S3_ARTIFACT_PATH }}/${{ env.BRANCH_NAME }}-latest.html
         run: |
           mkdir -p "${LATEST_HTML_PATH%/*}"
           echo writing $FWD_HTML to $LATEST_HTML_PATH
           echo $FWD_HTML > $LATEST_HTML_PATH
-          echo contents:
+          echo html file contents:
           cat $LATEST_HTML_PATH
       - uses: jakejarvis/s3-sync-action@master
         if: env.UPLOAD_TO_S3 == 'true'
@@ -463,4 +468,5 @@ jobs:
         run: |
           echo "::group::S3 build location"
           echo $S3_BUILD_URL
+          if [[ $S3_CREATE_LATEST_LINK == true ]]; then echo $LATEST_HTML_URL; fi
           echo "::endgroup::"
