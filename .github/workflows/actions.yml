@@ -452,7 +452,7 @@ jobs:
           echo html file contents:
           cat $LATEST_HTML_PATH
       - uses: jakejarvis/s3-sync-action@master
-        if: env.UPLOAD_TO_S3 == 'true'
+        if: false
         with:
           args: --acl public-read
         env:
