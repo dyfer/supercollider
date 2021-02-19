@@ -394,6 +394,7 @@ jobs:
             s3-artifact-suffx: ''
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
+    if: github.repository_owner == 'dyfer' || startsWith(github.ref, 'refs/tags/') # run in the main repo and everywhere on tagged commits
     needs: [lint, macOS]
     runs-on: ubuntu-18.04
     name: 'deploy ${{ matrix.artifact-suffix }} build'
@@ -440,7 +441,6 @@ jobs:
             echo https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${GITHUB_REF#refs/heads/}-latest.html >> $GITHUB_ENV
             echo 'EOF' >> $GITHUB_ENV
           fi
-            
       - name: create latest link
         if: env.S3_CREATE_LATEST_LINK == 'true'
         env:
