@@ -435,7 +435,7 @@ jobs:
       - name: create latest link
         if: matrix.s3-create-latest-link == 'true'
         env:
-          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=\'${{ env.S3_BUILD_URL }}\'" /></head></html>'
+          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=''${{ env.S3_BUILD_URL }}''" /></head></html>'
         run: |
           # export FWD_HTML=
           # if [[ ${{ matrix.s3-create-latest-link }} == "true" ]]; then 
