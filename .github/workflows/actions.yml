@@ -457,7 +457,7 @@ jobs:
           AWS_REGION: 'us-west-2'
           SOURCE_DIR: ${{ env.S3_ARTIFACT_PATH }}
           DEST_DIR: ${{ env.S3_BUILD_LOCATION }}
-      - if: if: ${{ env.UPLOAD_TO_GH_S3 }}
+      - if: ${{ env.UPLOAD_TO_GH_S3 }}
         run: |
           echo "::group::S3 build location"
           echo "https://supercollider.s3.amazonaws.com/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }}"
