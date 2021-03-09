@@ -332,6 +332,9 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
+# This makes sclang/scide work with a Qt installation at a fixed location.
+set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
     ${YAMLCPP_LIBRARY}
@@ -342,9 +345,6 @@ target_link_libraries( SuperCollider libscide)
 
 target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
 include_directories(${boost_include_dirs})
-
-# This makes sclang/scide work with a Qt installation at a fixed location.
-set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if(APPLE)
     target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
