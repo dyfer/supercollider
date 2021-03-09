@@ -201,6 +201,7 @@ jobs:
             xcode-version: '11.7'
             use-syslibs: false
             shared-libscsynth: false
+            update-homebrew: true
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           # - job-name: 'legacy'
@@ -273,6 +274,7 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
+          if [[ "${{ matrix.update-homebrew }}" == "true" ]]; then brew update; fi
           brew install libsndfile portaudio ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
