@@ -1,3 +1,6 @@
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 set(QT_IDE_COMPONENTS
     Concurrent
     Core
@@ -300,14 +303,6 @@ if(0 AND FINAL_BUILD)
   add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
   add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
-endif()
-
-# This makes sclang/scide work with a Qt installation at a fixed location.
-set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-elseif(APPLE)
-    set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/../Frameworks")
 endif()
 
 # Enable targets that depend on libscide to find its headers and their contents.
