@@ -302,6 +302,12 @@ else()
   add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
 
+# This makes sclang/scide work with a Qt installation at a fixed location.
+set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
+
 # Enable targets that depend on libscide to find its headers and their contents.
 # The existing code uses a mix of paths, such as:
 #  "settings/manager.hpp"
@@ -332,9 +338,6 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-# This makes sclang/scide work with a Qt installation at a fixed location.
-set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
     ${YAMLCPP_LIBRARY}
@@ -363,9 +366,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     include_directories(${X11_INCLUDE_DIR})
     target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
-
-    # This makes sclang/scide work with a Qt installation at a fixed location.
-    set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 if(PTHREADS_FOUND)
