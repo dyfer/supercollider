@@ -306,6 +306,8 @@ endif()
 set_property(TARGET libscide PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+elseif(APPLE)
+    set_property(TARGET libscide PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/../Frameworks")
 endif()
 
 # Enable targets that depend on libscide to find its headers and their contents.
