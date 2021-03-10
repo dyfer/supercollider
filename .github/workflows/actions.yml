@@ -205,7 +205,7 @@ jobs:
 
           - job-name: 'legacy'
             os-version: '10.15'
-            xcode-version: '10.3'
+            xcode-version: '11.7'
             qt-version: '5.9' # will use qt from aqtinstall
             use-syslibs: false
             shared-libscsynth: false
