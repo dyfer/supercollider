@@ -78,9 +78,21 @@
         },
         {
             "suite":"TestLinkClock",
-            "test":"*",
+            "test":"test_newFromTempoClock_reschedulesOldClockQueue",
             "skip":true,
-            "skipReason":"UnitTest has unknown issues when run in qpm (FIXME)"
+            "skipReason":"UnitTest sometimes fails (FIXME)"
+        },
+        {
+            "suite":"TestLinkClock",
+            "test":"test_newLinkClock_shouldNotChangeLinkTempo",
+            "skip":true,
+            "skipReason":"UnitTest sometimes fails (FIXME)"
+        },
+        {
+            "suite":"TestLinkClock",
+            "test":"test_LinkClock_sync_meter_aligns_barlines",
+            "skip":true,
+            "skipReason":"UnitTest sometimes fails (FIXME)"
         },
         {
             "suite":"TestMixedBundleTester",
