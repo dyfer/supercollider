@@ -1,6 +1,6 @@
 TestLinkClock : UnitTest {
 
-	classvar precision = 1e-04;
+	classvar precision = 1e-03;
 
 	// use Link Test Plan
 	// see external_libraries/link/TEST-PLAN.md
