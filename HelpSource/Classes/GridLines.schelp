@@ -111,7 +111,7 @@ argument:: numTicks
 Explicit number of ticks you would like to see on the graph.
 
 argument:: pixSpacing
-Minimal spacing to maintain between ticks. Only used if code::numTicks:: is code::nil::. For exponential grid it is used for the lowest portion of each decade.
+Minimal spacing to maintain between ticks. Only used if code::numTicks:: is code::nil::. For an exponential grid it is used for the lowest portion of each decade.
 
 returns:: A dictionary
 
