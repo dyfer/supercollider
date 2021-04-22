@@ -64,9 +64,9 @@ DrawGrid {
 	vertGrid_ { arg g;
 		y.grid = g;
 	}
-	pixSpacing_ { arg val;
-		x.pixSpacing = val;
-		y.pixSpacing = val;
+	tickSpacing_ { arg val;
+		x.tickSpacing = val;
+		y.tickSpacing = val;
 	}
 	dropLabelIfTooNarrow_ { arg bool;
 		x.dropLabelIfTooNarrow = bool;
@@ -87,7 +87,7 @@ DrawGridX {
 	var <grid,<>range,<>bounds;
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
-	var <pixSpacing = 64, <dropLabelIfTooNarrow = true;
+	var <tickSpacing = 64, <dropLabelIfTooNarrow = true;
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -102,8 +102,8 @@ DrawGridX {
 		range = [grid.spec.minval, grid.spec.maxval];
 		this.clearCache;
 	}
-	pixSpacing_ { arg val;
-		pixSpacing = val;
+	tickSpacing_ { arg val;
+		tickSpacing = val;
 		this.clearCache;
 	}
 	dropLabelIfTooNarrow_ { arg bool;
@@ -119,7 +119,7 @@ DrawGridX {
 		^commands ?? {
 			cacheKey = [range,bounds];
 			commands = [];
-			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, pixSpacing);
+			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, tickSpacing);
 			p['lines'].do { arg val;
 				// value, [color]
 				var x;
@@ -177,7 +177,7 @@ DrawGridY : DrawGridX {
 		^commands ?? {
 			commands = [];
 
-			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, pixSpacing);
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, tickSpacing);
 			p['lines'].do { arg val;
 				// value, [color]
 				var y;
@@ -274,7 +274,7 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, pixSpacing=64|
+	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing=64|
 		var lines, p, pixRange;
 		var nfrac, d, graphmin, graphmax, range, nfracarr;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
@@ -286,7 +286,7 @@ GridLines {
 		spec.warp.class.switch(
 			LinearWarp, {
 				numTicks ?? {
-					numTicks = (pixRange / pixSpacing);
+					numTicks = (pixRange / tickSpacing);
 					numTicks = numTicks.max(3).round(1);
 				};
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
@@ -318,7 +318,7 @@ GridLines {
 						roundFactor = roundFactor * 0.1;
 						nfrac = valueMin.abs.log10.floor.neg + 1;
 					};
-					numTicks ?? {numTicks = (pixRange / (pixSpacing * nDecades))};
+					numTicks ?? {numTicks = (pixRange / (tickSpacing * nDecades))};
 					tick = first;
 					while ({tick <= (valueMax + step)}) {
 						if(round(tick,roundFactor).inclusivelyBetween(valueMin,valueMax),{
@@ -342,7 +342,7 @@ GridLines {
 				} {
 					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
 					numTicks ?? {
-						numTicks = (pixRange / pixSpacing);
+						numTicks = (pixRange / tickSpacing);
 						numTicks = numTicks.max(3).round(1);
 					}; // set numTicks regardless to avoid errors
 				};
@@ -350,7 +350,7 @@ GridLines {
 			{
 				// TODO: other Warp specs currently have the same implementation as LinearWarp
 				numTicks ?? {
-					numTicks = (pixRange / pixSpacing);
+					numTicks = (pixRange / tickSpacing);
 					numTicks = numTicks.max(3).round(1);
 				};
 				# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
