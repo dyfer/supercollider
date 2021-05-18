@@ -3,6 +3,8 @@ include(SCVersion.txt)
 # CMake versions can only consist of digits and periods, so don't use _TWEAK
 project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
 
+# comment
+
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
