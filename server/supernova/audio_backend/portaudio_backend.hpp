@@ -32,9 +32,7 @@
 #include "cpu_time_info.hpp"
 #include "SC_PaUtils.hpp"
 
-#ifdef __APPLE__
-#    include "SC_InlineBinaryOp.h"
-#endif
+#include "SC_InlineBinaryOp.h"
 
 namespace nova {
 
