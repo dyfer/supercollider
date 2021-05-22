@@ -286,13 +286,42 @@ private:
         auto** outputs = static_cast<float**>(alloca(sizeof(float*) * m_hwOutputChannels));
         float** out = static_cast<float**>(outputBuffer);
 
+        // if (IsClipping)
+        //     for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+        //         for (uint16_t j = 0; j != blocksize_; ++j)
+        //             out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
+        // 
+        // for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+        //     outputs[i] = out[i];
+
+        // std::cout << "safety_clip_threshold_: " << safety_clip_threshold_ << std::endl;
+        // std::cout << "IsClipping: " << IsClipping << std::endl;
+
+        // solution 1 - works
         if (IsClipping)
             for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
                 for (uint16_t j = 0; j != blocksize_; ++j)
-                    out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
+                    outputs[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
+        else
+            for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+                outputs[i] = out[i];
 
-        for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
-            outputs[i] = out[i];
+        // solution 2 - NOPE
+        // for (uint16_t i = 0; i != m_hwOutputChannels; ++i) {
+        //     outputs[i] = out[i];
+        //     if (IsClipping)
+        //         for (uint16_t j = 0; j != blocksize_; ++j)
+        //             outputs[i][j] = sc_clip2(outputs[i][j], safety_clip_threshold_);
+        // }
+        
+        // solution 3 - NOPE
+        // for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+        //     outputs[i] = out[i];
+        // 
+        // if (IsClipping)
+        //     for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+        //         for (uint16_t j = 0; j != blocksize_; ++j)
+        //             outputs[i][j] = sc_clip2(outputs[i][j], safety_clip_threshold_);
 
         unsigned long processed = 0;
         while (processed != frames) {
@@ -306,12 +335,12 @@ private:
         return paContinue;
     }
 
-    template <bool IsClipping>
+    template <bool IsClippingPaProcess>
     static int pa_process(const void* input, void* output, unsigned long frame_count,
                           const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags,
                           void* user_data) {
         portaudio_backend* self = static_cast<portaudio_backend*>(user_data);
-        return self->perform<IsClipping>(input, output, frame_count, time_info, status_flags);
+        return self->perform<IsClippingPaProcess>(input, output, frame_count, time_info, status_flags);
     }
 
     PaStream* stream = nullptr;
