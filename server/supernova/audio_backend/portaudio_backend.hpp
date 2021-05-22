@@ -290,7 +290,7 @@ private:
         //     for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
         //         for (uint16_t j = 0; j != blocksize_; ++j)
         //             out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
-        // 
+        //
         // for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
         //     outputs[i] = out[i];
 
@@ -313,11 +313,11 @@ private:
         //         for (uint16_t j = 0; j != blocksize_; ++j)
         //             outputs[i][j] = sc_clip2(outputs[i][j], safety_clip_threshold_);
         // }
-        
+
         // solution 3 - NOPE
         for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
             outputs[i] = out[i];
-        
+
         if (IsClipping)
             for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
                 for (uint16_t j = 0; j != blocksize_; ++j)
