@@ -259,7 +259,7 @@ jobs:
         run: |
           brew install portaudio ccache fftw
           if [[ "${{ matrix.build-libsndfile }}" == "true" ]]; then
-            brew uninstall libsndfile
+            brew uninstall --ignore-dependencies libsndfile
             curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz
             tar xfvz libsndfile.tar.bz
             cd libsndfile
