@@ -265,6 +265,7 @@ jobs:
             tar xfvz libsndfile.tar.bz
             cd libsndfile*
             # autoreconf -fvi
+            chmod +x autogen.sh
             ./autogen.sh
             ./configure --enable-werror --prefix=/usr/local/lib
             make install
