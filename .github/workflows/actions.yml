@@ -268,7 +268,7 @@ jobs:
             # autoreconf -fvi
             # ./configure --enable-werror --prefix=/usr/local
             mkdir build && cd build
-            cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_INSTALL_PREFIX=/usr/local ..
+            cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
             cmake --build . --target install
             # make install
           fi
