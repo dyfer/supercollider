@@ -223,7 +223,7 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
-      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment-target }}
+      MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -258,7 +258,8 @@ jobs:
       - name: install dependencies
         run: |
           brew install portaudio ccache fftw
-          if [[ "${{ matrix.build-libsndfile }}" == "true" ]]; then 
+          if [[ "${{ matrix.build-libsndfile }}" == "true" ]]; then
+            xcode-select --print-path
             brew reinstall libsndfile --build-from-source
           fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
