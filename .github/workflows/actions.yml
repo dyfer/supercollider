@@ -264,9 +264,13 @@ jobs:
             curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
             tar xfvz libsndfile.tar.bz2
             cd libsndfile*/
-            autoreconf -fvi
-            ./configure --enable-werror --prefix=/usr/local
-            make install
+            # possibly replace with cmake? and move the env var back?
+            # autoreconf -fvi
+            # ./configure --enable-werror --prefix=/usr/local
+            mkdir build && cd build
+            cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_INSTALL_PREFIX=/usr/local ..
+            cmake --build .
+            # make install
           fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
