@@ -222,7 +222,6 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
-      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
     steps:
       - uses: actions/checkout@v2
@@ -285,6 +284,8 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: configure
+        env:
+          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
