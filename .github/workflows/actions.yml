@@ -264,8 +264,9 @@ jobs:
             curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz
             tar xfvz libsndfile.tar.bz
             cd libsndfile*
-            autoreconf -fvi
-            ./configure --prefix=/usr/local/lib
+            # autoreconf -fvi
+            ./autogen.sh
+            ./configure --enable-werror --prefix=/usr/local/lib
             make install
           fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
