@@ -260,7 +260,7 @@ jobs:
           brew install portaudio ccache fftw
           if [[ "${{ matrix.build-libsndfile }}" == "true" ]]; then
             brew uninstall --ignore-dependencies libsndfile
-            brew install automake
+            brew install automake mpg123
             curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
             tar xfvz libsndfile.tar.bz2
             cd libsndfile*/
