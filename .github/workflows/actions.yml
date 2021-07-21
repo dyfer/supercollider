@@ -185,6 +185,7 @@ jobs:
             deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
@@ -194,6 +195,7 @@ jobs:
             deployment-target: '10.10'
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
@@ -220,6 +222,8 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment-target }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -253,7 +257,12 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install libsndfile portaudio ccache fftw
+          brew install portaudio ccache fftw
+          if [[ ${{ matrix.build-libsndfile }} == true ]]; then 
+            brew install libsndfile --build-from-source
+          else
+            brew install libsndfile
+          fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
       - name: install system libraries
@@ -271,8 +280,6 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: configure
-        env:
-          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
