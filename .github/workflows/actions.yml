@@ -264,7 +264,7 @@ jobs:
             tar xfvz libsndfile.tar.bz2
             cd libsndfile*/
             autoreconf -fvi
-            ./configure CC=clang CXX=clang++ --enable-werror --prefix=/usr/local/lib
+            ./configure --enable-werror --prefix=/usr/local
             make install
           fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
