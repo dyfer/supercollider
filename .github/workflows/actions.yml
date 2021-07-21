@@ -257,19 +257,17 @@ jobs:
       - name: install dependencies
         run: |
           brew install portaudio ccache fftw
+          # we build libsndfile ourselves to make it compatible with older OSes (lower deployment target)
           if [[ "${{ matrix.build-libsndfile }}" == "true" ]]; then
             brew uninstall --ignore-dependencies libsndfile
             brew install automake mpg123
+            cd $GITHUB_WORKSPACE/..
             curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
             tar xfvz libsndfile.tar.bz2
             cd libsndfile*/
-            # possibly replace with cmake? and move the env var back?
-            # autoreconf -fvi
-            # ./configure --enable-werror --prefix=/usr/local
             mkdir build && cd build
             cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
             cmake --build . --target install
-            # make install
           fi
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
