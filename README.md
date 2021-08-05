@@ -102,6 +102,12 @@ To help you get your feet wet and get you familiar with our contribution process
 
 SuperCollider uses a Requests for Comment (RFC) system to propose, design, and discuss 'big' changes. Submitting a new RFC or discussing an existing one is a great way to get involved, especially if you are looking for a way to contribute that doesn't involve writing code or using a terminal. You can learn more at the [RFC repository](https://github.com/supercollider/rfcs).
 
+Maintainers
+----------------
+This section lists maintainers whose GPG keys are used for signing releases.
+
+@dyfer GPG: `2E1C4FC2F6BB58FA157B21B8064B501EB7405F04`
+
 License
 -------
 
