@@ -306,7 +306,7 @@ jobs:
           cd libvorbis*/
           echo "building *** libvorbis ***"
           mkdir build && cd build
-          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --config Release --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
