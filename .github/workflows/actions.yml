@@ -235,6 +235,7 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -282,7 +283,7 @@ jobs:
           cd ogg*/
           echo "building libogg"
           mkdir build && cd build
-          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --config Release --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
@@ -290,7 +291,7 @@ jobs:
           cd libvorbis*/
           echo "building libvorbis"
           mkdir build && cd build
-          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Xcode" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --config Release --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
@@ -298,7 +299,7 @@ jobs:
           cd libsndfile*/
           echo "building libsndfile"
           mkdir build && cd build
-          cmake -G"Xcode" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Xcode" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --config Release --target install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
@@ -328,7 +329,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
