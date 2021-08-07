@@ -275,7 +275,7 @@ jobs:
       - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true
         run: |
-          brew uninstall --ignore-dependencies libsndfile libvorbis
+          brew uninstall --ignore-dependencies --force libsndfile libvorbis libogg
           brew install automake
           cd $GITHUB_WORKSPACE/..
           curl -L https://gitlab.xiph.org/xiph/ogg/-/archive/v1.3.5/ogg-v1.3.5.tar.bz2 --output ogg.tar.bz2
