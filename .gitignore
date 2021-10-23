@@ -24,6 +24,11 @@ package/*.asc
 .idea
 cmake-build-*
 
+# Visual Studio files
+.vs/*
+CMakeSettings.json
+out/*
+
 # Python/PyCharm files
 venv
 __pycache__
