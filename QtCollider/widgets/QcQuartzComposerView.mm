@@ -19,6 +19,8 @@
  *
  ************************************************************************/
 
+/*
+
 #include "QcQuartzComposerView.h"
 #include "../QcWidgetFactory.h"
 #include <QMouseEvent>
@@ -26,16 +28,16 @@
 QC_DECLARE_QWIDGET_FACTORY(QcQuartzComposerView);
 
 QcQuartzComposerContainerView::QcQuartzComposerContainerView(QWidget* parent): QMacCocoaViewContainer(0, parent) {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    QCView* qcView = [[QCView alloc] init];
+   NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+   QCView* qcView = [[QCView alloc] init];
 
-    [qcView setAutostartsRendering:YES];
-    [qcView setEventForwardingMask:NSAnyEventMask];
+   [qcView setAutostartsRendering:YES];
+   [qcView setEventForwardingMask:NSAnyEventMask];
 
-    setCocoaView(qcView);
+   setCocoaView(qcView);
 
-    [qcView release];
-    [pool release];
+   [qcView release];
+   [pool release];
 }
 
 QcQuartzComposerContainerView::~QcQuartzComposerContainerView() {}
@@ -43,8 +45,8 @@ QcQuartzComposerContainerView::~QcQuartzComposerContainerView() {}
 // QMacCocoaViewContainer *must* be wrapped in a parent view
 // so we make a wrapper here which does most of the work
 QcQuartzComposerView::QcQuartzComposerView(QWidget* parent): QWidget(parent) {
-    containerView = new QcQuartzComposerContainerView(this);
-    mQCView = [(QCView*)containerView->cocoaView() retain];
+   containerView = new QcQuartzComposerContainerView(this);
+   mQCView = [(QCView*)containerView->cocoaView() retain];
 }
 
 QcQuartzComposerView::~QcQuartzComposerView() { [mQCView release]; }
@@ -52,8 +54,8 @@ QcQuartzComposerView::~QcQuartzComposerView() { [mQCView release]; }
 QSize QcQuartzComposerView::sizeHint() const { return containerView->sizeHint(); }
 
 void QcQuartzComposerView::resizeEvent(QResizeEvent* e) {
-    containerView->resize(e->size());
-    QWidget::resizeEvent(e);
+   containerView->resize(e->size());
+   QWidget::resizeEvent(e);
 }
 
 void QcQuartzComposerView::startRendering() { [mQCView startRendering]; }
@@ -61,37 +63,37 @@ void QcQuartzComposerView::startRendering() { [mQCView startRendering]; }
 void QcQuartzComposerView::stopRendering() { [mQCView stopRendering]; }
 
 void QcQuartzComposerView::loadCompositionFromFile(const QString& path) {
-    QByteArray byteArray = path.toUtf8();
-    const char* cString = byteArray.constData();
-    NSString* nsString = [[NSString alloc] initWithUTF8String:cString];
-    [mQCView loadCompositionFromFile:nsString];
-    [nsString release];
+   QByteArray byteArray = path.toUtf8();
+   const char* cString = byteArray.constData();
+   NSString* nsString = [[NSString alloc] initWithUTF8String:cString];
+   [mQCView loadCompositionFromFile:nsString];
+   [nsString release];
 }
 
 void QcQuartzComposerView::setMaxRenderingFrameRate(double rate) { [mQCView setMaxRenderingFrameRate:rate]; }
 
 QVariantList QcQuartzComposerView::inputKeys() const {
-    NSArray* inputKeys = [mQCView inputKeys];
-    int size = [inputKeys count];
-    QVariantList keylist;
-    for (int i = 0; i < size; ++i) {
-        NSString* name = [inputKeys objectAtIndex:i];
-        QString key = QString::fromUtf8([name UTF8String]);
-        keylist << QVariant(key);
-    }
-    return keylist;
+   NSArray* inputKeys = [mQCView inputKeys];
+   int size = [inputKeys count];
+   QVariantList keylist;
+   for (int i = 0; i < size; ++i) {
+       NSString* name = [inputKeys objectAtIndex:i];
+       QString key = QString::fromUtf8([name UTF8String]);
+       keylist << QVariant(key);
+   }
+   return keylist;
 }
 
 QVariantList QcQuartzComposerView::outputKeys() const {
-    NSArray* outputKeys = [mQCView outputKeys];
-    int size = [outputKeys count];
-    QVariantList keylist;
-    for (int i = 0; i < size; ++i) {
-        NSString* name = [outputKeys objectAtIndex:i];
-        QString key = QString::fromUtf8([name UTF8String]);
-        keylist << QVariant(key);
-    }
-    return keylist;
+   NSArray* outputKeys = [mQCView outputKeys];
+   int size = [outputKeys count];
+   QVariantList keylist;
+   for (int i = 0; i < size; ++i) {
+       NSString* name = [outputKeys objectAtIndex:i];
+       QString key = QString::fromUtf8([name UTF8String]);
+       keylist << QVariant(key);
+   }
+   return keylist;
 }
 
 bool QcQuartzComposerView::hasInputKey(NSString* key) { return [[mQCView inputKeys] containsObject:key]; }
@@ -105,7 +107,9 @@ id QcQuartzComposerView::getInputPort(NSString* key) { return [mQCView valueForI
 id QcQuartzComposerView::getOutputPort(NSString* key) { return [mQCView valueForOutputKey:key]; }
 
 NSString* QcQuartzComposerView::getTypeForKey(NSString* key) {
-    NSDictionary* attributes = [[mQCView attributes] objectForKey:key];
-    NSString* type = [attributes objectForKey:QCPortAttributeTypeKey];
-    return type;
+   NSDictionary* attributes = [[mQCView attributes] objectForKey:key];
+   NSString* type = [attributes objectForKey:QCPortAttributeTypeKey];
+   return type;
 }
+
+*/
