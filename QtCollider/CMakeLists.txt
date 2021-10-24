@@ -1,4 +1,4 @@
-set(REQUIRED_QT_VERSION 5.7)
+set(REQUIRED_QT_VERSION 5.15.2)
 option(SC_USE_QTWEBENGINE "Build with Qt WebEngine." ON)
 
 ###############################################################################
