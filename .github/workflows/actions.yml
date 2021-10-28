@@ -195,10 +195,31 @@ jobs:
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
+            homebrew-qt: qt5
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+
+          - job-name: 'Qt6 - homebrew'
+            os-version: '10.15'
+            xcode-version: '11.7'
+            deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
+            homebrew-qt: qt6
+            use-syslibs: false
+            shared-libscsynth: false
+            build-libsndfile: true
+            artifact-suffix: 'macOS-Qt6-homebrew' # set if needed - will trigger artifact upload
+
+          - job-name: 'Qt6 - aqtinstall'
+            os-version: '10.15'
+            xcode-version: '11.7'
+            deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
+            qt-version: '6.2.0' # will use qt from aqtinstall
+            use-syslibs: false
+            shared-libscsynth: false
+            build-libsndfile: true
+            artifact-suffix: 'macOS-qt6-aqtinstall' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
             os-version: '10.15'
@@ -214,6 +235,7 @@ jobs:
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13'
+            homebrew-qt: qt5
             use-syslibs: true
             shared-libscsynth: false
 
@@ -221,6 +243,7 @@ jobs:
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13'
+            homebrew-qt: qt5
             use-syslibs: false
             shared-libscsynth: true
 
@@ -322,7 +345,7 @@ jobs:
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: '!matrix.qt-version'
-        run: brew install qt5
+        run: brew install "${{ matrix.homebrew-qt }}"
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -409,6 +432,23 @@ jobs:
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: 'win64-installer'
+
+          - job-name: '64-bit Qt6'
+            fftw-arch: 'x64'
+            cmake-arch: 'x64'
+            os-version: '2019'
+            qt-version: '6.2.0'
+            qt-arch: 'win64_msvc2019_64'
+            fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
+            cmake-generator: 'Visual Studio 16 2019'
+            msvc-year: '2019'
+            vcvars-script: 'vcvars64.bat'
+            chocolatey-options: '' # '--forcex86' for 32-bit build
+            use-qtwebengine: 'ON' # might need to be turned off for MinGW
+            ableton-link: 'ON' # might need to be turned off for MinGW
+            artifact-suffix: 'win64-Qt6' # set if needed - will trigger artifact upload
+            # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            # installer-suffix: 'win64-installer'
 
           - job-name: '64-bit MinGW'
             fftw-arch: 'x64'
