@@ -739,7 +739,7 @@ static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
 static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
     UInt64 latencyNanos = 1000000000 * latencySeconds;
     UInt64 timeElapsed = time - gLogicalInitTime;
-    UInt64 schedTime = AudioConvertNanosToHostTime(timeElapsed + gCoreAudioInitTime);
+    UInt64 schedTime = AudioConvertNanosToHostTime(timeElapsed) + gCoreAudioInitTime;
     /* post("%lld, %lld, %lld, %lld, %lld, %lld, %lld \n",
          gLogicalInitTime, gCoreAudioInitTime,
          AudioGetCurrentHostTime(), AudioGetCurrentHostTime() - gCoreAudioInitTime,
