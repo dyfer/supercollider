@@ -72,14 +72,14 @@ MIDIClientRef gMIDIClient = 0;
 MIDIPortRef gMIDIInPort[kMaxMidiPorts], gMIDIOutPort[kMaxMidiPorts];
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
-UInt64 gCoreAudioInitTime = 0, gLogicalInitTime = 0;
+UInt64 gSystemInitTime = 0, gLogicalInitTime = 0, gSystemInitTimeDiff = 0;
 
 // cp
 static bool gSysexFlag = false;
 static Byte gRunningStatus = 0;
 std::vector<Byte> gSysexData;
 
-void midiNotifyProc(const MIDINotification* msg, void* refCon) {}
+void midiNotifyProc(const MIDINotification* msg, void* refCon) { }
 
 extern bool compiledOK;
 
@@ -664,8 +664,13 @@ int prInitMIDI(struct VMGlobals* g, int numArgsPushed) {
 #if SC_IPHONE
     // TODO use logical time for IOS scheduling
 #else
-    gCoreAudioInitTime = AudioGetCurrentHostTime();
+    gSystemInitTime = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
+		gSystemInitTimeDiff = gSystemInitTime - gLogicalInitTime;
 #endif
+
+    post(
+        "Initializing MIDI: gSystemInitTime - gLogicalInitTime %f s\n",
+        Float64(gSystemInitTime - gLogicalInitTime) / 1000000000.0	);
 
     return err;
 }
@@ -738,12 +743,10 @@ static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
 
 static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
     UInt64 latencyNanos = 1000000000 * latencySeconds;
-    UInt64 timeElapsed = time - gLogicalInitTime;
-    UInt64 schedTime = AudioConvertNanosToHostTime(timeElapsed + gCoreAudioInitTime);
-    /* post("%lld, %lld, %lld, %lld, %lld, %lld, %lld \n",
-         gLogicalInitTime, gCoreAudioInitTime,
-         AudioGetCurrentHostTime(), AudioGetCurrentHostTime() - gCoreAudioInitTime,
-         time, timeElapsed, schedTime); */
+    UInt64 timeElapsed = time - gLogicalInitTime + gSystemInitTime - gSystemInitTimeDiff;
+    UInt64 schedTime = AudioConvertNanosToHostTime(timeElapsed);
+    post("%lld, %lld, %lld, sysDiff %lld, time %lld, elapsed %lld, sched %lld \n", gLogicalInitTime, gSystemInitTime, clock_gettime_nsec_np(CLOCK_UPTIME_RAW),
+         clock_gettime_nsec_np(CLOCK_UPTIME_RAW) - gSystemInitTime, time, timeElapsed, schedTime);
     return (MIDITimeStamp)schedTime + AudioConvertNanosToHostTime(latencyNanos);
 }
 
