@@ -346,3 +346,8 @@ set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerato
 
 set(plugins "${plugins}" PARENT_SCOPE)
 set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
+
+if(NOT TARGET plugins) # add target for building just the plugins
+  	add_custom_target(plugins)
+  	add_dependencies(plugins ${plugins} ${supernova_plugins})
+endif()
