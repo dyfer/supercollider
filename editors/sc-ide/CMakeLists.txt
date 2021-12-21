@@ -547,6 +547,20 @@ if(APPLE OR WIN32)
                 ")
         endif()
 
+        if(SC_ADD_CODESIGNING_AFTER_DEPLOY)
+            file(GLOB files_to_codesign
+                LIST_DIRECTORIES false
+                ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/*
+                ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/*
+                ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/*
+            )
+            list(FILTER files_to_codesign EXCLUDE REGEX ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/HID_Support) # we don't want to codesign this
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Running ad hoc code signing\")
+                execute_process(COMMAND codesign --deep --force --sign - ${files_to_codesign})
+            ")
+        endif()
+
         if(SC_VERIFY_APP)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Verifying app\")
