@@ -41,6 +41,17 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "::set-output name=version::$SC_VERSION"
+      - name: check version in the tag against version in SCVersion.txt
+        if: ${{ startsWith(github.ref, 'refs/tags/Version-') }}
+        run: |
+          VERSION_SCRIPT=GetSCVersion.cmake
+          echo include\(SCVersion.txt\) > $VERSION_SCRIPT
+          echo execute_process\(COMMAND \${CMAKE_COMMAND} -E echo \"\${SC_VERSION}\"\) >> $VERSION_SCRIPT
+          CMAKE_SC_VERSION=`cmake -P $VERSION_SCRIPT`
+          if [[ "$CMAKE_SC_VERSION" != "${{ steps.set-version.outputs.version }}" ]]; then
+            echo "::error::The version specified in the tag (${{ steps.set-version.outputs.version }}) is different than the version in SCVersion.txt ($CMAKE_SC_VERSION)"
+            exit 1
+          fi
 
   Linux:
     needs: lint
