@@ -590,7 +590,7 @@ jobs:
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
-          git clone --depth=1 https://github.com/crucialfelix/API
+          git clone --depth=1 --branch topic/test-array-replacement https://github.com/dyfer/API
 
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
