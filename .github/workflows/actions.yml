@@ -194,9 +194,13 @@ jobs:
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
+            architectures: 'x86_64'
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            build-fftw: false
+            build-readline: false
+            build-portaudio: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
@@ -204,24 +208,50 @@ jobs:
             xcode-version: '10.3'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
+            architectures: 'x86_64'
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            build-fftw: false
+            build-readline: false
+            build-portaudio: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+
+          - job-name: 'universal no QT'
+            os-version: '10.15'
+            xcode-version: '10.3'
+            qt-version: '5.9.9' # will use qt from aqtinstall
+            deployment-target: '10.10'
+            architectures: 'arm64;x86_64'
+            use-syslibs: false
+            shared-libscsynth: false
+            build-libsndfile: true
+            build-fftw: true
+            build-readline: true
+            build-portaudio: true
+            artifact-suffix: 'macOS-universal-no_QT' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13'
+            architectures: 'x86_64'
             use-syslibs: true
             shared-libscsynth: false
+            build-fftw: false
+            build-readline: false
+            build-portaudio: false
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
             xcode-version: '11.7'
             deployment-target: '10.13'
+            architectures: 'x86_64'
             use-syslibs: false
             shared-libscsynth: true
+            build-fftw: false
+            build-readline: false
+            build-portaudio: false
 
     name: macOS ${{ matrix.job-name }}
     env:
@@ -266,9 +296,11 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install portaudio ccache fftw
+          brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          if [[ "${{ matrix.build-portaudio }}" != "true" ]]; then brew install portaudio; fi
+          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
       - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true
         run: |
@@ -280,7 +312,7 @@ jobs:
           cd ogg*/
           echo "*** building libogg ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/flac/archive/refs/tags/1.3.3.tar.gz --output flac.tar.xz
@@ -288,7 +320,7 @@ jobs:
           cd flac*/
           echo "*** building flac ***"
           cd build # build directory already exists
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
@@ -296,7 +328,7 @@ jobs:
           cd opus*/
           echo "*** building opus ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
@@ -304,7 +336,7 @@ jobs:
           cd libvorbis*/
           echo "building *** libvorbis ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
@@ -312,8 +344,35 @@ jobs:
           cd libsndfile*/
           echo "building libsndfile"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
+      - name: build fftw # for multiple architectures
+        if: matrix.build-fftw == true
+        run: |
+          # this might depend on the previous step installing automake
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://fftw.org/fftw-3.3.10.tar.gz --output fftw.tar.gz
+          tar xfz fftw.tar.gz
+          cd fftw*/
+          echo "*** building fftw x86_64 ***"
+          ./configure CFLAGS="-arch x86_64 -mmacosx-version-min=10.10" --enable-single --enable-shared --disable-static --disable-debug --prefix=/usr/local --disable-dependency-tracking --disable-fortran  --enable-sse2 --enable-avx --enable-avx2
+          make install
+          echo "*** building fftw arm64 ***"
+          make clean
+          ./configure CFLAGS="-arch arm64 -mmacosx-version-min=11.0" --enable-single --enable-shared --disable-static --disable-debug --prefix=`pwd`/build-arm64 --disable-dependency-tracking --disable-fortran --enable-neon
+          make install
+          echo "*** combining the libraries ***"
+          lipo -create /usr/local/lib/libfftw3f.3.dylib build-arm64/lib/libfftw3f.3.dylib -output /usr/local/lib/libfftw3f.3.dylib
+      - name: build readline # for multiple architectures
+        if: matrix.build-readline == true
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://ftp.gnu.org/gnu/readline/readline-8.1.tar.gz --output readline.tar.gz
+          tar xfz readline.tar.gz
+          cd readline*/
+          echo "*** building readline x86_64 ***"
+          ./configure CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.10" --prefix=/usr/local
+          make install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
@@ -342,10 +401,11 @@ jobs:
 
           if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
+          if "${{ matrix.build-portaudio }}"; then EXTRA_CMAKE_FLAGS="-DSYSTEM_PORTAUDIO=OFF $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON -DCMAKE_OSX_ARCHITECTURES=${{ matrix.architectures }} $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
