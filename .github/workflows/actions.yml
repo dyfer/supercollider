@@ -229,6 +229,7 @@ jobs:
             build-fftw: true
             build-readline: true
             build-portaudio: true
+            qt: false
             artifact-suffix: 'macOS-universal-no_QT' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
@@ -402,6 +403,8 @@ jobs:
           if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
           if "${{ matrix.build-portaudio }}"; then EXTRA_CMAKE_FLAGS="-DSYSTEM_PORTAUDIO=OFF $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ "${{ matrix.qt }}" == false ]]; then EXTRA_CMAKE_FLAGS="-DSC_QT=OFF $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
