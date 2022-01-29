@@ -321,7 +321,7 @@ jobs:
           echo "*** building flac ***"
           cd build # build directory already exists
           cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES="${{ matrix.architectures }}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DBUILD_EXAMPLES=OFF  -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install -- -k # continue building even if we fail to link the flac app
+          cmake --build . --target install -- -k || true # continue building even if we fail to link the flac app
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
           tar xfz opus.tar.gz
