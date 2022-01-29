@@ -374,7 +374,7 @@ jobs:
           ./configure CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.10" --prefix=/usr/local
           make install
       - name: install system libraries
-        if: env.USE_SYSLIBS == 'true'
+        if: matrix.use-syslibs == true
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: '!matrix.qt-version'
