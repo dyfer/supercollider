@@ -219,9 +219,8 @@ jobs:
 
           - job-name: 'universal no QT'
             os-version: '10.15'
-            xcode-version: '10.3'
-            qt-version: '5.9.9' # will use qt from aqtinstall
-            deployment-target: '10.10'
+            xcode-version: '12.4'
+            deployment-target: '10.14'
             architectures: 'arm64;x86_64'
             use-syslibs: false
             shared-libscsynth: false
