@@ -320,7 +320,7 @@ jobs:
           cd flac*/
           echo "*** building flac ***"
           cd build # build directory already exists
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES="${{ matrix.architectures }}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES="${{ matrix.architectures }}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DBUILD_PROGRAMS=OFF -DBUILD_EXAMPLES=OFF  -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
