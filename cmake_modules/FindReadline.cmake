@@ -15,36 +15,30 @@ if(APPLE)
 endif()
 
 if(WIN32)
-    if(READLINE_LIBRARY)
-        # get READLINE_LIBRARY_DIR if the library was already found
-        cmake_path(REMOVE_FILENAME READLINE_LIBRARY OUTPUT_VARIABLE READLINE_LIBRARY_DIR)
-        cmake_path(SET READLINE_LIBRARY_DIR NORMALIZE ${READLINE_LIBRARY_DIR}/../bin)
-    else()
-        find_path(READLINE_INCLUDE_DIR
-            NAMES readline/readline.h
-            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
-              "$ENV{ProgramW6432}/GnuWin32/include"
-              "$ENV{ProgramFiles}/GnuWin32/include"
+    find_path(READLINE_INCLUDE_DIR
+        NAMES readline/readline.h
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
+          "$ENV{ProgramW6432}/GnuWin32/include"
+          "$ENV{ProgramFiles}/GnuWin32/include"
 
-        )
-        find_library(READLINE_LIBRARY
-            NAMES readline6 readline5 readline libreadline6 libreadline5 libreadline
-            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
-              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
-              "$ENV{ProgramW6432}/GnuWin32/lib"
-              "$ENV{ProgramW6432}/GnuWin32/bin"
-              "$ENV{ProgramFiles}/GnuWin32/lib"
-              "$ENV{ProgramFiles}/GnuWin32/bin"
-        )
+    )
+    find_library(READLINE_LIBRARY
+        NAMES readline6 readline5 readline libreadline6 libreadline5 libreadline
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+          "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+          "$ENV{ProgramW6432}/GnuWin32/lib"
+          "$ENV{ProgramW6432}/GnuWin32/bin"
+          "$ENV{ProgramFiles}/GnuWin32/lib"
+          "$ENV{ProgramFiles}/GnuWin32/bin"
+    )
 
-        find_path(READLINE_LIBRARY_DIR
-            NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
-            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
-              "$ENV{ProgramW6432}/GnuWin32/bin"
-              "$ENV{ProgramFiles}/GnuWin32/bin"
-              "${READLINE_LIBRARY}"
-        )
-    endif()
+    find_path(READLINE_LIBRARY_DIR
+        NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+          "$ENV{ProgramW6432}/GnuWin32/bin"
+          "$ENV{ProgramFiles}/GnuWin32/bin"
+        PATH_SUFFIXES "bin"
+    )
 endif()
 
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
