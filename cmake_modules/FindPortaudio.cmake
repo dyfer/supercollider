@@ -26,7 +26,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   if(PORTAUDIO_FOUND)
     if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       # More accurate on macOS where we may need to link against the library and some other frameworks
-      set(PORTAUDIO_LIBRARIES "${PORTAUDIO_LINK_LIBRARIES}")
+      # set(PORTAUDIO_LIBRARIES "${PORTAUDIO_LINK_LIBRARIES}")
     endif()
   else()
     find_path(PORTAUDIO_INCLUDE_DIR
