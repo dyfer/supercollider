@@ -17,7 +17,8 @@ endif()
 if(WIN32)
     if(READLINE_LIBRARY)
         # get READLINE_LIBRARY_DIR if the library was already found
-        get_filename_component(READLINE_LIBRARY_DIR ${READLINE_LIBRARY} DIRECTORY)
+        get_filename_component(readline_dir ${READLINE_LIBRARY} DIRECTORY)
+        set(READLINE_LIBRARY_DIR ${readline_dir} PARENT_SCOPE)
     else()
         find_path(READLINE_INCLUDE_DIR
             NAMES readline/readline.h
