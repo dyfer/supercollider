@@ -420,7 +420,7 @@ jobs:
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'MinGW Makefiles'
             chocolatey-options: '' # '--forcex86' for 32-bit build
-            vcpkg-triplet: x64-MinGW # for readline
+            vcpkg-triplet: x64-mingw-dynamic # for readline
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
             ableton-link: 'OFF' # might need to be turned off for MinGW
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
@@ -484,9 +484,9 @@ jobs:
         if: matrix.vcpkg-triplet
         shell: bash
         run: |
-          choco install pkgconfiglite --no-progress
+          # choco install pkgconfiglite --no-progress
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}"
-          echo "PKG_CONFIG_PATH=$VCPKG_INSTALLATION_ROOT\installed\${{ matrix.vcpkg-triplet }}\lib\pkgconfig" >> $GITHUB_ENV
+          # echo "PKG_CONFIG_PATH=$VCPKG_INSTALLATION_ROOT\installed\${{ matrix.vcpkg-triplet }}\lib\pkgconfig" >> $GITHUB_ENV
       - name: configure
         shell: bash
         run: |
@@ -494,7 +494,7 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR;$VCPKG_INSTALLATION_ROOT/installed/${{ matrix.vcpkg-triplet }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
 
       - name: build
         shell: bash
