@@ -164,7 +164,12 @@ if(AUDIOAPI STREQUAL jack)
 elseif(AUDIOAPI STREQUAL portaudio)
     target_sources(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
     target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
+    message(STATUS "PORTAUDIO_LIBRARIES: " ${PORTAUDIO_LIBRARIES})
     target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
+    # if(NOT SYSTEM_PORTAUDIO)
+    #     target_include_directories(libsupernova PUBLIC "${CMAKE_BINARY_DIR}/portaudio/")
+    #     target_link_directories(libsupernova PUBLIC )
+    # endif()
     target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
 endif()
 
@@ -208,6 +213,9 @@ add_executable(supernova
     ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
     $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
     )
+# target_include_directories(supernova PUBLIC $<TARGET_PROPERTY:libsupernova,INCLUDE_DIRECTORIES>)
+# message(STATUS "PORTAUDIO_INCLUDE_DIRS: " ${PORTAUDIO_INCLUDE_DIRS})
+# target_include_directories(supernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
 target_link_libraries(supernova libsupernova)
 
 if(WIN32)
