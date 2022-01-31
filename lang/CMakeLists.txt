@@ -372,6 +372,7 @@ elseif(WIN32)
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different "${READLINE_DLL}" $<TARGET_FILE_DIR:sclang>
       )
+      set(READLINE_LIBRARY_DIR ${READLINE_LIBRARY_DIR} PARENT_SCOPE) # esport to parent scope to use in sc-ide install step
     endif(READLINE_LIBRARY_DIR)
     if(QT_BIN_PATH)
       list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
