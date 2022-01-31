@@ -483,9 +483,7 @@ jobs:
         if: matrix.vcpkg-triplet
         shell: bash
         run: |
-          # choco install pkgconfiglite --no-progress
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}"
-          # echo "PKG_CONFIG_PATH=$VCPKG_INSTALLATION_ROOT\installed\${{ matrix.vcpkg-triplet }}\lib\pkgconfig" >> $GITHUB_ENV
       - name: configure
         shell: bash
         run: |
