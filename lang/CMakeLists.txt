@@ -366,7 +366,7 @@ elseif(WIN32)
       list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
     endif(FFTW3F_LIBRARY_DIR)
     if(READLINE_LIBRARY_DIR)
-      file(GLOB READLINE_DLL "${READLINE_LIBRARY_DIR}/*readline*.dll" "${READLINE_LIBRARY_DIR}/*readline*.lib")
+      file(GLOB READLINE_DLL "${READLINE_LIBRARY_DIR}/*readline*.dll")
       list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
       add_custom_command(TARGET sclang
           POST_BUILD

@@ -17,7 +17,8 @@ endif()
 if(WIN32)
     if(READLINE_LIBRARY)
         # get READLINE_LIBRARY_DIR if the library was already found
-        get_filename_component(READLINE_LIBRARY_DIR ${READLINE_LIBRARY} DIRECTORY)
+        cmake_path(REMOVE_FILENAME READLINE_LIBRARY OUTPUT_VARIABLE READLINE_LIBRARY_DIR)
+        cmake_path(SET READLINE_LIBRARY_DIR NORMALIZE ${READLINE_LIBRARY_DIR}/../bin)
     else()
         find_path(READLINE_INCLUDE_DIR
             NAMES readline/readline.h
