@@ -518,7 +518,6 @@ void SC_TerminalClient::readlineInit() {
     rl_bind_key(CTRL('x'), &readlineRecompile);
     rl_callback_handler_install("sc3> ", &readlineCmdLine);
 
-    // FIXME: Implement the code below on Windows
 #    ifndef _WIN32
     // Set our handler for SIGINT that will clear the line instead of terminating.
     // NOTE: We prevent readline from setting its own signal handlers,
@@ -528,6 +527,8 @@ void SC_TerminalClient::readlineInit() {
     memset(&sact, 0, sizeof(struct sigaction));
     sact.sa_handler = &sc_rl_signalhandler;
     sigaction(SIGINT, &sact, nullptr);
+#    else
+    signal(SIGINT, &sc_rl_signalhandler);
 #    endif
 }
 
