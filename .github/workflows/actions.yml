@@ -387,7 +387,7 @@ jobs:
             msvc-year: '2019'
             vcvars-script: 'vcvars32.bat'
             chocolatey-options: '--forcex86' # '--forcex86' for 32-bit build
-            vcpkg-triplet: x86-windows-static # for readline
+            vcpkg-triplet: x86-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
@@ -405,7 +405,7 @@ jobs:
             msvc-year: '2019'
             vcvars-script: 'vcvars64.bat'
             chocolatey-options: '' # '--forcex86' for 32-bit build
-            vcpkg-triplet: x64-windows-static # for readline
+            vcpkg-triplet: x64-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
