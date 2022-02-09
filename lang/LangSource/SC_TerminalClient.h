@@ -169,6 +169,7 @@ private:
 #ifndef _WIN32
     boost::asio::posix::stream_descriptor mStdIn;
 #else
+    INPUT_RECORD irBuffer[inputBufferSize];
     boost::asio::windows::object_handle mStdIn;
 #endif
     void startInputRead();

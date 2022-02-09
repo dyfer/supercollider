@@ -528,6 +528,7 @@ void SC_TerminalClient::readlineInit() {
     sact.sa_handler = &sc_rl_signalhandler;
     sigaction(SIGINT, &sact, nullptr);
 #    else
+    rl_catch_signals = 0;
     signal(SIGINT, &sc_rl_signalhandler);
 #    endif
 }
@@ -535,6 +536,7 @@ void SC_TerminalClient::readlineInit() {
 #endif // HAVE_READLINE
 
 void SC_TerminalClient::startInputRead() {
+    uint16 inc = 0;
 #ifndef _WIN32
     if (mUseReadline)
         mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
@@ -543,21 +545,46 @@ void SC_TerminalClient::startInputRead() {
                                boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 #else
     mStdIn.async_wait([&](const boost::system::error_code& error) {
+        // std::cout << "got input (error " << error.message().c_str() << ")" << std::endl;
         if (error)
             onInputRead(error, 0);
         else {
-            DWORD bytes_transferred;
+            DWORD bytes_transferred, chars_transferred = 0;
+            // std::cout << "before ReadFile, inc " << inc << std::endl;
+            HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+            // FlushConsoleInputBuffer(hInput);
+            // auto result = ::ReadFile(hInput, inputBuffer.data(), inputBuffer.size(), &bytes_transferred,
+                    //    nullptr);
+            auto result = ::ReadConsoleInput(hInput, irBuffer, inputBuffer.size(), &bytes_transferred);
+            // std::cout << "result: " << result << std::endl;
+            
+            for(DWORD i = 0; i < bytes_transferred; i++) {
+                std::cout << "event type: " << irBuffer[i].EventType << std::endl;
+                if(irBuffer[i].EventType == KEY_EVENT) {
+                    if(irBuffer[i].Event.KeyEvent.bKeyDown) {
+                        inputBuffer[i] = irBuffer[i].Event.KeyEvent.uChar.AsciiChar;
+                        chars_transferred++;
+                    }
+                    // case KEY_EVENT:
+                    
+                    // break;
 
-            ::ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytes_transferred,
-                       nullptr);
-
-            onInputRead(error, bytes_transferred);
+                    // default:
+                    // break;
+                }
+            }
+            std::cout << "bytes_transferred: " << bytes_transferred << std::endl;
+            std::cout << "chars_transferred: " << chars_transferred << std::endl;
+            onInputRead(error, chars_transferred);
+            inc++;
+            
         }
     });
 #endif
 }
 
 void SC_TerminalClient::onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred) {
+    // std::cout << "error at the beginning of onInputRead: " << error.message().c_str() << std::endl;
     if (error == boost::asio::error::operation_aborted) {
         postfl("SCLang Input: Quit requested\n");
         return;
@@ -574,10 +601,11 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code& error, std:
         onQuit(1);
         return;
     }
-
+// std::cout << "error before !error: " << error << std::endl;
     if (!error) {
 #if HAVE_READLINE
         if (mUseReadline) {
+            // std::cout << "error before rl_callback_read_char: " << error << std::endl;
             rl_callback_read_char();
             startInputRead();
             return;
@@ -591,17 +619,21 @@ void SC_TerminalClient::inputThreadFn() {
 #if HAVE_READLINE
     if (mUseReadline)
         readlineInit();
-#endif
+#else
 
 #ifdef _WIN32
-    // make sure there's nothing on stdin before we launch the service
-    // this fixes #4214
-    DWORD bytesRead = 0;
-    auto success = ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytesRead, NULL);
+    // if (!mUseReadline) {
+        // make sure there's nothing on stdin before we launch the service
+        // this fixes #4214
+        DWORD bytesRead = 0;
+        auto success = ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytesRead, NULL);
 
-    if (success) {
-        pushCmdLine(inputBuffer.data(), bytesRead);
-    }
+        if (success) {
+            pushCmdLine(inputBuffer.data(), bytesRead);
+        }
+    // }
+#endif
+
 #endif
 
     startInputRead();
