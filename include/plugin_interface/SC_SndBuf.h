@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-typedef struct SNDFILE_tag SNDFILE;
+typedef struct sf_private_tag SNDFILE;
 
 #ifdef SUPERNOVA
 
