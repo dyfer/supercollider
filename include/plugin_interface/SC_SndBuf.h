@@ -22,7 +22,10 @@
 
 #include <stdint.h>
 
-typedef struct sf_private_tag SNDFILE;
+/* Instead of redefining a typedef, we use an opaque pointer */
+#ifndef SNDFILE
+#define SNDFILE void
+#endif
 
 #ifdef SUPERNOVA
 
@@ -223,3 +226,7 @@ inline float cubicinterp(float x, float y0, float y1, float y2, float y3) {
 
     return ((c3 * x + c2) * x + c1) * x + c0;
 }
+
+#ifdef SNDFILE
+#undef SNDFILE
+#endif

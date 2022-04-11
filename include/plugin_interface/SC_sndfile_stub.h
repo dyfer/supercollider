@@ -24,8 +24,11 @@
 
 
 /* A SNDFILE* pointer can be passed around much like stdio.h's FILE* pointer. */
+/* Instead of redefining a typedef, we use an opaque pointer */
 
-typedef struct SNDFILE_tag SNDFILE;
+#ifndef SNDFILE
+#define SNDFILE void
+#endif
 
 
 #if (defined(_MSCVER) || defined(_MSC_VER))
@@ -52,3 +55,7 @@ struct SF_INFO {
 };
 
 typedef struct SF_INFO SF_INFO;
+
+#ifdef SNDFILE
+#undef SNDFILE
+#endif
