@@ -24,7 +24,7 @@
 
 /* Instead of redefining a typedef, we use an opaque pointer */
 #ifndef SNDFILE
-#define SNDFILE void
+#    define SNDFILE void
 #endif
 
 #ifdef SUPERNOVA
@@ -228,5 +228,5 @@ inline float cubicinterp(float x, float y0, float y1, float y2, float y3) {
 }
 
 #ifdef SNDFILE
-#undef SNDFILE
+#    undef SNDFILE
 #endif

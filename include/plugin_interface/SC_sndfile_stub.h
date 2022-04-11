@@ -27,7 +27,7 @@
 /* Instead of redefining a typedef, we use an opaque pointer */
 
 #ifndef SNDFILE
-#define SNDFILE void
+#    define SNDFILE void
 #endif
 
 
@@ -57,5 +57,5 @@ struct SF_INFO {
 typedef struct SF_INFO SF_INFO;
 
 #ifdef SNDFILE
-#undef SNDFILE
+#    undef SNDFILE
 #endif
