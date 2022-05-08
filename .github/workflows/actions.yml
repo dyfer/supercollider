@@ -203,7 +203,7 @@ jobs:
 
           - job-name: 'legacy'
             os-version: '10.15'
-            xcode-version: '10.3'
+            xcode-version: '11.3.1'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
             use-syslibs: false
