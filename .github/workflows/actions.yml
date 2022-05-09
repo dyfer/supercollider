@@ -348,7 +348,19 @@ jobs:
 
           cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
-        run: cmake --build $BUILD_PATH --config Release --target install
+        run: |
+          # Keep a raw log of cmake's output
+          BUILD_LOG=raw_build.log
+          # Make cmake failure an overall failure
+          set -o pipefail
+          cmake --build $BUILD_PATH --config Release --target install | tee $BUILD_LOG | xcpretty --simple
+          CMAKE_EXIT=$?
+          set +o pipefail
+          if [[ $CMAKE_EXIT != 0 ]]; then
+              echo "Build failed. Log:"
+              cat $BUILD_LOG
+          fi
+          exit $CMAKE_EXIT
       - name: create archive
         if: matrix.artifact-suffix
         run: |
