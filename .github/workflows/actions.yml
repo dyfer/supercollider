@@ -446,7 +446,9 @@ jobs:
         if: matrix.vcpkg-triplet
         uses: actions/cache@v2
         with:
-          path: ~/AppData/Local/vcpkg/archives
+          path: |
+            ~/AppData/Local/vcpkg/archives
+            /c/vcpkg/downloads
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
       - name: cache qt
