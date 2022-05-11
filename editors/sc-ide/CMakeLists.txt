@@ -405,7 +405,7 @@ if(APPLE)
     install(CODE
         "
             include(BundleUtilities)
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\" IGNORE_ITEM \"QtWebEngineCore.framework\")
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\" IGNORE_ITEM \"QtNetwork;QtWebEngineCore\")
         "
     )
 
