@@ -553,7 +553,7 @@ if(APPLE OR WIN32)
 
         string(APPEND VERIFY_CMD "
             message(STATUS \"Running fixup_bundle to correct paths, just in case\")
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\")
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"${CONTENTS_DIR}/Frameworks/QtCore.framework/Versions/5/;${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/\")
         ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
