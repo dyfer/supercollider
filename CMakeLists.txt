@@ -258,6 +258,8 @@ if(APPLE)
     # codesigning is also being broken by macdeployqt, but it is needed on arm64
     # to run the app locally at all, hence we sign after deploying the app
     option(SC_CODESIGN_AFTER_DEPLOY "Run ad hoc codesigning after creating the app bundle" ON)
+	# run fixup_bundle after macdeployqt but before verify_app; might help solve issues with rpath and verify_app
+	option(SC_FIXUP_AFTER_DEPLOY "Run fixup_bundle after creating the app bundle with macdeployqt" OFF)
     # verify_app fails with official Qt; we'll still use it for Qt from homebrew
     option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()

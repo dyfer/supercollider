@@ -551,10 +551,27 @@ if(APPLE OR WIN32)
                 ")
         endif()
 
-        string(APPEND VERIFY_CMD "
-            message(STATUS \"Running fixup_bundle to correct paths, just in case\")
-            fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"\" \"${CONTENTS_DIR}/Frameworks;${CONTENTS_DIR}/Frameworks/QtCore.framework;${CONTENTS_DIR}/Frameworks/QtGui.framework/Versions/5;${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS\" IGNORE_ITEM \"QtWebEngineProcess\")
-        ")
+        if(SC_FIXUP_AFTER_DEPLOY)
+            
+            set(SC_MACOS_VERIFY_PATHS)
+            list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks")
+            # list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework")
+
+            set(SC_MACOS_VERIFY_LIBS)
+            foreach(component Concurrent Core DBus Gui MacExtras Network Pdf Positioning PrintSupport Qml QmlModels Quick QuickWidgets SerialPort Svg VirtualKeyboard WebChannel WebEngineCore WebEngineWidgets WebSockets Widgets)
+                if(TARGET Qt5::${component}) 
+                    list(APPEND SC_MACOS_VERIFY_LIBS "${CONTENTS_DIR}/Frameworks/Qt${component}.framework/Versions/Current/Qt${component}")
+                endif()
+            endforeach()
+            # fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"QtWebEngineProcess\")
+            # fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\")
+
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Running fixup_bundle to correct library paths\")
+                    fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"QtWebEngineProcess;QtWebEngineCore\")
+            ")
+
+        endif()
 
         if(SC_CODESIGN_AFTER_DEPLOY)
             string(APPEND VERIFY_CMD "
