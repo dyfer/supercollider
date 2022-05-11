@@ -197,6 +197,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            verify-app: true
             vcpkg-triplet: x64-osx-dynamic # required for build-libsndfile
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
