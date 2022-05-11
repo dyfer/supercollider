@@ -400,6 +400,14 @@ if(APPLE)
     # for processing into the plist:
     set_property(TARGET SuperCollider
 	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
+    
+    # bundle some libraries before running macdeployqt to set correct paths
+    install(CODE
+        "
+            include(BundleUtilities)
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\" IGNORE_ITEM \"QtWebEngineCore.framework\")
+        "
+    )
 
 elseif(WIN32)
 
