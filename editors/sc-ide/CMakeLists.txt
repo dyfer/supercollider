@@ -478,7 +478,7 @@ if(APPLE OR WIN32)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
-        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
+        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/${scappcontentsdir})
         set(QT_WEBENGINE_APP
             "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
         set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")

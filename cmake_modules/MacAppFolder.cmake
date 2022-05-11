@@ -10,8 +10,9 @@ if(APPLE)
 		message(STATUS "Building sc in STANDALONE mode. App name: " ${standalone})
 	endif()
 
-	set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources" CACHE STRING "Installation path for the Resourcedir")
-	set(scappbindir "${scappbundlename}/${scappbundlename}.app/Contents/MacOS" CACHE STRING "Installation path for the Bindir")
+	set(scappcontentsdir "${scappbundlename}/${scappbundlename}.app/Contents" CACHE STRING "Installation path for the Contents dir")
+	set(scappauxresourcesdir "${scappcontentsdir}/Resources" CACHE STRING "Installation path for the Resource dir")
+	set(scappbindir "${scappcontentsdir}/MacOS" CACHE STRING "Installation path for the Bin dir")
 
 	###### Allow user to select a FHS-style install
 	# TODO not yet used
