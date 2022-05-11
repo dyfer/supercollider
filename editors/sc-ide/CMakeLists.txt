@@ -401,14 +401,6 @@ if(APPLE)
     set_property(TARGET SuperCollider
 	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
     
-    # bundle some libraries before running macdeployqt to set correct paths
-    install(CODE
-        "
-            include(BundleUtilities)
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\" IGNORE_ITEM \"QtNetwork;QtWebEngineCore\")
-        "
-    )
-
 elseif(WIN32)
 
     if(NOT MSVC)
@@ -558,6 +550,11 @@ if(APPLE OR WIN32)
                 execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
                 ")
         endif()
+
+        string(APPEND VERIFY_CMD "
+            message(STATUS \"Running fixup_bundle to correct paths, just in case\")
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/sclang\" \"\" \"\")
+        ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
             string(APPEND VERIFY_CMD "
