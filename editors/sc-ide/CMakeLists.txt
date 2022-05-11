@@ -553,7 +553,7 @@ if(APPLE OR WIN32)
 
         string(APPEND VERIFY_CMD "
             message(STATUS \"Running fixup_bundle to correct paths, just in case\")
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${scappbindir}/scsynth\" \"\" \"${CONTENTS_DIR}/Frameworks/\")
+            fixup_bundle(\"${CONTENTS_DIR}/Resources/scsynth\" \"\" \"${CONTENTS_DIR}/Frameworks/\")
         ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
