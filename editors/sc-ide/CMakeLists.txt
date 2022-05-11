@@ -553,7 +553,7 @@ if(APPLE OR WIN32)
 
         string(APPEND VERIFY_CMD "
             message(STATUS \"Running fixup_bundle to correct paths, just in case\")
-            fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"\" \"${CONTENTS_DIR}/Frameworks;${CONTENTS_DIR}/Frameworks/QtCore.framework;${CONTENTS_DIR}/Frameworks/QtCore.framework/Versions/5;${CONTENTS_DIR}/Frameworks/QtGui.framework/Versions/5/Resources\")
+            fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"\" \"${CONTENTS_DIR}/Frameworks;${CONTENTS_DIR}/Frameworks/QtCore.framework;${CONTENTS_DIR}/Frameworks/QtGui.framework/Versions/5;${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS\")
         ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
