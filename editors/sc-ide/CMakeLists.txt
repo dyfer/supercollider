@@ -555,7 +555,7 @@ if(APPLE OR WIN32)
             
             set(SC_MACOS_VERIFY_PATHS)
             list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks")
-            # list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework")
+            list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/MacOS")
 
             if(SYSTEM_BOOST AND Boost_FOUND)
                 list(APPEND SC_MACOS_VERIFY_PATHS "${Boost_THREAD_LIBRARY}" "${Boost_SYSTEM_LIBRARY}" "${Boost_FILESYSTEM_LIBRARY}" "${Boost_PROGRAM_OPTIONS_LIBRARY}" "${Boost_REGEX_LIBRARY}" "${Boost_TEST_EXEC_MONITOR_LIBRARY}")
