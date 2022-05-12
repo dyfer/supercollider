@@ -221,6 +221,7 @@ jobs:
             use-syslibs: true
             shared-libscsynth: false
             verify-app: true
+            fixup-after-deploy: true
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
