@@ -575,7 +575,7 @@ if(APPLE OR WIN32)
                     fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"QtWebEngineProcess;QtWebEngineCore\")
             ")
 
-            if(TARGET Qt5::WebEngineCore})
+            if(TARGET Qt5::WebEngineCore)
                 string(APPEND VERIFY_CMD "
                 message(STATUS \"Running fixup_bundle to fix QtWebEngine paths\")
                     fixup_bundle(\"${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\")
