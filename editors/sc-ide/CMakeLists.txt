@@ -492,7 +492,8 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${QT_WEBENGINE_PROCESS}
             ")
-        set(VERIFY_CMD "include(BundleUtilities)")
+        # set(VERIFY_CMD "include(BundleUtilities)")        
+        set(VERIFY_CMD "include(${CMAKE_SOURCE_DIR}/cmake_modules/BundleUtilitiesWithRPath.cmake)")
         if(SUPERNOVA)
             get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
             if(LINK_FFTW)
@@ -555,7 +556,8 @@ if(APPLE OR WIN32)
             
             set(SC_MACOS_VERIFY_PATHS)
             list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks")
-            # list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework")
+            list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/MacOS")
+            list(APPEND SC_MACOS_VERIFY_PATHS "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework")
 
             set(SC_MACOS_VERIFY_LIBS)
             foreach(component Concurrent Core DBus Gui MacExtras Network Pdf Positioning PrintSupport Qml QmlModels Quick QuickWidgets SerialPort Svg VirtualKeyboard WebChannel WebEngineCore WebEngineWidgets WebSockets Widgets)
@@ -567,8 +569,24 @@ if(APPLE OR WIN32)
             # fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\")
 
             string(APPEND VERIFY_CMD "
+                # set(_temp \"blah\")
+                # include(${CMAKE_SOURCE_DIR}/cmake_modules/BundleUtilitiesWithRPath.cmake)
+                # message(STATUS \"_temp:\" ${\"${_temp}\"})
+                # message(STATUS \"_temp:\" ${\"_temp\"})
+                # message(STATUS \"_temp: $" "{temp})
+                # message(STATUS \"_temp:\" @_temp@)
                 message(STATUS \"Running fixup_bundle to correct library paths\")
-                    fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"QtWebEngineProcess;QtWebEngineCore\")
+                fixup_bundle(\"${CONTENTS_DIR}/MacOS/sclang\" \"${SC_MACOS_VERIFY_LIBS}\" \"${SC_MACOS_VERIFY_PATHS}\" IGNORE_ITEM \"QtWebEngineProcess;QtWebEngineCore\")
+                # message(STATUS \"Running fixup_bundle_item\")
+                # execute_process(COMMAND 
+                #     sh -c \
+                #     \"find ${CONTENTS_DIR}/Frameworks \
+                #     \\\\( \
+                #         -name \\\"*.dylib\\\" \
+                #         -maxdepth 1 \
+                #     \\\\) \
+                #     -exec \"${CMAKE_COMMAND}\" -E fixup_bundle_item\\\\(\\\"{}\\\" \\\"${CONTENTS_DIR}/MacOS/sclang\\\" \\\"${SC_MACOS_VERIFY_PATHS}\\\"\\\\) \\\;\"
+                # )
             ")
 
         endif()
