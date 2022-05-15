@@ -579,12 +579,15 @@ if(APPLE OR WIN32)
         endif()
 
         if(SC_VERIFY_APP)
-            set(CMAKE_MACOSX_RPATH 1)
-            list(APPEND CMAKE_INSTALL_RPATH "${CONTENTS_DIR}/Frameworks")
-            set(BUILD_RPATH_USE_ORIGIN TRUE)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Verifying app\")
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+        endif()
+        if(SC_VERIFY_APP_DIRS)
+            string(APPEND VERIFY_CMD "
+                include(\"${CMAKE_SOURCE_DIR}/cmake_modules/VerifyApp.cmake\")
+                message(STATUS \"Verifying app using a custom script verify_app_dirs\")
+                verify_app_dirs(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"${CONTENTS_DIR}/Frameworks\")")
         endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})

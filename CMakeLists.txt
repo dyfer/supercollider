@@ -259,7 +259,9 @@ if(APPLE)
     # to run the app locally at all, hence we sign after deploying the app
     option(SC_CODESIGN_AFTER_DEPLOY "Run ad hoc codesigning after creating the app bundle" ON)
     # verify_app fails with official Qt; we'll still use it for Qt from homebrew
-    option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
+    option(SC_VERIFY_APP "Run veri./vcpkgfy_app on the app bundle" ON)
+	# this one is unofficial, but should work with libraries with rpaths
+	option(SC_VERIFY_APP_DIRS "Run a custom verify_app_dirs on the app bundle" OFF)
 endif()
 
 #############################################
