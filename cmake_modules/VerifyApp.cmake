@@ -6,6 +6,19 @@ cmake_policy(SET CMP0057 NEW) # if IN_LIST
 
 include(BundleUtilities)
 
+function(gp_file_type_rpaths original_file file type_var rpaths)
+  if(NOT IS_ABSOLUTE "${original_file}")
+    message(STATUS "warning: gp_file_type expects absolute full path for first arg original_file")
+  endif()
+
+  get_filename_component(exepath "${original_file}" PATH)
+
+  set(type "")
+  gp_resolved_file_type("${original_file}" "${file}" "${exepath}" "" type "${rpaths}")
+
+  set(${type_var} "${type}" PARENT_SCOPE)
+endfunction()
+
 function(verify_bundle_prerequisites_dirs bundle result_var info_var dirs)
   set(result 1)
   set(info "")
@@ -30,7 +43,8 @@ function(verify_bundle_prerequisites_dirs bundle result_var info_var dirs)
 
       if(NOT prereq_filename IN_LIST CFG_IGNORE_ITEM)
         get_item_rpaths(${f} _main_exe_rpaths)
-        list(APPEND _main_exe_rpaths "${dirs}")
+        # list(APPEND _main_exe_rpaths "${dirs}")
+        # message(STATUS "_main_exe_rpaths: " "${_main_exe_rpaths}")
         get_prerequisites("${f}" prereqs 1 1 "${exepath}" "${_main_exe_rpaths}")
 
         # On the Mac,
@@ -46,7 +60,7 @@ function(verify_bundle_prerequisites_dirs bundle result_var info_var dirs)
 
         foreach(p ${prereqs})
           set(p_type "")
-          gp_file_type("${f}" "${p}" p_type)
+          gp_file_type("${f}" "${p}" p_type "${dirs}")
 
           if(APPLE)
             if(NOT p_type STREQUAL "embedded" AND NOT p_type STREQUAL "system")

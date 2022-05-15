@@ -491,6 +491,7 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${QT_WEBENGINE_PROCESS}
+                -libpath=\"${CONTENTS_DIR}/Frameworks\"
             ")
         set(VERIFY_CMD "include(BundleUtilities)")
         if(SUPERNOVA)
@@ -550,6 +551,35 @@ if(APPLE OR WIN32)
                 execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
                 ")
         endif()
+
+        # deploy again
+        string(APPEND VERIFY_CMD "
+            message(STATUS \"running second deploy command\")
+            message(STATUS \"${DEPLOY_CMD}\")
+            execute_process(COMMAND 
+            
+                \"${DEPLOY_PROG}\"
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                -verbose=1
+                -executable=${CONTENTS_DIR}/MacOS/sclang
+                -executable=${CONTENTS_DIR}/Resources/scsynth
+                -executable=${CONTENTS_DIR}/Resources/supernova
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+                -executable=${QT_WEBENGINE_PROCESS}
+                -libpath=\"${CONTENTS_DIR}/Frameworks\"
+            
+                RESULT_VARIABLE RES
+                OUTPUT_VARIABLE OUT
+                ERROR_VARIABLE ERR
+                )
+            if(OUT)
+                message(STATUS \"Deploy again result: \${OUT}\")
+            endif()
+            if(RES)
+                message(FATAL_ERROR \"Deploy again failed with error: \${ERR}\")
+            endif()
+        ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
             string(APPEND VERIFY_CMD "
