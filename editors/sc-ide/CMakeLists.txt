@@ -579,7 +579,8 @@ if(APPLE OR WIN32)
         endif()
 
         if(SC_VERIFY_APP)
-            set(BUILD_RPATH_USE_ORIGIN TRUE)
+            set(CMAKE_MACOSX_RPATH 1)
+            list(APPEND CMAKE_INSTALL_RPATH "${CONTENTS_DIR}/Frameworks")
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Verifying app\")
                 verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
