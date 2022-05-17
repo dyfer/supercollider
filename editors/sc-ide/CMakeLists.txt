@@ -479,6 +479,16 @@ if(APPLE OR WIN32)
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
         set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/${scappcontentsdir})
+
+        # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
+        # will run macdeployqt afterward to auto-deploy QtWebEngine dependencies
+        # install(CODE
+        #     "
+        #         include(BundleUtilities)
+        #         fixup_bundle(\"${CONTENTS_DIR}/Resources/scsynth\" \"\" \"\" IGNORE_ITEM \"SuperCollider\")
+        #     "
+        # )
+
         set(QT_WEBENGINE_APP
             "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
         set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
@@ -491,7 +501,7 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${QT_WEBENGINE_PROCESS}
-                -libpath=\"${CONTENTS_DIR}/Frameworks\"
+                -libpath=\"/Users/marcin/vcpkg/installed/x64-osx-release-dynamic/lib\"
             ")
         set(VERIFY_CMD "include(BundleUtilities)")
         if(SUPERNOVA)
@@ -552,33 +562,17 @@ if(APPLE OR WIN32)
                 ")
         endif()
 
-        # deploy again
         string(APPEND VERIFY_CMD "
-            message(STATUS \"running second deploy command\")
-            message(STATUS \"${DEPLOY_CMD}\")
+            message(STATUS \"Fixing library paths\")
             execute_process(COMMAND 
-            
-                \"${DEPLOY_PROG}\"
-                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
-                -verbose=1
-                -executable=${CONTENTS_DIR}/MacOS/sclang
-                -executable=${CONTENTS_DIR}/Resources/scsynth
-                -executable=${CONTENTS_DIR}/Resources/supernova
-                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
-                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
-                -executable=${QT_WEBENGINE_PROCESS}
-                -libpath=\"${CONTENTS_DIR}/Frameworks\"
-            
-                RESULT_VARIABLE RES
-                OUTPUT_VARIABLE OUT
-                ERROR_VARIABLE ERR
-                )
-            if(OUT)
-                message(STATUS \"Deploy again result: \${OUT}\")
-            endif()
-            if(RES)
-                message(FATAL_ERROR \"Deploy again failed with error: \${ERR}\")
-            endif()
+                sh -c \
+                \"find ${CONTENTS_DIR}/Frameworks \
+                \\\\( \
+                    -name \\\"*.dylib\\\" \
+                    -maxdepth 1 \
+                \\\\) \
+                -exec install_name_tool -change \\\"@rpath\\\" \\\"@loader_path/../Frameworks\\\" {} \\\;\"
+            )
         ")
 
         if(SC_CODESIGN_AFTER_DEPLOY)
