@@ -127,26 +127,26 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'focal clang11'
-            os-version: '20.04'
-            c-compiler: 'clang-11'
-            cxx-compiler: 'clang++-11'
-            use-syslibs: false
-            shared-libscsynth: false
+          # - job-name: 'focal clang11' # disabled - the build fails with fatal error: 'cstdlib' file not found
+          #   os-version: '20.04'
+          #   c-compiler: 'clang-11'
+          #   cxx-compiler: 'clang++-11'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
-          - job-name: 'focal clang12'
-            os-version: '20.04'
-            c-compiler: 'clang-12'
-            cxx-compiler: 'clang++-12'
-            use-syslibs: false
-            shared-libscsynth: false
+          # - job-name: 'focal clang12' # disabled - the build fails with fatal error: 'cstdlib' file not found
+          #   os-version: '20.04'
+          #   c-compiler: 'clang-12'
+          #   cxx-compiler: 'clang++-12'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
-          - job-name: 'jammy clang13'
-            os-version: '22.04'
-            c-compiler: 'clang-13'
-            cxx-compiler: 'clang++-13'
-            use-syslibs: false
-            shared-libscsynth: false
+          # - job-name: 'jammy clang13' # disabled - the build fails with fatal error: 'cstdlib' file not found
+          #   os-version: '22.04'
+          #   c-compiler: 'clang-13'
+          #   cxx-compiler: 'clang++-13'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
           - job-name: 'jammy clang14'
             os-version: '22.04'
