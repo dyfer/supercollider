@@ -628,8 +628,8 @@ jobs:
       - name: prepare tests
         run: |
           echo `python --version` # check version
-
-          sudo pip install $QPM_URL
+          sudo python -m pip install -U pip setuptools
+          sudo python -m pip install $QPM_URL
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
