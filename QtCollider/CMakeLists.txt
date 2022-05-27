@@ -22,6 +22,7 @@ option(SC_USE_QTWEBENGINE "Build with Qt WebEngine.")
 
 if(Qt5WebEngine_FOUND)
   set(SC_USE_QTWEBENGINE ON)
+  set(SC_USE_QTWEBENGINE ON PARENT_SCOPE)
 else()
   if(SC_USE_QTWEBENGINE)
     # if QtWebEngine was explicitly requested, throw an error
@@ -29,6 +30,7 @@ else()
   else()
     message(STATUS "QtWebEngine not found, building without QtWebEngine")
     set(SC_USE_QTWEBENGINE OFF)
+    set(SC_USE_QTWEBENGINE OFF PARENT_SCOPE)
   endif()
 endif()
 
