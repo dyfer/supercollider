@@ -1,5 +1,36 @@
 set(REQUIRED_QT_VERSION 5.7)
-option(SC_USE_QTWEBENGINE "Build with Qt WebEngine." ON)
+
+# try detecting Qt5 from homebrew on macOS
+if (APPLE AND NOT ENV{CMAKE_PREFIX_PATH} AND NOT Qt5_DIR AND NOT CMAKE_PREFIX_PATH)
+  find_package(Qt5Core ${REQUIRED_QT_VERSION} QUIET)
+  if(NOT Qt5Core_FOUND)
+    execute_process(COMMAND "brew" "--prefix" "qt5"
+      OUTPUT_VARIABLE QT_HOMBREW_PREFIX
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(QT_HOMBREW_PREFIX)
+      message(STATUS "Using homebrew Qt in " ${QT_HOMBREW_PREFIX})
+      set(ENV{CMAKE_PREFIX_PATH} ${QT_HOMBREW_PREFIX})  
+    endif()
+  endif()
+endif()
+
+# check if WebEngine is present
+find_package(Qt5WebEngine ${REQUIRED_QT_VERSION} QUIET)
+
+option(SC_USE_QTWEBENGINE "Build with Qt WebEngine.")
+
+if(Qt5WebEngine_FOUND)
+  set(SC_USE_QTWEBENGINE ON)
+else()
+  if(SC_USE_QTWEBENGINE)
+    # if QtWebEngine was explicitly requested, throw an error
+    message(FATAL_ERROR "QtWebEngine was requested but it was not found")
+  else()
+    message(STATUS "QtWebEngine not found, building without QtWebEngine")
+    set(SC_USE_QTWEBENGINE OFF)
+  endif()
+endif()
 
 ###############################################################################
 # Components and libraries
