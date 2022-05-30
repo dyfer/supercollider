@@ -148,7 +148,10 @@ TestUGen_RTAlloc : UnitTest {
 		var testAllocPass = { |name, func, runtime = 0.001|
 			var cond = CondVar(), nonZeroOut = nil;
 			func.loadToFloatArray(runtime, server) { |out|
-				out.postln;
+				"array: ".post; out.postln;
+				"array.size: ".post; out.size.postln;
+				"array.minItem: ".post; out.minItem.postln;
+				"array.maxItem: ".post; out.maxItem.postln;
 				nonZeroOut = out.sum != 0;
 				cond.signalOne();
 			};
@@ -165,7 +168,10 @@ TestUGen_RTAlloc : UnitTest {
 		var testAllocFail = { |name, func, runtime = 0.001|
 			var cond = CondVar(), zeroOut = nil;
 			func.loadToFloatArray(runtime, server) { |out|
-				out.postln;
+				"array: ".post; out.postln;
+				"array.size: ".post; out.size.postln;
+				"array.minItem: ".post; out.minItem.postln;
+				"array.maxItem: ".post; out.maxItem.postln;
 				zeroOut = out.sum == 0;
 				cond.signalOne();
 			};
