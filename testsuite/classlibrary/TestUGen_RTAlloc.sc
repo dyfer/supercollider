@@ -148,6 +148,7 @@ TestUGen_RTAlloc : UnitTest {
 		var testAllocPass = { |name, func, runtime = 0.001|
 			var cond = CondVar(), nonZeroOut = nil;
 			func.loadToFloatArray(runtime, server) { |out|
+				out.postln;
 				nonZeroOut = out.sum != 0;
 				cond.signalOne();
 			};
