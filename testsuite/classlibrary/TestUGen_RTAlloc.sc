@@ -7,11 +7,12 @@ TestUGen_RTAlloc : UnitTest {
 		server.options.memSize = 1024;
 		server.options.blockSize = 64;
 		this.bootServer(server);
+		1.wait;
 	}
 
 	tearDown {
 		server.quit.remove;
-		0.1.wait; // additional wait when this is run in the CI
+		1.wait; // additional wait when this is run in the CI
 	}
 
 	test_allocFail_clearUnit {
