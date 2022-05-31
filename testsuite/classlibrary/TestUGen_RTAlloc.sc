@@ -11,6 +11,7 @@ TestUGen_RTAlloc : UnitTest {
 
 	tearDown {
 		server.quit.remove;
+		0.1.wait; // additional wait when this is run in the CI
 	}
 
 	test_allocFail_clearUnit {
