@@ -191,9 +191,9 @@ jobs:
         include:
 
           - job-name: ''
-            os-version: '11'
-            xcode-version: '12.4'
-            deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 11 only supports 10.14+
+            os-version: '12'
+            xcode-version: '13.4.1'
+            deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 12 only supports 10.14+
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
