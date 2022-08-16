@@ -564,6 +564,8 @@ jobs:
           else
             unzip $ARTIFACT_FILE.zip
           fi
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
       - name: setup Linux environment
         if: runner.os == 'Linux'
         run: |
@@ -573,9 +575,6 @@ jobs:
 
           # add bin to PATH so qpm can find scsynth
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
-
-          # load MIDI modules
-          sudo modprobe snd-seq
 
           # start jack
           jackd --no-realtime -d dummy &
