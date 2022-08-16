@@ -574,6 +574,9 @@ jobs:
           # add bin to PATH so qpm can find scsynth
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
 
+          # load MIDI modules
+          sudo modprobe snd-seq
+
           # start jack
           jackd --no-realtime -d dummy &
       - name: setup python
