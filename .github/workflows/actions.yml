@@ -564,8 +564,8 @@ jobs:
           else
             unzip $ARTIFACT_FILE.zip
           fi
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: setup Linux environment
         if: runner.os == 'Linux'
         run: |
