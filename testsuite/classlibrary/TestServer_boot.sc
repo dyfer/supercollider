@@ -102,6 +102,8 @@ TestServer_boot : UnitTest {
 		var count = 0;
 		var func = { count = count + 1 };
 
+		0.5.wait; // add extra time to ensure that previosly quitted server is not running (?)
+
 		ServerBoot.add(func, s);
 		this.bootServer(s);
 		this.cycleNotify(s);
@@ -119,6 +121,8 @@ TestServer_boot : UnitTest {
 	test_notifyAndServerTreeActions {
 		var count = 0;
 		var func = { count = count + 1 };
+
+		0.5.wait; // add extra time to ensure that previosly quitted server is not running (?)
 
 		ServerTree.add(func, s);
 		this.bootServer(s);
