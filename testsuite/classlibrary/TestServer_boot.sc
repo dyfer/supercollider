@@ -104,7 +104,7 @@ TestServer_boot : UnitTest {
 		var scsynthRunning = "ps aux | grep -v grep | grep -c scsynth".unixCmdGetStdOut;
 
 		"scsynth runnning: ".post; scsynthRunning.postln;
-		if(scsynthRunning.asBoolean) {"killing all servers".postln; Server.killAll};
+		if(scsynthRunning.asInteger.asBoolean) {"killing all servers".postln; Server.killAll};
 
 		0.5.wait; // add extra time to ensure that previosly quitted server is not running (?)
 
@@ -127,8 +127,14 @@ TestServer_boot : UnitTest {
 	test_notifyAndServerTreeActions {
 		var count = 0;
 		var func = { count = count + 1 };
+		var scsynthRunning = "ps aux | grep -v grep | grep -c scsynth".unixCmdGetStdOut;
+
+		"scsynth runnning: ".post; scsynthRunning.postln;
+		if(scsynthRunning.asInteger.asBoolean) {"killing all servers".postln; Server.killAll};
 
 		0.5.wait; // add extra time to ensure that previosly quitted server is not running (?)
+
+		"scsynth runnning after 0.5: ".post; "ps aux | grep -v grep | grep -c scsynth".unixCmdGetStdOut.postln;
 
 		ServerTree.add(func, s);
 		this.bootServer(s);
