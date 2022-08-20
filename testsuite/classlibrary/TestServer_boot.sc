@@ -101,8 +101,14 @@ TestServer_boot : UnitTest {
 	test_notifyAndServerBootActions {
 		var count = 0;
 		var func = { count = count + 1 };
+		var scsynthRunning = "ps aux | grep -v grep | grep -c scsynth".unixCmdGetStdOut;
+
+		"scsynth runnning: ".post; scsynthRunning.postln;
+		if(scsynthRunning.asBoolean) {"killing all servers".postln; Server.killAll};
 
 		0.5.wait; // add extra time to ensure that previosly quitted server is not running (?)
+
+		"scsynth runnning after 0.5: ".post; "ps aux | grep -v grep | grep -c scsynth".unixCmdGetStdOut.postln;
 
 		ServerBoot.add(func, s);
 		this.bootServer(s);
