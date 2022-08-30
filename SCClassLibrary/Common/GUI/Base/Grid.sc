@@ -106,6 +106,14 @@ DrawGrid {
 	vertGrid_ { arg g;
 		y.grid = g;
 	}
+	tickSpacing_ { arg val;
+		x.tickSpacing = val;
+		y.tickSpacing = val;
+	}
+	hideOverlappingLabels_ { arg bool;
+		x.hideOverlappingLabels = bool;
+		y.hideOverlappingLabels = bool;
+	}
 	copy {
 		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
 	}
@@ -122,6 +130,7 @@ DrawGridX {
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
 	var txtPad = 2; // match with Plot:txtPad
+	var <tickSpacing = 32, <hideOverlappingLabels = true;
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -147,7 +156,7 @@ DrawGridX {
 		^commands ?? {
 			cacheKey = [range,bounds];
 			commands = [];
-			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
+			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, tickSpacing);
 
 			p['lines'].do { arg val, i;
 				var x;
@@ -176,22 +185,34 @@ DrawGridX {
 			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val; // value, label, [color, font]
-					var x;
-					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
-					});
-					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
-					});
+				p['labels'].do { arg val, i; // value, label, [color, font]
+					var x, next_x, diff, labelWidth, drawLabel = true;
 					x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+					if(hideOverlappingLabels) {
+						next_x = (p['labels'][i + 1] ? [])[0];
+						labelWidth = val[1].asString.size * font.size * 0.5;
+						if(next_x.notNil) {
+							diff = grid.spec.unmap(next_x).linlin(0, 1, bounds.left, bounds.right) - x;
+							if(diff < labelWidth) {
+								drawLabel = false
+							}
+						};
+					};
+					if(drawLabel) {
+						if(val[2].notNil) {
+							commands = commands.add( ['color_',val[2] ] );
+						};
+						if(val[3].notNil) {
+							commands = commands.add( ['font_',val[3] ] );
+						};
 
-					commands = commands.add([
-						'stringCenteredIn', val[1].asString,
-						Rect.aboutPoint(
-							x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
-						).top_(bounds.bottom + txtPad)
-					]);
+						commands = commands.add([
+							'stringCenteredIn', val[1].asString,
+							Rect.aboutPoint(
+								x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
+							).top_(bounds.bottom + txtPad)
+						]);
+					};
 				}
 			});
 			commands
@@ -224,7 +245,7 @@ DrawGridY : DrawGridX {
 
 			commands = [];
 
-			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom);
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, tickSpacing);
 
 			p['lines'].do { arg val, i; // value, [color]
 				var y;
@@ -254,8 +275,8 @@ DrawGridY : DrawGridX {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 
-				p['labels'].do { arg val;
-					var y, lblRect;
+				p['labels'].do { arg val, i;
+					var y, lblRect, next_y, diff, labelHeight, drawLabel = true;
 
 					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
@@ -336,28 +357,105 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks|
+	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks,tickSpacing=64|
 		var lines,p,pixRange;
-		var nfrac,d,graphmin,graphmax,range;
+		var nfrac,d,graphmin,graphmax,range, nfracarr;
+		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
 		pixRange = pixelMax - pixelMin;
-		if(numTicks.isNil,{
-			numTicks = (pixRange / 64);
-			numTicks = numTicks.max(3).round(1);
-		});
-		# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
 		lines = [];
-		if(d != inf,{
-			forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-				if(tick.inclusivelyBetween(valueMin,valueMax),{
-					lines = lines.add( tick );
-				})
-			});
-		});
+		nfracarr = [];
+		spec.warp.class.switch(
+			LinearWarp, {
+				if(numTicks.isNil,{
+					numTicks = (pixRange / tickSpacing);
+					numTicks = numTicks.max(3).round(1);
+				});
+				# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
+				if(d != inf,{
+					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+						if(tick.inclusivelyBetween(valueMin,valueMax),{
+							lines = lines.add( tick );
+						})
+					});
+				});
+			},
+			ExponentialWarp, {
+				expRangeIsValid = ((valueMin > 0) && (valueMax > 0)) || ((valueMin < 0) && (valueMax < 0));
+				if(expRangeIsValid) {
+					expRangeIsPositive = valueMin > 0;
+					if(expRangeIsPositive) {
+						nDecades = log10(valueMax/valueMin);
+						first = step = 10**(valueMin.abs.log10.trunc);
+						roundFactor = step;
+					} {
+						nDecades = log10(valueMin/valueMax);
+						step = 10**(valueMin.abs.log10.trunc - 1);
+						first = 10 * step.neg;
+						roundFactor = 10**(valueMax.abs.log10.trunc);
+					};
+					//workaround for small ranges
+					"nDecades: ".post;nDecades.postln;
+					if(nDecades < 1) {
+						step = step * 0.1;
+						roundFactor = roundFactor * 0.1;
+						nfrac = valueMin.abs.log10.floor.neg + 1;
+					};
+					numTicks ?? {numTicks = (pixRange / (tickSpacing * nDecades))};
+					"numTicks: ".post; numTicks.postln;
+					tick = first;
+					while ({tick <= (valueMax + step)}) {
+						if(round(tick, roundFactor).inclusivelyBetween(valueMin, valueMax)) {
+							if(
+								(numTicks > 4) ||
+								((numTicks > 2.5).and(tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)) ||
+								((numTicks > 2).and((tick - this.niceNum(tick, true)) < 1e-15)) ||
+								(tick.abs.log10.frac < 0.01)
+							) {
+								lines = lines.add( tick )
+							};
+						};
+						if(tick >= (step * 9.9999)) { step = (step * 10) };
+						if(expRangeIsPositive) {
+							if((round(tick,roundFactor) >= (round(step*10,roundFactor))) && (nDecades > 1)) { step = (step*10) };
+						} {
+							if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) && (nDecades > 1)) { step = (step*0.1).postln };
+						};
+						tick = (tick+step);
+					};
+					nfracarr = lines.collect({ arg val;
+						val.abs.log10.floor.neg.max(0)
+					});
+
+				} {
+					format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
+					numTicks ?? {
+						numTicks = (pixRange / tickSpacing);
+						numTicks = numTicks.max(3).round(1);
+					}; // set numTicks regardless to avoid errors
+				};
+			},
+			{
+				// TODO: other Warp specs currently have the same implementation as LinearWarp
+				if(numTicks.isNil,{
+					numTicks = (pixRange / tickSpacing);
+					numTicks = numTicks.max(3).round(1);
+				});
+				# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
+				if(d != inf,{
+					forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
+						if(tick.inclusivelyBetween(valueMin,valueMax),{
+							lines = lines.add( tick );
+						})
+					});
+				});
+			}
+		);
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
 			if (sum(lines % 1) == 0) { nfrac = 0 };
-			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val,nfrac) ] });
+			p['labels'] = lines.collect({ arg val, inc;
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ? 1) ] });
 		};
 		^p
 	}
