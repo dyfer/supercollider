@@ -129,6 +129,7 @@ DrawGridX {
 	var commands,cacheKey;
 	var txtPad = 2; // match with Plot:txtPad
 	var <>tickSpacing = 64;
+	var <>numTicks = nil; // nil for dynamic with view size
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -154,7 +155,7 @@ DrawGridX {
 		^commands ?? {
 			cacheKey = [range,bounds];
 			commands = [];
-			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, tickSpacing);
+			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, numTicks, tickSpacing);
 
 			p['lines'].do { arg val, i;
 				var x;
@@ -233,7 +234,7 @@ DrawGridY : DrawGridX {
 
 			commands = [];
 
-			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, tickSpacing);
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, numTicks, tickSpacing);
 
 			p['lines'].do { arg val, i; // value, [color]
 				var y;
