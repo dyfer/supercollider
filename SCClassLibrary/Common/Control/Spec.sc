@@ -100,7 +100,15 @@ ControlSpec : Spec {
 		^numStep
 	}
 
-	grid { ^grid ?? {GridLines(this)} }
+	grid {
+		^grid ?? {
+			warp.switch(
+				LinearWarp(), {GridLines(this)},
+				ExponentialWarp(), {ExponentialGridLines(this)},
+				{GridLines(this)} // all other Warps
+			)
+		}
+	}
 
 	looseRange { |data, defaultRange, minval, maxval|
 		var newMin, newMax;

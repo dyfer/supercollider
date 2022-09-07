@@ -2,6 +2,7 @@ DrawGrid {
 
 	var <bounds, <>x, <>y;
 	var <>opacity=0.7, <>smoothing=false, <>linePattern;
+	var <>testView;
 
 	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
@@ -27,7 +28,7 @@ DrawGrid {
 
 		w = Window("Grid test", bounds.center_(Window.screenBounds.center)).front;
 
-		UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
+		grid.testView = UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
 		.drawFunc_({ |v|
 			var units;
 
@@ -106,6 +107,15 @@ DrawGrid {
 	vertGrid_ { arg g;
 		y.grid = g;
 	}
+	tickSpacing_ { arg val;
+		x.tickSpacing = val;
+		y.tickSpacing = val;
+		testView !? {testView.refresh};
+	}
+	hideOverlappingLabels_ { arg bool;
+		x.hideOverlappingLabels = bool;
+		y.hideOverlappingLabels = bool;
+	}
 	copy {
 		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
 	}
@@ -122,6 +132,7 @@ DrawGridX {
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
 	var txtPad = 2; // match with Plot:txtPad
+	var <>tickSpacing = 64, <hideOverlappingLabels = true;
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -147,7 +158,7 @@ DrawGridX {
 		^commands ?? {
 			cacheKey = [range,bounds];
 			commands = [];
-			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
+			p = grid.getParams(range[0], range[1], bounds.left, bounds.right, nil, tickSpacing);
 
 			p['lines'].do { arg val, i;
 				var x;
@@ -172,26 +183,49 @@ DrawGridX {
 			if (p['lines'].size == 1 and: { valNorm != 1 }) {
 				commands = this.prAddLineCmds(commands, bounds.right, lineColor);
 			};
+			p.postcs;
 
 			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val; // value, label, [color, font]
-					var x;
-					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
-					});
-					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
-					});
+				p['labels'].do { arg val, i; // value, label, [color, font]
+					var x, prev_x, diff, labelWidth, drawLabel = true, prev_i;
 					x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+					if(hideOverlappingLabels) {
+						p['labels'].postcs;
+						prev_i = p['labels'].collect({|searchVals, searchInc| [searchInc] ++ searchVals}).select({|searchVals| (searchVals[0] < i) && searchVals[2].notNil }).last.first;
+						// prev_i = [ [ 0.1, "0.1" ], [ 0.2, "0.2" ], [ 0.5, "0.5" ], [ 1.0, "1.0" ], [ 2.0, "2" ], [ 5.0, "5" ], [ 10.0, "10" ], [ 20.0, "20" ], [ 50.0, "50" ], [ 100.0, "100" ] ].collect({|searchVals, searchInc| [searchInc] ++ searchVals}).select({|searchVals| (searchVals[0] < 5) && searchVals[2].notNil }).last.first;
+						// prev_x = (p['labels'][i - 1] ? [])[0];
+						"prev_i: ".post; prev_i.postln;
+						prev_i !? {prev_x = (p['labels'][prev_i] ? [])[0]}; // figure out how to make decision based on the nicenum here... ? or decades
 
-					commands = commands.add([
-						'stringCenteredIn', val[1].asString,
-						Rect.aboutPoint(
-							x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
-						).top_(bounds.bottom + txtPad)
-					]);
+						if(prev_x.notNil) {
+							labelWidth = val[1].asString.bounds.width;
+							// diff = grid.spec.unmap(prev_x).linlin(0, 1, bounds.left, bounds.right) - x;
+							diff = x - grid.spec.unmap(prev_x).linlin(0, 1, bounds.left, bounds.right);
+							if(diff < labelWidth) {
+								drawLabel = false
+							};
+							[i, prev_i, val[0], x, prev_x, diff, labelWidth, drawLabel].postln;
+						};
+					};
+					if(drawLabel) {
+						if(val[2].notNil) {
+							commands = commands.add( ['color_',val[2] ] );
+						};
+						if(val[3].notNil) {
+							commands = commands.add( ['font_',val[3] ] );
+						};
+
+						commands = commands.add([
+							'stringCenteredIn', val[1].asString,
+							Rect.aboutPoint(
+								x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
+							).top_(bounds.bottom + txtPad)
+						]);
+					} {
+						p['labels'][i][1] = nil; // remove label if it's not drawn
+					};
 				}
 			});
 			commands
@@ -224,7 +258,7 @@ DrawGridY : DrawGridX {
 
 			commands = [];
 
-			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom);
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom, nil, tickSpacing);
 
 			p['lines'].do { arg val, i; // value, [color]
 				var y;
@@ -254,8 +288,8 @@ DrawGridY : DrawGridX {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 
-				p['labels'].do { arg val;
-					var y, lblRect;
+				p['labels'].do { arg val, i;
+					var y, lblRect, next_y, diff, labelHeight, drawLabel = true;
 
 					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
@@ -336,12 +370,12 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
-	getParams { |valueMin,valueMax,pixelMin,pixelMax,numTicks|
+	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
 		var lines,p,pixRange;
 		var nfrac,d,graphmin,graphmax,range;
 		pixRange = pixelMax - pixelMin;
 		if(numTicks.isNil,{
-			numTicks = (pixRange / 64);
+			numTicks = (pixRange / tickSpacing);
 			numTicks = numTicks.max(3).round(1);
 		});
 		# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
@@ -357,7 +391,7 @@ GridLines {
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
 			if (sum(lines % 1) == 0) { nfrac = 0 };
-			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val,nfrac) ] });
+			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val, nfrac)] });
 		};
 		^p
 	}
@@ -367,6 +401,80 @@ GridLines {
 		} {
 			^val.round( (10**numDecimalPlaces).reciprocal).asString
 		}
+	}
+}
+
+ExponentialGridLines : GridLines {
+	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 32|
+		var lines,p,pixRange;
+		var nfrac,d,graphmin,graphmax,range, nfracarr;
+		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
+		pixRange = pixelMax - pixelMin;
+		lines = [];
+		nfracarr = [];
+		expRangeIsValid = ((valueMin > 0) && (valueMax > 0)) || ((valueMin < 0) && (valueMax < 0));
+		if(expRangeIsValid) {
+			expRangeIsPositive = valueMin > 0;
+			if(expRangeIsPositive) {
+				nDecades = log10(valueMax/valueMin);
+				first = step = 10**(valueMin.abs.log10.trunc);
+				roundFactor = step;
+			} {
+				nDecades = log10(valueMin/valueMax);
+				step = 10**(valueMin.abs.log10.trunc - 1);
+				first = 10 * step.neg;
+				roundFactor = 10**(valueMax.abs.log10.trunc);
+			};
+			//workaround for small ranges
+			if(nDecades < 1) {
+				step = step * 0.1;
+				roundFactor = roundFactor * 0.1;
+				nfrac = valueMin.abs.log10.floor.neg + 1;
+			};
+			numTicks ?? {numTicks = (pixRange / (tickSpacing * nDecades))};
+			// "numTicks: ".post; numTicks.postln;
+			tick = first;
+			while ({tick <= (valueMax + step)}) {
+				if(round(tick, roundFactor).inclusivelyBetween(valueMin, valueMax)) {
+					// [tick, (numTicks > 4), ((numTicks > 2.5).and(tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)), ((numTicks > 2).and((tick - this.niceNum(tick, true)).abs < 1e-15)), (tick.abs.round(roundFactor).log10.frac < 0.01)].postln;
+					if(
+						(numTicks > 4) ||
+						((numTicks > 2.5).and(tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)).and(tick >= 1) ||
+						((numTicks > 2).and((tick - this.niceNum(tick, true)).abs < 1e-15)) ||
+						(tick.abs.round(roundFactor).log10.frac < 0.01) ||
+						(tick.absdif(valueMax) < 1e-15)
+					) {
+						// "adding ".post; tick.postln;
+						lines = lines.add( tick )
+					};
+				};
+				if(tick >= (step * 9.9999)) { step = (step * 10) };
+				if(expRangeIsPositive) {
+					if((round(tick,roundFactor) >= (round(step*10,roundFactor))) && (nDecades > 1)) { step = (step*10) };
+				} {
+					if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) && (nDecades > 1)) { step = (step*0.1).postln };
+				};
+				tick = (tick+step);
+			};
+			nfracarr = lines.collect({ arg val;
+				val.abs.log10.floor.neg.max(0)
+			});
+
+		} {
+			format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
+			numTicks ?? {
+				numTicks = (pixRange / tickSpacing);
+				numTicks = numTicks.max(3).round(1);
+			}; // set numTicks regardless to avoid errors
+		};
+		p = ();
+		p['lines'] = lines;
+		if(pixRange / numTicks > 9) {
+			if (sum(lines % 1) == 0) { nfrac = 0 };
+			p['labels'] = lines.collect({ arg val, inc;
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ? 1) ] });
+		};
+		^p
 	}
 }
 
