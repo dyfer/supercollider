@@ -205,6 +205,21 @@ jobs:
             artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
             verify-app: true
 
+          - job-name: 'arm64'
+            os-version: '11'
+            xcode-version: '12.4'
+            deployment-target: '11.0'
+            cmake-architectures: arm64
+            use-syslibs: false
+            shared-libscsynth: false
+            system-portaudio: true
+            build-libsndfile: true
+            build-readline: true
+            build-fftw: true
+            vcpkg-triplet: arm64-osx-release-supercollider # required for build-libsndfile
+            artifact-suffix: 'macOS-arm64' # set if needed - will trigger artifact upload
+            verify-app: true
+
           - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
@@ -313,7 +328,14 @@ jobs:
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: '!matrix.qt-version'
-        run: brew install qt5
+        run: |
+          if [[ "${{ matrix.cmake-architectures }}" == "arm64" ]]; then 
+            echo "Installing arm64 version of homebrew qt5 manually"
+            curl -L -H "Authorization: Bearer QQ==" -o qt5.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
+            brew install -f qt5.tar.gz
+          else
+            brew install qt5
+          fi;
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -544,7 +566,7 @@ jobs:
           - name: macOS
             runs-on: macos-11
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            artifact-suffix: macOS
+            artifact-suffix: macOS-x64
             artifact-extension: '.dmg'
 
           - name: Linux
@@ -742,6 +764,7 @@ jobs:
         with:
           files: |
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
