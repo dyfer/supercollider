@@ -633,7 +633,7 @@ jobs:
       matrix:
         include:
 
-          - artifact-suffix: macOS
+          - artifact-suffix: macOS-x64
             s3-os-name: osx
             s3-artifact-suffx: ''
             s3-artifact-extension: 'dmg'
@@ -741,8 +741,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS.dmg/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
