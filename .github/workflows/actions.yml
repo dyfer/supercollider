@@ -318,7 +318,11 @@ jobs:
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
           brew uninstall --ignore-dependencies readline
-          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+          # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
+          # vcpkg readline currently fails (ncurses dependency), let's install arm64 readline bottle manually
+          echo "Installing arm64 version of homebrew readline manually"
+          curl -L -H "Authorization: Bearer QQ==" -o readline.tar.gz https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:08efc469d237689a9619ec6b3ea931793d03597e89bd622ebd122b7256d7a446 # sha of the arm64 bottle for big sur
+          brew install -f readline.tar.gz
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
         run: |
