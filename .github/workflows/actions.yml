@@ -190,41 +190,45 @@ jobs:
       matrix:
         include:
 
-          - job-name: ''
+          - job-name: 'x64'
             os-version: '11'
             xcode-version: '12.4'
             deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 11 only supports 10.14+
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+            artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
             verify-app: true
 
-          - job-name: 'legacy'
+          - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
             system-portaudio: false
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+            artifact-suffix: 'macOS-x64-legacy' # set if needed - will trigger artifact upload
 
-          - job-name: 'use system libraries'
+          - job-name: 'x64 use system libraries'
             os-version: '12'
             xcode-version: '13.4.1'
             deployment-target: '10.14'
+            cmake-architectures: x86_64
             use-syslibs: true
             shared-libscsynth: false
             verify-app: true
 
-          - job-name: 'shared libscsynth'
+          - job-name: 'x64 shared libscsynth'
             os-version: '12'
             xcode-version: '13.4.1'
             deployment-target: '10.14'
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: true
             verify-app: true
@@ -241,6 +245,7 @@ jobs:
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
+      CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
     steps:
       - uses: actions/checkout@v2
         with:
