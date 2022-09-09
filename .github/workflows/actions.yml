@@ -264,8 +264,8 @@ jobs:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
       CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
-      QT_INSTALL_DIR: ${{ github.workspace }}/../Qt
-      QT_UNIVERSAL_PREP_DIR: ${{ github.workspace }}/../qt-prepare
+      QT_UNIVERSAL_PREP_DIR: ${{ github.workspace }}/qt-prepare
+      QT_UNIVERSAL_INSTALL_DIR: ${{ github.workspace }}/qt-prepare/qt-universal # needs to be under QT_UNIVERSAL_PREP_DIR for caching
     steps:
       - uses: actions/checkout@v2
         with:
@@ -384,8 +384,8 @@ jobs:
           brew install -f qt5-arm64.bigsur.bottle.tar.gz
           
           echo "creating universal binary"
-          mkdir $QT_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_INSTALL_DIR $CURRENT_QT5_DIR.x64 $CURRENT_QT5_DIR
+          mkdir $QT_UNIVERSAL_INSTALL_DIR
+          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR.x64 $CURRENT_QT5_DIR
       - name: install qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
@@ -411,7 +411,7 @@ jobs:
           brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.orig
-          cp -r $QT_INSTALL_DIR $CURRENT_QT5_DIR
+          cp -r $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
