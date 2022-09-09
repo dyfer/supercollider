@@ -333,10 +333,10 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        if: '!matrix.qt-version' && matrix.cmake-architectures == 'x86_64'
+        if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
         run: brew install qt5
       - name: install qt universal binary
-        if: '!matrix.qt-version' && matrix.cmake-architectures != 'x86_64'
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
  
