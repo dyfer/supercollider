@@ -346,11 +346,7 @@ jobs:
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
  
-          echo "installing x64 version of qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
-          brew install -f qt5-x64.bigsur.bottle.tar.gz
- 
-          echo "installing arm64 qt and dependencies" # sha of the arm64 bottles for big sur
+          echo "downloading arm64 qt dependencies" # sha of the arm64 bottles for big sur
           curl -L -H "Authorization: Bearer QQ==" -o pcre-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:2d6bfcafce9da9739e32ee433087e69a78cda3f18291350953e6ad260fefc50b
           curl -L -H "Authorization: Bearer QQ==" -o pcre2-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre2/blobs/sha256:e9ad944caf659a16e81a3232da8b9d21547b9979cc784f9d242860667ed757a5
           curl -L -H "Authorization: Bearer QQ==" -o gettext-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gettext/blobs/sha256:339b62b52ba86dfa73091d37341104b46c01ae354ca425000732df689305442b
@@ -365,20 +361,25 @@ jobs:
           curl -L -H "Authorization: Bearer QQ==" -o webp-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:90cc74768d434a5476cf49144d02ef5dd24cfeb2dead12f1210ffa468e024c85
           curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
 
+          # echo "creating second homebrew install" # we need independent install of qt for makeuniversal
+          git clone https://github.com/Homebrew/brew homebrew
+          homebrew/bin/brew install qt5
+
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
-          `brew --prefix qt5`/bin/qmake makeuniversal.pro
+          `homebrew/bin/brew --prefix qt5`/bin/qmake makeuniversal.pro
           make
           cd ..
 
+          echo "installing x64 version of qt"
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
+          brew install -f qt5-x64.bigsur.bottle.tar.gz
           echo "moving x64 qt"
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.x64
-
           echo "replacing x64 qt with arm64 qt"
-          brew uninstall --ignore-dependencies qt5
-          brew install -f qt5-arm64.bigsur.bottle.tar.gz
+          brew reinstall -f qt5-arm64.bigsur.bottle.tar.gz
           
           echo "creating universal binary"
           mkdir $QT_UNIVERSAL_INSTALL_DIR
