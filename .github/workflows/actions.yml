@@ -265,6 +265,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
       CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
       QT_INSTALL_DIR: ${{ github.workspace }}/../Qt
+      QT_UNIVERSAL_PREP_DIR: ${{ github.workspace }}/../qt-prepare
     steps:
       - uses: actions/checkout@v2
         with:
@@ -336,8 +337,8 @@ jobs:
         run: brew install qt5
       - name: create qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
-        working-directory: ${{ env.GITHUB_WORKSPACE }}/../qt-prepare
         run: |
+          mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
