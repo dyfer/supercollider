@@ -338,17 +338,20 @@ jobs:
       - name: install qt from homebrew
         if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
         run: brew install qt5
-      - name: install qt universal binary
+      - name: prepare qt universal binary # this can be cached
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
+          # this is a workaround to create an arm64 binary of qt5
+          # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
+          # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
  
           echo "installing x64 version of qt"
           curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
           brew install -f qt5-x64.bigsur.bottle.tar.gz
 
-          echo "creating second homebrew install"
-          git clone https://github.com/Homebrew/brew homebrew
+          # echo "creating second homebrew install"
+          # git clone https://github.com/Homebrew/brew homebrew
  
           echo "installing arm64 qt and dependencies" # sha of the arm64 bottles for big sur
           curl -L -H "Authorization: Bearer QQ==" -o pcre-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:2d6bfcafce9da9739e32ee433087e69a78cda3f18291350953e6ad260fefc50b
@@ -364,32 +367,48 @@ jobs:
           curl -L -H "Authorization: Bearer QQ==" -o libtiff-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:cda70e066b4b649d7b41654abfc46e8ed1c3740c54f3cf58f4e750a551dc94f7
           curl -L -H "Authorization: Bearer QQ==" -o webp-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:90cc74768d434a5476cf49144d02ef5dd24cfeb2dead12f1210ffa468e024c85
           curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
-          homebrew/bin/brew install -f gettext-arm64.bigsur.bottle.tar.gz
-          homebrew/bin/brew install -f pcre-arm64.bigsur.bottle.tar.gz
-          homebrew/bin/brew install -f glib-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f pcre2-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f libpng-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f freetype-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f gdbm-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f mpdecimal-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f jpeg-turbo-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f giflib-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f libtiff-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f webp-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f qt5-arm64.bigsur.bottle.tar.gz
- 
+
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
           `brew --prefix qt5`/bin/qmake makeuniversal.pro
           make
           cd ..
+
+          echo "moving x64 qt"
+          export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
+          mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.x64
+
+          echo "replacing x64 qt with arm64 qt"
+          brew uninstall --ignore-dependencies qt5
+          brew install -f qt5-arm64.bigsur.bottle.tar.gz
           
           echo "creating universal binary"
           mkdir $QT_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_INSTALL_DIR `brew --prefix qt5` `homebrew/bin/brew --prefix qt5`
+          makeuniversal/makeuniversal $QT_INSTALL_DIR $CURRENT_QT5_DIR.x64 $CURRENT_QT5_DIR
+      - name: install qt universal binary
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        run: |
+          cd $QT_UNIVERSAL_PREP_DIR
 
-          echo "relocating universal qt back to homebrew"
+          echo "removing x64 packages"
+          brew uninstall --ignore-dependencies gettext pcre glib pcre2 libpng freetype gdbm mpdecimal jpeg-turbo giflib libtiff webp
+          echo "installing arm64 packages"
+          brew install -f gettext-arm64.bigsur.bottle.tar.gz
+          brew install -f pcre-arm64.bigsur.bottle.tar.gz
+          brew install -f glib-arm64.bigsur.bottle.tar.gz 
+          brew install -f pcre2-arm64.bigsur.bottle.tar.gz 
+          brew install -f libpng-arm64.bigsur.bottle.tar.gz 
+          brew install -f freetype-arm64.bigsur.bottle.tar.gz 
+          brew install -f gdbm-arm64.bigsur.bottle.tar.gz 
+          brew install -f mpdecimal-arm64.bigsur.bottle.tar.gz 
+          brew install -f jpeg-turbo-arm64.bigsur.bottle.tar.gz 
+          brew install -f giflib-arm64.bigsur.bottle.tar.gz 
+          brew install -f libtiff-arm64.bigsur.bottle.tar.gz 
+          brew install -f webp-arm64.bigsur.bottle.tar.gz 
+
+          echo "moving universal qt to homebrew"
+          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.orig
           cp -r $QT_INSTALL_DIR $CURRENT_QT5_DIR
