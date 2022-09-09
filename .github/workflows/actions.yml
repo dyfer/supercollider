@@ -364,7 +364,16 @@ jobs:
           homebrew/bin/brew install -f gettext-arm64.bigsur.bottle.tar.gz
           homebrew/bin/brew install -f pcre-arm64.bigsur.bottle.tar.gz
           homebrew/bin/brew install -f glib-arm64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f pcre2-arm64.bigsur.bottle.tar.gz libpng-arm64.bigsur.bottle.tar.gz freetype-arm64.bigsur.bottle.tar.gz gdbm-arm64.bigsur.bottle.tar.gz mpdecimal-arm64.bigsur.bottle.tar.gz jpeg-turbo-arm64.bigsur.bottle.tar.gz giflib-arm64.bigsur.bottle.tar.gz libtiff-arm64.bigsur.bottle.tar.gz webp-arm64.bigsur.bottle.tar.gz qt5-arm64.bigsur.bottle.tar.gz
+          homebrew/bin/brew install -f pcre2-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f libpng-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f freetype-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f gdbm-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f mpdecimal-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f jpeg-turbo-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f giflib-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f libtiff-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f webp-arm64.bigsur.bottle.tar.gz 
+          homebrew/bin/brew install -f qt5-arm64.bigsur.bottle.tar.gz
  
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
