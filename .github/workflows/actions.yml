@@ -361,14 +361,14 @@ jobs:
           curl -L -H "Authorization: Bearer QQ==" -o webp-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:90cc74768d434a5476cf49144d02ef5dd24cfeb2dead12f1210ffa468e024c85
           curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
 
-          # echo "creating second homebrew install" # we need independent install of qt for makeuniversal
+          echo "creating second homebrew install" # we need independent install of qt for makeuniversal
           git clone https://github.com/Homebrew/brew homebrew
           homebrew/bin/brew install qt5
 
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
-          `homebrew/bin/brew --prefix qt5`/bin/qmake makeuniversal.pro
+          `../homebrew/bin/brew --prefix qt5`/bin/qmake makeuniversal.pro
           make
           cd ..
 
