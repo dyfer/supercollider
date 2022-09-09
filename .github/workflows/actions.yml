@@ -321,8 +321,8 @@ jobs:
           # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
           # vcpkg readline currently fails (ncurses dependency), let's install arm64 readline bottle manually
           echo "Installing arm64 version of homebrew readline manually"
-          curl -L -H "Authorization: Bearer QQ==" -o readline.tar.gz https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:08efc469d237689a9619ec6b3ea931793d03597e89bd622ebd122b7256d7a446 # sha of the arm64 bottle for big sur
-          brew install -f readline.tar.gz
+          curl -L -H "Authorization: Bearer QQ==" -o readline.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:08efc469d237689a9619ec6b3ea931793d03597e89bd622ebd122b7256d7a446 # sha of the arm64 bottle for big sur
+          brew install -f readline.bigsur.bottle.tar.gz
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
         run: |
@@ -335,8 +335,8 @@ jobs:
         run: |
           if [[ "${{ matrix.cmake-architectures }}" == "arm64" ]]; then 
             echo "Installing arm64 version of homebrew qt5 manually"
-            curl -L -H "Authorization: Bearer QQ==" -o qt5.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
-            brew install -f qt5.tar.gz
+            curl -L -H "Authorization: Bearer QQ==" -o qt5.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
+            brew install -f qt5.bigsur.bottle.tar.gz
           else
             brew install qt5
           fi;
