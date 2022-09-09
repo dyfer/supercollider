@@ -335,7 +335,7 @@ jobs:
         if: '!matrix.qt-version'
         run: brew install qt5
       - name: create qt universal binary
-        if: matrix.cmake-architectures != "x86_64" && '!matrix.qt-version'
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         working-directory: ${{ env.GITHUB_WORKSPACE }}/../qt-prepare
         run: |
           echo "getting 'makeuniversal' tool"
