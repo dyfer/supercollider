@@ -321,7 +321,10 @@ jobs:
         run: |
           brew uninstall --ignore-dependencies readline
           # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
-          # vcpkg readline currently fails (ncurses dependency), let's install arm64 readline bottle manually
+          # vcpkg readline currently fails on arm64 (ncurses dependency)
+          # see https://github.com/microsoft/vcpkg/issues/22654
+          # as a workaround, let's install arm64 readline bottle manually
+          # once the issue with vcpkg/ncurses is solved, let's remove this and use vcpkg in arm64/universal builds
           echo "Installing arm64 version of homebrew readline manually"
           curl -L -H "Authorization: Bearer QQ==" -o readline.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:08efc469d237689a9619ec6b3ea931793d03597e89bd622ebd122b7256d7a446 # sha of the arm64 bottle for big sur
           brew install -f readline.bigsur.bottle.tar.gz
