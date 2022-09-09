@@ -387,8 +387,8 @@ jobs:
           makeuniversal/makeuniversal $QT_INSTALL_DIR `brew --prefix qt5` `homebrew/bin/brew --prefix qt5`
 
           echo "relocating universal qt back to homebrew"
-          mv `readlink -f \`brew --prefix qt5\`` `readlink -f \`brew --prefix qt5\``-old
-          cp -r $QT_INSTALL_DIR `readlink -f \`brew --prefix qt5\``
+          mv `(cd \`brew --prefix qt5\`; pwd -P)` `(cd \`brew --prefix qt5\`; pwd -P)`-old
+          cp -r $QT_INSTALL_DIR `(cd \`brew --prefix qt5\`; pwd -P)`
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
