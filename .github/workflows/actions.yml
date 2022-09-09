@@ -347,9 +347,21 @@ jobs:
           echo "creating second homebrew install"
           git clone https://github.com/Homebrew/brew homebrew
  
-          echo "installing arm64 qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
-          homebrew/bin/brew install -f qt5-arm64.bigsur.bottle.tar.gz
+          echo "installing arm64 qt and dependencies" # sha of the arm64 bottles for big sur
+          curl -L -H "Authorization: Bearer QQ==" -o pcre-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:2d6bfcafce9da9739e32ee433087e69a78cda3f18291350953e6ad260fefc50b
+          curl -L -H "Authorization: Bearer QQ==" -o pcre2-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre2/blobs/sha256:e9ad944caf659a16e81a3232da8b9d21547b9979cc784f9d242860667ed757a5
+          curl -L -H "Authorization: Bearer QQ==" -o gettext-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gettext/blobs/sha256:339b62b52ba86dfa73091d37341104b46c01ae354ca425000732df689305442b
+          curl -L -H "Authorization: Bearer QQ==" -o glib-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/glib/blobs/sha256:663d6af72612b190ef76977db1dc8e822be21f1555a36a854a83e854afdb5025
+          curl -L -H "Authorization: Bearer QQ==" -o libpng-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libpng/blobs/sha256:766a7136ee626b411fb63da0c7e5bc1e848afb6e224622f25ea305b2d1a4a0f1
+          curl -L -H "Authorization: Bearer QQ==" -o freetype-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/freetype/blobs/sha256:deb09510fb83adf76d9bb0d4ac4a3d3a2ddfff0d0154e09d3719edb73b058278
+          curl -L -H "Authorization: Bearer QQ==" -o gdbm-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gdbm/blobs/sha256:09f52f15b2a2d126213ea5631bdd35722006540f0086bd285a4f611a4b4b8a78
+          curl -L -H "Authorization: Bearer QQ==" -o mpdecimal-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/mpdecimal/blobs/sha256:eebbc5c7e71710c848eb60b90f946aefdee1b5269c840c30b8098d6bb758500b
+          curl -L -H "Authorization: Bearer QQ==" -o jpeg-turbo-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/jpeg-turbo/blobs/sha256:02e7859fbd2d7ac8336600bde67184ff78339146da99525b404ba683d184dff7
+          curl -L -H "Authorization: Bearer QQ==" -o giflib-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/giflib/blobs/sha256:e9a78b55a43f68f2552f845fff27d1c247ed865b1dd653f4c8ab259594411f86
+          curl -L -H "Authorization: Bearer QQ==" -o libtiff-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:cda70e066b4b649d7b41654abfc46e8ed1c3740c54f3cf58f4e750a551dc94f7
+          curl -L -H "Authorization: Bearer QQ==" -o webp-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:90cc74768d434a5476cf49144d02ef5dd24cfeb2dead12f1210ffa468e024c85
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
+          homebrew/bin/brew install -f pcre-arm64.bigsur.bottle.tar.gz pcre2-arm64.bigsur.bottle.tar.gz gettext-arm64.bigsur.bottle.tar.gz  glib-arm64.bigsur.bottle.tar.gz libpng-arm64.bigsur.bottle.tar.gz freetype-arm64.bigsur.bottle.tar.gz gdbm-arm64.bigsur.bottle.tar.gz mpdecimal-arm64.bigsur.bottle.tar.gz jpeg-turbo-arm64.bigsur.bottle.tar.gz giflib-arm64.bigsur.bottle.tar.gz libtiff-arm64.bigsur.bottle.tar.gz webp-arm64.bigsur.bottle.tar.gz qt5-arm64.bigsur.bottle.tar.gz
  
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
