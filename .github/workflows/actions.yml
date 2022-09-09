@@ -333,26 +333,34 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        if: '!matrix.qt-version'
+        if: '!matrix.qt-version' && matrix.cmake-architectures == 'x86_64'
         run: brew install qt5
-      - name: create qt universal binary
-        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+      - name: install qt universal binary
+        if: '!matrix.qt-version' && matrix.cmake-architectures != 'x86_64'
         run: |
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
+ 
+          echo "installing x64 version of qt"
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
+          brew install -f qt5-x64.bigsur.bottle.tar.gz
+
+          echo "creating second homebrew install"
+          git clone https://github.com/Homebrew/brew homebrew
+ 
+          echo "installing arm64 qt"
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
+          homebrew/bin/brew install -f qt5-arm64.bigsur.bottle.tar.gz
+ 
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
           `brew --prefix qt5`/bin/qmake makeuniversal.pro
           make
           cd ..
-          echo "getting arm64 qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
-          echo "decompressing archive"
-          mkdir qt5-arm64
-          tar zxf qt5-arm64.tar.gz -C qt5-arm64
+          
           echo "creating universal binary"
           mkdir $QT_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_INSTALL_DIR `brew --prefix qt5` qt5-arm64/qt*/5.15*/
+          makeuniversal/makeuniversal $QT_INSTALL_DIR `brew --prefix qt5` `homebrew/bin/brew --prefix qt5`
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
