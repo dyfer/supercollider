@@ -337,6 +337,10 @@ jobs:
             echo "Installing arm64 version of homebrew qt5 manually"
             curl -L -H "Authorization: Bearer QQ==" -o qt5.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 # sha of the arm64 bottle for big sur
             brew install -f qt5.bigsur.bottle.tar.gz
+            # replace macdeployqt with a universal binary from https://github.com/crystalidea/macdeployqt-universal that can be run on x64
+            mv `brew --prefix qt5`/bin/macdeployqt `brew --prefix qt5`/bin/macdeployqt-arm64
+            curl -L https://github.com/crystalidea/macdeployqt-universal/raw/main/bin/macdeployqt -o `brew --prefix qt5`/bin/macdeployqt
+            chmod +x `brew --prefix qt5`/bin/macdeployqt
           else
             brew install qt5
           fi;
