@@ -385,6 +385,10 @@ jobs:
           echo "creating universal binary"
           mkdir $QT_INSTALL_DIR
           makeuniversal/makeuniversal $QT_INSTALL_DIR `brew --prefix qt5` `homebrew/bin/brew --prefix qt5`
+
+          echo "relocating universal qt back to homebrew"
+          mv `readlink -f \`brew --prefix qt5\`` `readlink -f \`brew --prefix qt5\``-old
+          cp -r $QT_INSTALL_DIR `readlink -f \`brew --prefix qt5\``
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -405,9 +409,7 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]] && [[ "${{ matrix.cmake-architectures }}" == "x86_64" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
-
-          if [[ -z "${{ matrix.qt-version }}" ]] && [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=$QT_INSTALL_DIR $EXTRA_CMAKE_FLAGS"; fi # for the prepared qt universal binary
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
