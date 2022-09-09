@@ -212,7 +212,7 @@ jobs:
             cmake-architectures: arm64
             use-syslibs: false
             shared-libscsynth: false
-            system-portaudio: true
+            system-portaudio: false
             build-libsndfile: true
             build-readline: true
             build-fftw: true
