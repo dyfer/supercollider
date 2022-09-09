@@ -349,9 +349,6 @@ jobs:
           echo "installing x64 version of qt"
           curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
           brew install -f qt5-x64.bigsur.bottle.tar.gz
-
-          # echo "creating second homebrew install"
-          # git clone https://github.com/Homebrew/brew homebrew
  
           echo "installing arm64 qt and dependencies" # sha of the arm64 bottles for big sur
           curl -L -H "Authorization: Bearer QQ==" -o pcre-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:2d6bfcafce9da9739e32ee433087e69a78cda3f18291350953e6ad260fefc50b
