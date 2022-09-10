@@ -416,7 +416,7 @@ jobs:
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
           cd $QT_UNIVERSAL_PREP_DIR
-          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=0
+          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
 
           echo "removing x64 packages"
           brew uninstall --ignore-dependencies gettext pcre glib pcre2 libpng freetype gdbm mpdecimal jpeg-turbo giflib libtiff webp
