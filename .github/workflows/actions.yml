@@ -405,7 +405,7 @@ jobs:
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           echo "creating universal binary"
           mkdir $QT_UNIVERSAL_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR qt@5/*/
+          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR qt@5/5.15.5_2/
       - name: install qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
