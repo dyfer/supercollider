@@ -367,11 +367,8 @@ jobs:
                           echo "--- ${file} ---"
                           for this_path in $loader_paths
                           do
-                              echo "this path: ${this_path}"
                               if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
-                                  # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                                  # echo $corrected_path
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file"
@@ -381,9 +378,7 @@ jobs:
                                   fi
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
-                                  # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
-                                  # echo $corrected_path
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file"
@@ -394,7 +389,6 @@ jobs:
                               fi
                           done
                       fi
-                      # echo "file:" "$@" "$file"
                   fi
               done
           }
