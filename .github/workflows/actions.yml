@@ -265,7 +265,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
       CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
       QT_UNIVERSAL_PREP_DIR: ${{ github.workspace }}/qt-prepare
-      QT_UNIVERSAL_INSTALL_DIR: ${{ github.workspace }}/qt-prepare/qt-universal # needs to be under QT_UNIVERSAL_PREP_DIR for caching
+      QT_UNIVERSAL_WORK_DIR: ${{ github.workspace }}/qt-prepare/tmp # needs to be under QT_UNIVERSAL_PREP_DIR for caching
     steps:
       - uses: actions/checkout@v2
         with:
@@ -294,6 +294,13 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: cache qt universal binary
+        id: cache-qt-universal
+        uses: actions/cache@v3
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        with:
+          path: ${{ env.QT_UNIVERSAL_WORK_DIR }}
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v2
@@ -336,7 +343,7 @@ jobs:
         if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
         run: brew install qt5
       - name: prepare qt universal binary # this can be cached
-        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version' && '!${{ steps.cache-qt-universal.outputs.cache-hit }}'
         run: |
           # this is a workaround to create a universal x64/arm64 binary of qt5
           # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
@@ -346,7 +353,7 @@ jobs:
           packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5) # note it needs to be qt@5, not qt5 here
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
-          TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
+          TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
 
           echo "making downloads folder "$DOWNLOAD_PATH
           mkdir -p "$DOWNLOAD_PATH"
@@ -454,7 +461,7 @@ jobs:
           packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5)
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
-          TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
+          TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
 
           # echo "making downloads folder "$DOWNLOAD_PATH
           # mkdir -p "$DOWNLOAD_PATH"
