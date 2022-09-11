@@ -358,7 +358,7 @@ jobs:
         if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
         run: brew install qt5
       - name: prepare qt universal binary # this can be cached
-        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version' && '!${{ steps.cache-qt-universal.outputs.cache-hit }}'
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version' && '${{ steps.cache-qt-universal.outputs.cache-hit }}' != 'true'
         run: |
           # this is a workaround to create a universal x64/arm64 binary of qt5
           # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
