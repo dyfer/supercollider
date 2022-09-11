@@ -477,7 +477,8 @@ jobs:
               for file in *
               do
                   if [ -f "$file" ]; then
-                      if [[ $file == *.dylib ]] || [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                      file_type_string=`file -b "${file}"`
+                      if [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
                           for this_path in $loader_paths
