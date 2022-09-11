@@ -343,93 +343,10 @@ jobs:
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
 
-          brew install qt5
-
-          echo "getting arm64 qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
-          tar xf qt5-arm64.bigsur.bottle.tar.gz
-
-          export QT_DIR_ARM64=qt5_arm64
-          echo "moving extracted qt to ${QT_DIR_ARM64}"
-          mv qt@5/*/ $QT_DIR_ARM64
-
-          echo "fixing paths..."
-
-          HOMEBREW_PREFIX=`brew --prefix`
-          echo "homebrew prefix: "$HOMEBREW_PREFIX
-
-          HOMEBREW_CELLAR=`brew --cellar`
-          echo "homebrew cellar: "$HOMEBREW_CELLAR
-
-          set_loader_paths () { # takes the source path
-              find "${1}" -print0 | while IFS= read -r -d '' file
-              do
-                  if [ -f "$file" ]; then
-                      file_type_string=`file -bh "${file}"`
-                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
-                          loader_paths=`otool -XL "$file" | awk '{print $1 }'`
-                          install_name=`otool -XD "$file"`
-                          echo "--- ${file} ---"
-                          basename=$(basename -- "$file")
-                          # echo $basename
-                          if [[ $install_name == *"@@HOMEBREW_PREFIX@@"* ]]; then
-                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                              echo "${basename}: setting install name to ${corrected_path}"
-                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                          fi
-                          if [[ $install_name == *"@@HOMEBREW_CELLAR@@"* ]]; then
-                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
-                              echo "${basename}: setting install name to ${corrected_path}"
-                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                          fi
-                          for this_path in $loader_paths
-                          do
-                              if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
-                                  # echo $this_path
-                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                                  # echo $corrected_path
-                                  echo "${this_path}: changing path to ${corrected_path}"
-                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                              fi
-                              if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
-                                  # echo $this_path
-                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
-                                  # echo $corrected_path
-                                  echo "${this_path}: changing path to ${corrected_path}"
-                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                              fi
-                          done
-                      fi
-                  fi
-              done
-          }
-
-          set_loader_paths "$QT_DIR_ARM64"
-
-          echo "getting 'makeuniversal' tool"
-          git clone https://github.com/nedrysoft/makeuniversal.git
-          cd makeuniversal
-          `brew --prefix qt5`/bin/qmake makeuniversal.pro
-          make
-          cd ..
-
-          echo "creating universal binary"
-          mkdir $QT_UNIVERSAL_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR `brew --prefix qt5` $QT_DIR_ARM64
-      - name: install qt universal binary
-        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
-        run: |
-          cd $QT_UNIVERSAL_PREP_DIR
-          # export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
-
-          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
-
-          # prepare universal versions of the dependencies
-
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline)
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt5)
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
-          TEMP_PATH="${GITHUB_WORKSPACE}/tmp"
+          TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
 
           echo "making downloads folder "$DOWNLOAD_PATH
           mkdir -p "$DOWNLOAD_PATH"
@@ -455,7 +372,7 @@ jobs:
               sha=$(get_bottle_sha $name)
               os_id=$BOTTLE_ID
               destination=$DOWNLOAD_PATH
-              url="https://ghcr.io/v2/homebrew/core/${name}/blobs/sha256:${sha}"
+              url="https://ghcr.io/v2/homebrew/core/${name/@//}/blobs/sha256:${sha}"
               filename="${name}.${os_id}.bottle.tar.gz"
               dest_full_path="${destination}/${filename}"
               if [[ -f "$dest_full_path" ]]; then
@@ -473,9 +390,8 @@ jobs:
               source=$DOWNLOAD_PATH
               destination=$TEMP_PATH
               filename="${name}.${os_id}.bottle.tar.gz"
-              echo "downloading ${filename} from ${url}"
-              cd "$destination"
-              tar xf "${source}/${filename}"
+              echo "decompressing ${filename}"
+              tar xf "${source}/${filename}" --directory "$destination"
           }
 
           set_loader_paths () { # takes name
@@ -521,17 +437,52 @@ jobs:
               done
           }
 
+          for package in "${packages_to_process[@]}"
+          do
+              echo "--- processing ${package} ---"
+              download_bottle $package
+              decompress_bottle $package
+              set_loader_paths $package
+          done
+
+      - name: install qt universal binary
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        run: |
+          cd $QT_UNIVERSAL_PREP_DIR
+
+          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
+
+          # prepare universal versions of the dependencies
+
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt5)
+
+          DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
+          TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
+
+          # echo "making downloads folder "$DOWNLOAD_PATH
+          # mkdir -p "$DOWNLOAD_PATH"
+          # mkdir -p "$TEMP_PATH"
+
           combine_libraries () { # takes name
               name=$1
-              src_path="${TEMP_PATH}/${1}/"
-              dst_path="`brew --prefix $name`/lib"
-              cd "$src_path"*"/lib"
-              for file in *
+              base_path="${TEMP_PATH}/${1}/"
+              varname=`ls "${base_path}/"` # we assume there's only one subdirectory
+              base_src_path="${base_path}/${varname}"
+              base_dst_path=`brew --prefix ${name}`
+              find  "$base_src_path" -print0 | while IFS= read -r -d '' file
               do
                   if [ -f "$file" ] && [ ! -h "$file" ]; then
-                      dst_full_path="${dst_path}/${file}"
-                      echo "combining "`pwd`"/${file} and ${dst_full_path}"
-                      lipo "$file" "$dst_full_path" -create -output "$dst_full_path"
+                      file_type_string=`file -bh "${file}"`
+                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                          # echo "--- ${file} ---"
+                          basename=$(basename -- "$file")
+                          base_relative_path=${file##$base_src_path}
+                          dst_full_path="${base_dst_path}${base_relative_path}"
+                          if [ -f "$dst_full_path" ]; then
+                              echo "combining ${file} and ${dst_full_path}"
+                              lipo "$file" "$dst_full_path" -create -output "$dst_full_path"
+                          fi
+                      fi
                   fi
               done
           }
@@ -539,9 +490,6 @@ jobs:
           for package in "${packages_to_process[@]}"
           do
               echo "--- processing ${package} ---"
-              download_bottle $package
-              decompress_bottle $package
-              set_loader_paths $package
               combine_libraries $package
           done
 
