@@ -428,6 +428,9 @@ jobs:
           HOMEBREW_PREFIX=`brew --prefix`
           echo "homebrew prefix: "$HOMEBREW_PREFIX
 
+          HOMEBREW_CELLAR=`brew --cellar`
+          echo "homebrew cellar: "$HOMEBREW_CELLAR
+
           FORMULA_PATH=$HOMEBREW_PREFIX"/Homebrew/Library/Taps/homebrew/homebrew-core/Formula"
           echo "formulas: "$FORMULA_PATH
 
