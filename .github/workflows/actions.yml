@@ -359,8 +359,7 @@ jobs:
           echo "homebrew cellar: "$HOMEBREW_CELLAR
 
           set_loader_paths () { # takes the source path
-              cd "${1}"
-              find . -print0 | while IFS= read -r -d '' file
+              find "${1}" -print0 | while IFS= read -r -d '' file
               do
                   if [ -f "$file" ]; then
                       # "$@" "$file"
@@ -374,20 +373,20 @@ jobs:
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file"
+                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
                                       echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                                   fi
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file"
+                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
                                       echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                                   fi
                               fi
                           done
@@ -489,10 +488,10 @@ jobs:
                                   # echo $corrected_path
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file"
+                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
                                       echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                                   fi
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
@@ -501,10 +500,10 @@ jobs:
                                   # echo $corrected_path
                                   if [[ $this_path == *"$file" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file"
+                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
                                       echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                                   fi
                               fi
                           done
