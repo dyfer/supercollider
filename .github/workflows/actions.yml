@@ -470,7 +470,7 @@ jobs:
               do
                   if [ -f "$file" ] && [ ! -h "$file" ]; then
                       file_type_string=`file -bh "${file}"`
-                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                      if [[ $file_type_string == *"current ar archive"* ]] || [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           # echo "--- ${file} ---"
                           basename=$(basename -- "$file")
                           base_relative_path=${file##$base_src_path}
