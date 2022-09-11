@@ -231,8 +231,8 @@ jobs:
             build-libsndfile: true
             build-readline: true
             build-fftw: true
-            vcpkg-triplet: x64-arm64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS-universal' # set if needed - will trigger artifact upload
+            vcpkg-triplet: x64-arm64-osx-release-supercollider
+            artifact-suffix: 'macOS-universal'
             verify-app: true
 
           - job-name: 'x64 legacy'
