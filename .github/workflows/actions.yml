@@ -489,11 +489,6 @@ jobs:
               echo "--- processing ${package} ---"
               combine_libraries $package
           done
-
-          echo "moving universal qt to homebrew"
-          export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
-          mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.orig
-          cp -r $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
