@@ -338,7 +338,7 @@ jobs:
       - name: prepare qt universal binary # this can be cached
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
-          # this is a workaround to create an arm64 binary of qt5
+          # this is a workaround to create a universal x64/arm64 binary of qt5
           # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
@@ -350,7 +350,10 @@ jobs:
           tar xf qt5-arm64.bigsur.bottle.tar.gz
 
           export QT_DIR_ARM64=qt5_arm64
+          echo "moving extracted qt to ${QT_DIR_ARM64}"
           mv qt@5/*/ $QT_DIR_ARM64
+
+          echo "fixing paths..."
 
           HOMEBREW_PREFIX=`brew --prefix`
           echo "homebrew prefix: "$HOMEBREW_PREFIX
@@ -363,8 +366,8 @@ jobs:
               do
                   if [ -f "$file" ]; then
                       # "$@" "$file"
-                      file_type_string=`file -b "${file}"`
-                      if [[ $file == *.dylib ]] || [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                      file_type_string=`file -bh "${file}"`
+                      if [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
                           for this_path in $loader_paths
@@ -406,7 +409,6 @@ jobs:
 
           echo "creating universal binary"
           mkdir $QT_UNIVERSAL_INSTALL_DIR
-          ls -l
           makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR `brew --prefix qt5` $QT_DIR_ARM64
       - name: install qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
@@ -477,7 +479,7 @@ jobs:
               for file in *
               do
                   if [ -f "$file" ]; then
-                      file_type_string=`file -b "${file}"`
+                      file_type_string=`file -bh "${file}"`
                       if [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
