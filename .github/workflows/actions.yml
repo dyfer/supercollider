@@ -367,7 +367,7 @@ jobs:
                   if [ -f "$file" ]; then
                       # "$@" "$file"
                       file_type_string=`file -bh "${file}"`
-                      if [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
                           for this_path in $loader_paths
@@ -474,13 +474,11 @@ jobs:
 
           set_loader_paths () { # takes name
               name=$1
-              src_path="${TEMP_PATH}/${1}/"
-              cd "$src_path"*"/lib"
-              for file in *
+              find "${TEMP_PATH}/${1}" -print0 | while IFS= read -r -d '' file
               do
                   if [ -f "$file" ]; then
                       file_type_string=`file -bh "${file}"`
-                      if [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
                           for this_path in $loader_paths
