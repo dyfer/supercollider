@@ -365,33 +365,38 @@ jobs:
               find "${1}" -print0 | while IFS= read -r -d '' file
               do
                   if [ -f "$file" ]; then
-                      # "$@" "$file"
                       file_type_string=`file -bh "${file}"`
                       if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
-                          loader_paths=`otool -L "$file" | awk '{print $1 }'`
+                          loader_paths=`otool -XL "$file" | awk '{print $1 }'`
+                          install_name=`otool -XD "$file"`
                           echo "--- ${file} ---"
                           basename=$(basename -- "$file")
+                          # echo $basename
+                          if [[ $install_name == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
+                          if [[ $install_name == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
                           for this_path in $loader_paths
                           do
                               if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                                  # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                                  if [[ $this_path == *"$basename" ]]; then
-                                      echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                                  else
-                                      echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                                  fi
+                                  # echo $corrected_path
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                                  # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
-                                  if [[ $this_path == *"$basename" ]]; then
-                                      echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                                  else
-                                      echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                                  fi
+                                  # echo $corrected_path
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                               fi
                           done
                       fi
@@ -421,7 +426,7 @@ jobs:
 
           # prepare universal versions of the dependencies
 
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 readline webp)
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline)
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
           TEMP_PATH="${GITHUB_WORKSPACE}/tmp"
@@ -480,34 +485,35 @@ jobs:
                   if [ -f "$file" ]; then
                       file_type_string=`file -bh "${file}"`
                       if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
-                          loader_paths=`otool -L "$file" | awk '{print $1 }'`
+                          loader_paths=`otool -XL "$file" | awk '{print $1 }'`
+                          install_name=`otool -XD "$file"`
                           echo "--- ${file} ---"
                           basename=$(basename -- "$file")
+                          if [[ $install_name == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
+                          if [[ $install_name == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
                           for this_path in $loader_paths
                           do
                               if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
                                   # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
                                   # echo $corrected_path
-                                  if [[ $this_path == *"$basename" ]]; then
-                                      echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                                  else
-                                      echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                                  fi
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
                                   # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
                                   # echo $corrected_path
-                                  if [[ $this_path == *"$basename" ]]; then
-                                      echo "${this_path}: setting the id to ${corrected_path}"
-                                      install_name_tool -id "$corrected_path" "$file" 2>/dev/null
-                                  else
-                                      echo "${this_path}: changing the path to ${corrected_path}"
-                                      install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
-                                  fi
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
                               fi
                           done
                       fi
