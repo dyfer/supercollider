@@ -370,11 +370,12 @@ jobs:
                       if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
+                          basename=$(basename -- "$file")
                           for this_path in $loader_paths
                           do
                               if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                                  if [[ $this_path == *"$file" ]]; then
+                                  if [[ $this_path == *"$basename" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
@@ -384,7 +385,7 @@ jobs:
                               fi
                               if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
-                                  if [[ $this_path == *"$file" ]]; then
+                                  if [[ $this_path == *"$basename" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
@@ -481,13 +482,14 @@ jobs:
                       if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
                           loader_paths=`otool -L "$file" | awk '{print $1 }'`
                           echo "--- ${file} ---"
+                          basename=$(basename -- "$file")
                           for this_path in $loader_paths
                           do
                               if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
                                   # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
                                   # echo $corrected_path
-                                  if [[ $this_path == *"$file" ]]; then
+                                  if [[ $this_path == *"$basename" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
@@ -499,7 +501,7 @@ jobs:
                                   # echo $this_path
                                   corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
                                   # echo $corrected_path
-                                  if [[ $this_path == *"$file" ]]; then
+                                  if [[ $this_path == *"$basename" ]]; then
                                       echo "${this_path}: setting the id to ${corrected_path}"
                                       install_name_tool -id "$corrected_path" "$file" 2>/dev/null
                                   else
