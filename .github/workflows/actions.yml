@@ -343,56 +343,75 @@ jobs:
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
 
-          echo "creating second homebrew install" # we need independent install of qt for makeuniversal
-          git clone https://github.com/Homebrew/brew homebrew
-          homebrew/bin/brew update --force --quiet
-          curl -L -H "Authorization: Bearer QQ==" -o pcre-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:fb2fefbe1232706a603a6b385fc37253e5aafaf3536cb68b828ad1940b95e601
-          curl -L -H "Authorization: Bearer QQ==" -o pcre2-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre2/blobs/sha256:0108a261b51c0c8628eb94fb92a00e33867dccac8b6756a71a24e47f596125c7
-          curl -L -H "Authorization: Bearer QQ==" -o gettext-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gettext/blobs/sha256:a025e143fe3f5f7e24a936b8b0a4926acfdd025b11d62024e3d355c106536d56
-          curl -L -H "Authorization: Bearer QQ==" -o glib-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/glib/blobs/sha256:f5b96cbf2a87be517ace99589a62984ddb22e22ed6fefa0108a459d746de45ef
-          curl -L -H "Authorization: Bearer QQ==" -o libpng-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libpng/blobs/sha256:a8f1c35f9f004c4f7878c30027e35a9fb9551782df963f88deebd3dc29d94d51
-          curl -L -H "Authorization: Bearer QQ==" -o freetype-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/freetype/blobs/sha256:69a5d61245af56e6b088986b16c6e5b842c3d4f5896c34e013341ca94f4a45d1
-          curl -L -H "Authorization: Bearer QQ==" -o gdbm-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gdbm/blobs/sha256:d52ed8dbb258f11b14eb10494aeb8a2dab91c3626b11e37d8197d2fb183c489b
-          curl -L -H "Authorization: Bearer QQ==" -o mpdecimal-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/mpdecimal/blobs/sha256:255b6226cdcfaf0d40167012593e863e73dfed2884c10e7fc3eb4018e81712df
-          curl -L -H "Authorization: Bearer QQ==" -o jpeg-turbo-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/jpeg-turbo/blobs/sha256:c2cbe03545e80c2b438a3d7f9b96fbcb7db4130b39ddae267a3b199f58f99c1c
-          curl -L -H "Authorization: Bearer QQ==" -o giflib-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/giflib/blobs/sha256:dc23500f50d599c4dbfcea0107b643bef41538c2f5fd162b049f82d21e3d32d5
-          curl -L -H "Authorization: Bearer QQ==" -o libtiff-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:a56a4f0a3ad9a75a70a9458fd098ec7da793eb39fcd4877515b5163b6ece21b0
-          curl -L -H "Authorization: Bearer QQ==" -o webp-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:dc4045b5b9e114898adc9522c704aa668c15c64a5026a2f22c0edfb0cd5fdaeb
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 
-          homebrew/bin/brew install -f gettext-x64.bigsur.bottle.tar.gz
-          homebrew/bin/brew install -f pcre-x64.bigsur.bottle.tar.gz
-          homebrew/bin/brew install -f glib-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f pcre2-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f libpng-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f freetype-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f gdbm-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f mpdecimal-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f jpeg-turbo-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f giflib-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f libtiff-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f webp-x64.bigsur.bottle.tar.gz 
-          homebrew/bin/brew install -f qt5-x64.bigsur.bottle.tar.gz 
+          brew install qt5
+
+          echo "getting arm64 qt"
+          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
+          tar xf qt5-arm6464.bigsur.bottle.tar.gz
+
+          HOMEBREW_PREFIX=`brew --prefix`
+          echo "homebrew prefix: "$HOMEBREW_PREFIX
+
+          HOMEBREW_CELLAR=`brew --cellar`
+          echo "homebrew cellar: "$HOMEBREW_CELLAR
+
+          set_loader_paths () { # takes the source path
+              cd "${1}"
+              find . -print0 | while IFS= read -r -d '' file
+              do
+                  if [ -f "$file" ]; then
+                      # "$@" "$file"
+                      file_type_string=`file -b "${file}"`
+                      if [[ $file == *.dylib ]] || [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                          loader_paths=`otool -L "$file" | awk '{print $1 }'`
+                          echo "--- ${file} ---"
+                          for this_path in $loader_paths
+                          do
+                              echo "this path: ${this_path}"
+                              if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                                  # echo $corrected_path
+                                  if [[ $this_path == *"$file" ]]; then
+                                      echo "${this_path}: setting the id to ${corrected_path}"
+                                      install_name_tool -id "$corrected_path" "$file"
+                                  else
+                                      echo "${this_path}: changing the path to ${corrected_path}"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                  fi
+                              fi
+                              if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                                  # echo $corrected_path
+                                  if [[ $this_path == *"$file" ]]; then
+                                      echo "${this_path}: setting the id to ${corrected_path}"
+                                      install_name_tool -id "$corrected_path" "$file"
+                                  else
+                                      echo "${this_path}: changing the path to ${corrected_path}"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                  fi
+                              fi
+                          done
+                      fi
+                      # echo "file:" "$@" "$file"
+                  fi
+              done
+          }
+
+          set_loader_paths "qt@5/"
 
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
-          `../homebrew/bin/brew --prefix qt5`/bin/qmake makeuniversal.pro
+          `brew --prefix qt5`/bin/qmake makeuniversal.pro
           make
           cd ..
 
-          echo "installing x64 version of qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-x64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:b3da3a73a96ad85fb78cc1e7b848ce58e6756be7f2c449b8671146a976f53699 # sha of the x64 bottle for big sur
-          brew install -f qt5-x64.bigsur.bottle.tar.gz
-          echo "moving x64 qt"
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
-          mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.x64
-          echo "replacing x64 qt with arm64 qt"
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
-          brew reinstall -f qt5-arm64.bigsur.bottle.tar.gz
-          
           echo "creating universal binary"
           mkdir $QT_UNIVERSAL_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR.x64 $CURRENT_QT5_DIR
+          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR qt@5/*/
       - name: install qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
