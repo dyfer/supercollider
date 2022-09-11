@@ -373,8 +373,6 @@ jobs:
           homebrew/bin/brew install -f webp-x64.bigsur.bottle.tar.gz 
           homebrew/bin/brew install -f qt5-x64.bigsur.bottle.tar.gz 
 
-          homebrew/bin/brew install qt5
-
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
           cd makeuniversal
@@ -460,19 +458,35 @@ jobs:
               cd "$src_path"*"/lib"
               for file in *
               do
-                  if [ -f "$file" ] && [ ! -h "$file" ]; then
-                      if [[ $file == *.dylib ]]; then
-                          loader_paths=`otool -L "$file" | grep @@HOMEBREW_PREFIX@@ | awk '{print $1 }'`
+                  if [ -f "$file" ]; then
+                      if [[ $file == *.dylib ]] || [[ $file_type_string == *"dynamic library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                          loader_paths=`otool -L "$file" | awk '{print $1 }'`
+                          echo "--- ${file} ---"
                           for this_path in $loader_paths
                           do
-                              corrcted_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
-                              echo "changing"
-                              if [[ $this_path == *"$file" ]]; then
-                                  echo "${this_path}: setting the id to ${corrcted_path}"
-                                  install_name_tool -id "$corrcted_path" "$file"
-                              else
-                                  echo "${this_path}: changing the path to ${corrcted_path}"
-                                  install_name_tool -change "$this_path" "$corrcted_path" "$file"
+                              if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                                  # echo $corrected_path
+                                  if [[ $this_path == *"$file" ]]; then
+                                      echo "${this_path}: setting the id to ${corrected_path}"
+                                      install_name_tool -id "$corrected_path" "$file"
+                                  else
+                                      echo "${this_path}: changing the path to ${corrected_path}"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                  fi
+                              fi
+                              if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                                  # echo $corrected_path
+                                  if [[ $this_path == *"$file" ]]; then
+                                      echo "${this_path}: setting the id to ${corrected_path}"
+                                      install_name_tool -id "$corrected_path" "$file"
+                                  else
+                                      echo "${this_path}: changing the path to ${corrected_path}"
+                                      install_name_tool -change "$this_path" "$corrected_path" "$file"
+                                  fi
                               fi
                           done
                       fi
@@ -488,7 +502,6 @@ jobs:
               for file in *
               do
                   if [ -f "$file" ] && [ ! -h "$file" ]; then
-                      # "$@" "$file"
                       dst_full_path="${dst_path}/${file}"
                       echo "combining "`pwd`"/${file} and ${dst_full_path}"
                       lipo "$file" "$dst_full_path" -create -output "$dst_full_path"
@@ -498,7 +511,7 @@ jobs:
 
           for package in "${packages_to_process[@]}"
           do
-              echo "\nprocessing ${package}...\n"
+              echo "--- processing ${package} ---"
               download_bottle $package
               decompress_bottle $package
               set_loader_paths $package
