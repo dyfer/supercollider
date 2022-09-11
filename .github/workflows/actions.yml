@@ -349,6 +349,9 @@ jobs:
           curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
           tar xf qt5-arm64.bigsur.bottle.tar.gz
 
+          export QT_DIR_ARM64=qt5_arm64
+          mv mv qt@5/*/ $QT_DIR_ARM64
+
           HOMEBREW_PREFIX=`brew --prefix`
           echo "homebrew prefix: "$HOMEBREW_PREFIX
 
@@ -393,7 +396,7 @@ jobs:
               done
           }
 
-          set_loader_paths "qt@5/"
+          set_loader_paths "$QT_DIR_ARM64"
 
           echo "getting 'makeuniversal' tool"
           git clone https://github.com/nedrysoft/makeuniversal.git
@@ -402,10 +405,10 @@ jobs:
           make
           cd ..
 
-          export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           echo "creating universal binary"
           mkdir $QT_UNIVERSAL_INSTALL_DIR
-          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR qt@5/5.15.5_2/
+          ls -l
+          makeuniversal/makeuniversal $QT_UNIVERSAL_INSTALL_DIR `brew --prefix qt5` $QT_DIR_ARM64
       - name: install qt universal binary
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
