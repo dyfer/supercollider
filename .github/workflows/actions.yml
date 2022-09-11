@@ -343,7 +343,7 @@ jobs:
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
 
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt5)
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5) # note it needs to be qt@5, not qt5 here
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
           TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
@@ -358,13 +358,10 @@ jobs:
           HOMEBREW_CELLAR=`brew --cellar`
           echo "homebrew cellar: "$HOMEBREW_CELLAR
 
-          FORMULA_PATH=$HOMEBREW_PREFIX"/Homebrew/Library/Taps/homebrew/homebrew-core/Formula"
-          echo "formulas: "$FORMULA_PATH
-
           BOTTLE_ID="arm64_big_sur" # TODO: detect big_sur / monterey based on the host OS 
 
-          get_bottle_sha () {
-              cat "${FORMULA_PATH}/${1}.rb" | grep "$BOTTLE_ID" | awk '{print $NF }' | sed 's/\"//g'
+          get_bottle_sha () { # takes name
+              brew cat --formula ${1} | grep "$BOTTLE_ID" | awk '{print $NF }' | sed 's/\"//g'
           }
 
           download_bottle () { #takes name
@@ -454,7 +451,7 @@ jobs:
 
           # prepare universal versions of the dependencies
 
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt5)
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5)
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
           TEMP_PATH="${QT_UNIVERSAL_PREP_DIR}/tmp"
