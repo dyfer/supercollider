@@ -350,7 +350,7 @@ jobs:
           tar xf qt5-arm64.bigsur.bottle.tar.gz
 
           export QT_DIR_ARM64=qt5_arm64
-          mv mv qt@5/*/ $QT_DIR_ARM64
+          mv qt@5/*/ $QT_DIR_ARM64
 
           HOMEBREW_PREFIX=`brew --prefix`
           echo "homebrew prefix: "$HOMEBREW_PREFIX
