@@ -220,6 +220,21 @@ jobs:
             artifact-suffix: 'macOS-arm64' # set if needed - will trigger artifact upload
             verify-app: true
 
+          - job-name: 'universal'
+            os-version: '11'
+            xcode-version: '12.4'
+            deployment-target: '10.14'
+            cmake-architectures: 'x86_64;arm64'
+            use-syslibs: false
+            shared-libscsynth: false
+            system-portaudio: false
+            build-libsndfile: true
+            build-readline: true
+            build-fftw: true
+            vcpkg-triplet: x64-arm64-osx-release-supercollider # required for build-libsndfile
+            artifact-suffix: 'macOS-universal' # set if needed - will trigger artifact upload
+            verify-app: true
+
           - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
