@@ -319,15 +319,12 @@ jobs:
       - name: install readline # to allow cross-compiling
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies readline
+          # brew uninstall --ignore-dependencies readline
           # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
           # vcpkg readline currently fails on arm64 (ncurses dependency)
           # see https://github.com/microsoft/vcpkg/issues/22654
           # as a workaround, let's install arm64 readline bottle manually
-          # once the issue with vcpkg/ncurses is solved, let's remove this and use vcpkg in arm64/universal builds
-          echo "Installing arm64 version of homebrew readline manually"
-          curl -L -H "Authorization: Bearer QQ==" -o readline.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:08efc469d237689a9619ec6b3ea931793d03597e89bd622ebd122b7256d7a446 # sha of the arm64 bottle for big sur
-          brew install -f readline.bigsur.bottle.tar.gz
+          # this is currently done in the "install qt universal binary" step
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
         run: |
@@ -345,21 +342,6 @@ jobs:
           # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
- 
-          echo "downloading arm64 qt dependencies" # sha of the arm64 bottles for big sur
-          curl -L -H "Authorization: Bearer QQ==" -o pcre-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre/blobs/sha256:2d6bfcafce9da9739e32ee433087e69a78cda3f18291350953e6ad260fefc50b
-          curl -L -H "Authorization: Bearer QQ==" -o pcre2-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/pcre2/blobs/sha256:e9ad944caf659a16e81a3232da8b9d21547b9979cc784f9d242860667ed757a5
-          curl -L -H "Authorization: Bearer QQ==" -o gettext-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gettext/blobs/sha256:339b62b52ba86dfa73091d37341104b46c01ae354ca425000732df689305442b
-          curl -L -H "Authorization: Bearer QQ==" -o glib-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/glib/blobs/sha256:663d6af72612b190ef76977db1dc8e822be21f1555a36a854a83e854afdb5025
-          curl -L -H "Authorization: Bearer QQ==" -o libpng-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libpng/blobs/sha256:766a7136ee626b411fb63da0c7e5bc1e848afb6e224622f25ea305b2d1a4a0f1
-          curl -L -H "Authorization: Bearer QQ==" -o freetype-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/freetype/blobs/sha256:deb09510fb83adf76d9bb0d4ac4a3d3a2ddfff0d0154e09d3719edb73b058278
-          curl -L -H "Authorization: Bearer QQ==" -o gdbm-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/gdbm/blobs/sha256:09f52f15b2a2d126213ea5631bdd35722006540f0086bd285a4f611a4b4b8a78
-          curl -L -H "Authorization: Bearer QQ==" -o mpdecimal-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/mpdecimal/blobs/sha256:eebbc5c7e71710c848eb60b90f946aefdee1b5269c840c30b8098d6bb758500b
-          curl -L -H "Authorization: Bearer QQ==" -o jpeg-turbo-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/jpeg-turbo/blobs/sha256:02e7859fbd2d7ac8336600bde67184ff78339146da99525b404ba683d184dff7
-          curl -L -H "Authorization: Bearer QQ==" -o giflib-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/giflib/blobs/sha256:e9a78b55a43f68f2552f845fff27d1c247ed865b1dd653f4c8ab259594411f86
-          curl -L -H "Authorization: Bearer QQ==" -o libtiff-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:cda70e066b4b649d7b41654abfc46e8ed1c3740c54f3cf58f4e750a551dc94f7
-          curl -L -H "Authorization: Bearer QQ==" -o webp-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:90cc74768d434a5476cf49144d02ef5dd24cfeb2dead12f1210ffa468e024c85
-          curl -L -H "Authorization: Bearer QQ==" -o qt5-arm64.bigsur.bottle.tar.gz https://ghcr.io/v2/homebrew/core/qt/5/blobs/sha256:d850b52300c76f43a020e8a8f40f738abda4b7a49c8aa127fd1995ff6d21dae3 
 
           echo "creating second homebrew install" # we need independent install of qt for makeuniversal
           git clone https://github.com/Homebrew/brew homebrew
@@ -416,26 +398,113 @@ jobs:
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         run: |
           cd $QT_UNIVERSAL_PREP_DIR
-          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
+          # export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
 
-          echo "removing x64 packages"
-          brew uninstall --ignore-dependencies gettext pcre glib pcre2 libpng freetype gdbm mpdecimal jpeg-turbo giflib libtiff webp
-          echo "installing arm64 packages"
-          brew install -f gettext-arm64.bigsur.bottle.tar.gz
-          brew install -f pcre-arm64.bigsur.bottle.tar.gz
-          brew install -f glib-arm64.bigsur.bottle.tar.gz 
-          brew install -f pcre2-arm64.bigsur.bottle.tar.gz 
-          brew install -f libpng-arm64.bigsur.bottle.tar.gz 
-          brew install -f freetype-arm64.bigsur.bottle.tar.gz 
-          brew install -f gdbm-arm64.bigsur.bottle.tar.gz 
-          brew install -f mpdecimal-arm64.bigsur.bottle.tar.gz 
-          brew install -f jpeg-turbo-arm64.bigsur.bottle.tar.gz 
-          brew install -f giflib-arm64.bigsur.bottle.tar.gz 
-          brew install -f libtiff-arm64.bigsur.bottle.tar.gz 
-          brew install -f webp-arm64.bigsur.bottle.tar.gz 
+          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
+
+          # prepare universal versions of the dependencies
+
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 readline webp)
+
+          DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
+          TEMP_PATH="${GITHUB_WORKSPACE}/tmp"
+
+          echo "making downloads folder "$DOWNLOAD_PATH
+          mkdir -p "$DOWNLOAD_PATH"
+          mkdir -p "$TEMP_PATH"
+
+          HOMEBREW_PREFIX=`brew --prefix`
+          echo "homebrew prefix: "$HOMEBREW_PREFIX
+
+          FORMULA_PATH=$HOMEBREW_PREFIX"/Homebrew/Library/Taps/homebrew/homebrew-core/Formula"
+          echo "formulas: "$FORMULA_PATH
+
+          BOTTLE_ID="arm64_big_sur" # TODO: detect big_sur / monterey based on the host OS 
+
+          get_bottle_sha () {
+              cat "${FORMULA_PATH}/${1}.rb" | grep "$BOTTLE_ID" | awk '{print $NF }' | sed 's/\"//g'
+          }
+
+          download_bottle () { #takes name
+              name=$1
+              sha=$(get_bottle_sha $name)
+              os_id=$BOTTLE_ID
+              destination=$DOWNLOAD_PATH
+              url="https://ghcr.io/v2/homebrew/core/${name}/blobs/sha256:${sha}"
+              filename="${name}.${os_id}.bottle.tar.gz"
+              dest_full_path="${destination}/${filename}"
+              if [[ -f "$dest_full_path" ]]; then
+                  # TODO: check if sha matches
+                  echo "$filename already exists, not downloading"
+              else
+                  echo "downloading ${filename} from ${url}"
+                  curl -f -L -H "Authorization: Bearer QQ==" -o "$dest_full_path" "$url"
+              fi
+          }
+
+          decompress_bottle () { # takes name
+              name=$1
+              os_id=$BOTTLE_ID
+              source=$DOWNLOAD_PATH
+              destination=$TEMP_PATH
+              filename="${name}.${os_id}.bottle.tar.gz"
+              echo "downloading ${filename} from ${url}"
+              cd "$destination"
+              tar xf "${source}/${filename}"
+          }
+
+          set_loader_paths () { # takes name
+              name=$1
+              src_path="${TEMP_PATH}/${1}/"
+              cd "$src_path"*"/lib"
+              for file in *
+              do
+                  if [ -f "$file" ] && [ ! -h "$file" ]; then
+                      if [[ $file == *.dylib ]]; then
+                          loader_paths=`otool -L "$file" | grep @@HOMEBREW_PREFIX@@ | awk '{print $1 }'`
+                          for this_path in $loader_paths
+                          do
+                              corrcted_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                              echo "changing"
+                              if [[ $this_path == *"$file" ]]; then
+                                  echo "${this_path}: setting the id to ${corrcted_path}"
+                                  install_name_tool -id "$corrcted_path" "$file"
+                              else
+                                  echo "${this_path}: changing the path to ${corrcted_path}"
+                                  install_name_tool -change "$this_path" "$corrcted_path" "$file"
+                              fi
+                          done
+                      fi
+                  fi
+              done
+          }
+
+          combine_libraries () { # takes name
+              name=$1
+              src_path="${TEMP_PATH}/${1}/"
+              dst_path="`brew --prefix $name`/lib"
+              cd "$src_path"*"/lib"
+              for file in *
+              do
+                  if [ -f "$file" ] && [ ! -h "$file" ]; then
+                      # "$@" "$file"
+                      dst_full_path="${dst_path}/${file}"
+                      echo "combining "`pwd`"/${file} and ${dst_full_path}"
+                      lipo "$file" "$dst_full_path" -create -output "$dst_full_path"
+                  fi
+              done
+          }
+
+          for package in "${packages_to_process[@]}"
+          do
+              echo "\nprocessing ${package}...\n"
+              download_bottle $package
+              decompress_bottle $package
+              set_loader_paths $package
+              combine_libraries $package
+          done
 
           echo "moving universal qt to homebrew"
-          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
           export CURRENT_QT5_DIR=`(cd \`brew --prefix qt5\`; pwd -P)`
           mv $CURRENT_QT5_DIR $CURRENT_QT5_DIR.orig
           cp -r $QT_UNIVERSAL_INSTALL_DIR $CURRENT_QT5_DIR
