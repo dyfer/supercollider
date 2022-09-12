@@ -647,7 +647,9 @@ jobs:
             ~/AppData/Local/ccache
             ~/AppData/Roaming/.ccache
             ~/AppData/Local/.ccache
-            ~/.ccache 
+            ~/.ccache
+            ~/ccache
+            ~/.config/ccache 
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
