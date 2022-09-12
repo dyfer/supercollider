@@ -159,6 +159,21 @@ if( CCacheExectuable )
   if(NOT CMAKE_GENERATOR STREQUAL "Xcode") # we already post a message when using Xcode
     message(STATUS "Detected ccache: using ccache to speed up build process")
   endif()
+
+  # fix for Visual Studio from https://gitlab.kitware.com/cmake/cmake/-/issues/16176
+  if (MSVC)
+    file(COPY_FILE
+      ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
+      ONLY_IF_DIFFERENT)
+
+    set(CMAKE_VS_GLOBALS
+      "CLToolExe=cl.exe"
+      "CLToolPath=${CMAKE_BINARY_DIR}"
+      "TrackFileAccess=false"
+      "UseMultiToolTask=true"
+      "DebugInformationFormat=OldStyle"
+    )
+  endif()
 endif()
 
 #############################################
