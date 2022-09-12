@@ -642,7 +642,12 @@ jobs:
       - name: cache ccache
         uses: actions/cache@v3
         with:
-          path: ~/AppData/Roaming/ccache # NOTE: this should be ~/AppData/Local/ccache for ccache 4.7+
+          path: | # NOTE: this should be ~/AppData/Local/ccache for ccache 4.7+
+            ~/AppData/Roaming/ccache
+            ~/AppData/Local/ccache
+            ~/AppData/Roaming/.ccache
+            ~/AppData/Local/.ccache
+            ~/.ccache 
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
