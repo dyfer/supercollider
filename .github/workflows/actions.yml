@@ -644,7 +644,8 @@ jobs:
         with:
           path: |
             ~/AppData/Local/ccache # this will likely be the location of cache for ccache 4.7+
-            ~/.config/ccache # this is the location of the cache for ccache 4.6.3, since we run build in bash, see https://github.com/ccache/ccache/issues/1023
+            ~/AppData/Roaming/ccache # this is used when running ccache 4.6.3 NOT in bash
+            ~/.config/ccache # this is used when running ccache 4.6.3 in bash, see https://github.com/ccache/ccache/issues/1023
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
