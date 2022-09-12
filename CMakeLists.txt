@@ -162,13 +162,16 @@ if( CCacheExectuable )
 
   # fix for Visual Studio from https://gitlab.kitware.com/cmake/cmake/-/issues/16176
   if (MSVC)
-    file(COPY_FILE
-      ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
-      ONLY_IF_DIFFERENT)
+    # file(COPY_FILE
+    #   ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
+    #   ONLY_IF_DIFFERENT)
+
+	get_filename_component(CCacheExectuableFileName ${CCacheExectuable} NAME)
+	get_filename_component(CCacheExectuableDir ${CCacheExectuable} DIRECTORY)
 
     set(CMAKE_VS_GLOBALS
-      "CLToolExe=cl.exe"
-      "CLToolPath=${CMAKE_BINARY_DIR}"
+      "CLToolExe=${CCacheExectuableFileName}"
+      "CLToolPath=${CCacheExectuableDir}"
       "TrackFileAccess=false"
       "UseMultiToolTask=true"
       "DebugInformationFormat=OldStyle"
