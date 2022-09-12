@@ -157,7 +157,7 @@ if( CCacheExectuable )
   set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
   if(NOT CMAKE_GENERATOR STREQUAL "Xcode") # we already post a message when using Xcode
-    message(STATUS "Detected ccache: using ccache to speed up build process")
+    message(STATUS "Detected ccache at ${CCacheExectuable}: using ccache to speed up build process")
   endif()
 
   # fix for Visual Studio from https://gitlab.kitware.com/cmake/cmake/-/issues/16176
