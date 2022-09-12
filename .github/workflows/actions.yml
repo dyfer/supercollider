@@ -642,7 +642,7 @@ jobs:
       - name: cache ccache
         uses: actions/cache@v3
         with:
-          path: ~/AppData/ccache # NOTE: this should be ~/AppData/Local/ccache for ccache 4.7+
+          path: ~/AppData/Roaming/ccache # NOTE: this should be ~/AppData/Local/ccache for ccache 4.7+
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
@@ -669,7 +669,7 @@ jobs:
         shell: bash
         run: |
           choco install ccache --no-progress
-          echo "C:/ProgramData/chocolatey/lib/ccache/tools" >> $GITHUB_PATH
+          # echo "C:/ProgramData/chocolatey/lib/ccache/tools" >> $GITHUB_PATH
       - name: install libsndfile
         shell: bash
         run: |
