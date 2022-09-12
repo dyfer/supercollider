@@ -639,6 +639,12 @@ jobs:
         run: |
           echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
           echo "::set-output name=week::$(date '+%V')"
+      - name: cache ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/AppData/Local/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v2
@@ -659,6 +665,12 @@ jobs:
           version: ${{ matrix.qt-version }}
           arch: ${{ matrix.qt-arch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: install ccache
+        shell: bash
+        run: |
+          choco install ccache --no-progress
+          echo "C:\ProgramData\chocolatey\lib\ccache\tools" >> $GITHUB_PATH
+          echo "C:\\ProgramData\\chocolatey\\lib\\ccache\\tools" >> $GITHUB_PATH
       - name: install libsndfile
         shell: bash
         run: |
