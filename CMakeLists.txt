@@ -163,7 +163,8 @@ if( CCacheExectuable )
   # fix for Visual Studio from https://gitlab.kitware.com/cmake/cmake/-/issues/16176
   if (MSVC)
     file(COPY_FILE
-      ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
+    #   ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
+      "c:/ProgramData/chocolatey/lib/ccache/tools/ccache-4.6.1-windows-x86_64/ccache.exe" ${CMAKE_BINARY_DIR}/cl.exe
       ONLY_IF_DIFFERENT)
 
     set(CMAKE_VS_GLOBALS
