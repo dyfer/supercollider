@@ -170,8 +170,10 @@ if( CCacheExectuable )
 	get_filename_component(CCacheExectuableDir ${CCacheExectuable} DIRECTORY)
 
     set(CMAKE_VS_GLOBALS
-      "CLToolExe=${CCacheExectuableFileName}"
-      "CLToolPath=${CCacheExectuableDir}"
+    #   "CLToolExe=${CCacheExectuableFileName}"
+    #   "CLToolPath=${CCacheExectuableDir}"
+      "CLToolExe=${CCacheExectuable}"
+      "CLToolPath=${CMAKE_BINARY_DIR}"
       "TrackFileAccess=false"
       "UseMultiToolTask=true"
       "DebugInformationFormat=OldStyle"
