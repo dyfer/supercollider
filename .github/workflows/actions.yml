@@ -643,10 +643,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/AppData/Local/ccache # this will likely be the location of cache for ccache 4.7+
-            ~/AppData/Roaming/ccache # this is used when running ccache 4.6.3 NOT in bash
-            ~/.ccache
-            ~/.config/ccache # this is used when running ccache 4.6.3 in bash, see https://github.com/ccache/ccache/issues/1023
+            # ~/AppData/Local/ccache # this will likely be the location of cache for ccache 4.7+
+            # ~/AppData/Roaming/ccache # this is used when running ccache 4.6.3 NOT in bash
+            ~/AppData/Roaming/.ccache
+            ~/AppData/Local/.ccache
+            # ~/.ccache
+            # ~/.config/ccache # this is used when running ccache 4.6.3 in bash, see https://github.com/ccache/ccache/issues/1023
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: cache vcpkg
