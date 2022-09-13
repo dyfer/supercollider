@@ -745,9 +745,9 @@ jobs:
         if: matrix.artifact-suffix
         shell: bash
         run: |
-          ls -l ~/*
+          ls -la ~/*
           echo "--- in AppData ---"
-          ls -l ~/AppData/*
+          ls -la ~/AppData/*
 
   test:
     strategy:
