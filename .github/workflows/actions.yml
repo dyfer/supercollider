@@ -748,6 +748,13 @@ jobs:
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
+      - name: list directories
+        if: matrix.artifact-suffix
+        shell: bash
+        run: |
+          ls -l ~/*
+          echo "--- in AppData ---"
+          ls -l ~/AppData/*
 
   test:
     strategy:
