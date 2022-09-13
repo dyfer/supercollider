@@ -160,7 +160,7 @@ if( CCacheExectuable )
     message(STATUS "Detected ccache at ${CCacheExectuable}: using ccache to speed up build process")
   endif()
 
-  # fix for Visual Studio from https://gitlab.kitware.com/cmake/cmake/-/issues/16176
+  # fix for Visual Studio adapted from https://github.com/ccache/ccache/wiki/MS-Visual-Studio#usage
   if (MSVC)
     file(COPY_FILE
     #   ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
