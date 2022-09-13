@@ -164,7 +164,7 @@ if( CCacheExectuable )
   if (MSVC)
     file(COPY_FILE
     #   ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
-      "c:/ProgramData/chocolatey/lib/ccache/tools/ccache-4.6.1-windows-x86_64/ccache.exe" ${CMAKE_BINARY_DIR}/cl.exe
+      "c:/ProgramData/chocolatey/lib/ccache/tools/ccache-4.6.3-windows-x86_64/ccache.exe" ${CMAKE_BINARY_DIR}/cl.exe
       ONLY_IF_DIFFERENT)
 
     set(CMAKE_VS_GLOBALS
