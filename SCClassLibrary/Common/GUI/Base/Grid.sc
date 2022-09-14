@@ -300,7 +300,18 @@ GridLines {
 	var <>spec;
 
 	*new { arg spec;
-		^super.newCopyArgs(spec.asSpec)
+		spec = spec.asSpec;
+		spec.warp.switch(
+			LinearWarp(), {
+				^super.newCopyArgs(spec)
+			},
+			ExponentialWarp(), {
+				^ExponentialGridLines(spec)
+			},
+			{
+				^super.newCopyArgs(spec)
+			} // all other Warps
+		)
 	}
 
 	asGrid { ^this }
@@ -381,6 +392,10 @@ GridLines {
 }
 
 ExponentialGridLines : GridLines {
+
+	*new { arg spec;
+		^super.newCopyArgs(spec.asSpec)
+	}
 
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
 		var lines,p,pixRange;
