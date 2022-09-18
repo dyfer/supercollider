@@ -395,7 +395,8 @@ ExponentialGridLines : GridLines {
 		lines = [];
 		nfracarr = [];
 
-		expRangeIsValid = ((valueMin > 0) && (valueMax > 0)) || ((valueMin < 0) && (valueMax < 0));
+		expRangeIsValid = ((valueMin > 0) and: { valueMax > 0 }) or: {(valueMin < 0) and: { valueMax < 0 } };
+
 		if(expRangeIsValid) {
 			expRangeIsPositive = valueMin > 0;
 			if(expRangeIsPositive) {
@@ -420,20 +421,20 @@ ExponentialGridLines : GridLines {
 				var drawLabel = true, maxNumTicks;
 				if(round(tick, roundFactor).inclusivelyBetween(valueMin, valueMax)) {
 					if(
-						(numTicks > 4) ||
-						((numTicks > 2.5).and(tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)).and(tick >= 1) ||
-						((numTicks > 2).and((tick - this.niceNum(tick, true)).abs < 1e-15)) ||
-						(tick.abs.round(roundFactor).log10.frac < 0.01) ||
-						(tick.absdif(valueMax) < 1e-15) ||
-						(tick.absdif(valueMin) < 1e-15)
+						(numTicks > 4) or:
+						{ ((numTicks > 2.5).and(tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)).and(tick >= 1) } or:
+						{ ((numTicks > 2).and((tick - this.niceNum(tick, true)).abs < 1e-15)) } or:
+						{ (tick.abs.round(roundFactor).log10.frac < 0.01) } or:
+						{ (tick.absdif(valueMax) < 1e-15) } or:
+						{ (tick.absdif(valueMin) < 1e-15) }
 					) {
 						maxNumTicks = tickSpacing.linlin(32, 64, 8, 5, nil);
 						maxNumTicks = maxNumTicks * tick.asFloat.asString.bounds.width.linlin(24, 40, 0.7, 1.5); // 10.0.asString.bounds.width to 1000.0.asString.bounds.width
 						if(
-							(numTicks < maxNumTicks) &&
-							((tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)).and(tick >= 1).not &&
-							(((tick - this.niceNum(tick, true)).abs < 1e-15)).not &&
-							(tick.abs.log10.frac > numTicks.linlin(4, maxNumTicks, 0.7, 0.93))
+							(numTicks < maxNumTicks) and:
+							{ ((tick.abs.round(1).asInteger == this.niceNum(tick.abs, true).round(1).asInteger)).and(tick >= 1).not } and:
+							{ (((tick - this.niceNum(tick, true)).abs < 1e-15)).not } and:
+							{ (tick.abs.log10.frac > numTicks.linlin(4, maxNumTicks, 0.7, 0.93)) }
 						) {
 							drawLabel = false // drop labels for tightly spaced upper area of the decade
 						};
@@ -442,9 +443,9 @@ ExponentialGridLines : GridLines {
 				};
 				if(tick >= (step * 9.9999)) { step = (step * 10) };
 				if(expRangeIsPositive) {
-					if((round(tick,roundFactor) >= (round(step*10,roundFactor))) && (nDecades > 1)) { step = (step*10) };
+					if((round(tick,roundFactor) >= (round(step*10,roundFactor))) and: { (nDecades > 1) }) { step = (step*10) };
 				} {
-					if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) && (nDecades > 1)) { step = (step*0.1) };
+					if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) and: { (nDecades > 1) }) { step = (step*0.1) };
 				};
 				tick = (tick+step);
 			};
