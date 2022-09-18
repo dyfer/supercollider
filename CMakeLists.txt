@@ -166,7 +166,7 @@ if( CCacheExectuable )
   # the solution is to add the path to the actual ccache executable earlier in the path
   # e.g. in bash: export PATH=`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`:$PATH
   if (MSVC)
-    message(STATUS "MSVC and ccache detected at ${CCacheExectuable}: using ccache to speed up build process")
+    message(STATUS "Found ccache at ${CCacheExectuable}: using ccache with MSVC to speed up build process")
     file(COPY_FILE
       ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
       ONLY_IF_DIFFERENT)
