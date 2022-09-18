@@ -161,10 +161,13 @@ if( CCacheExectuable )
   endif()
 
   # fix for Visual Studio adapted from https://github.com/ccache/ccache/wiki/MS-Visual-Studio#usage
+  # NOTE: there is an issue with ccache installed from chocolatey
+  # since chocolatey puts a "shim" as opposed to the actual executable in the PATH
+  # the solution is to add the path to the actual ccache executable earlier in the path
+  # e.g. in bash: export PATH=`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`:$PATH
   if (MSVC)
     file(COPY_FILE
       ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
-      # "c:/ProgramData/chocolatey/lib/ccache/tools/ccache-4.6.3-windows-x86_64/ccache.exe" ${CMAKE_BINARY_DIR}/cl.exe
       ONLY_IF_DIFFERENT)
 
     set(CMAKE_VS_GLOBALS
