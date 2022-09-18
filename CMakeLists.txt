@@ -156,7 +156,7 @@ if( CCacheExectuable )
   # only used with >=cmake-3.4
   set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
-  if(NOT CMAKE_GENERATOR STREQUAL "Xcode" AND NOT CMAKE_GENERATOR STREQUAL "Visual Studio") # we already post a message when using Xcode or MSVC
+  if(NOT CMAKE_GENERATOR MATCHES "Xcode" AND (NOT CMAKE_GENERATOR MATCHES "Visual Studio")) # we already post a message when using Xcode or MSVC
     message(STATUS "Found ccache at ${CCacheExectuable}: using ccache to speed up build process")
   endif()
 
