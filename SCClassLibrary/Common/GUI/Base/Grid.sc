@@ -294,18 +294,18 @@ GridLines {
 	var <>spec;
 
 	*new { arg spec;
-		spec = spec.asSpec;
-		spec.warp.switch(
-			LinearWarp(), {
-				^super.newCopyArgs(spec)
-			},
-			ExponentialWarp(), {
-				^ExponentialGridLines(spec)
-			},
-			{
-				^super.newCopyArgs(spec)
-			} // all other Warps
-		)
+		var gridClass;
+		if(spec.isNil) {
+			gridClass = BlankGridLines;
+		} {
+			gridClass = spec.asSpec.warp.gridClass;
+		};
+		if(this.name != \GridLines) {
+			if(this.name != gridClass.name) {
+				"% is designed to use %, but the user requested % instead.".format(spec.asSpec.warp.class.name, gridClass.name, this.name).warn;
+			};
+		};
+		^gridClass.newCopyArgs(spec.asSpec);
 	}
 
 	asGrid { ^this }
@@ -386,10 +386,6 @@ GridLines {
 }
 
 ExponentialGridLines : GridLines {
-
-	*new { arg spec;
-		^super.newCopyArgs(spec.asSpec)
-	}
 
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
 		var lines,p,pixRange;

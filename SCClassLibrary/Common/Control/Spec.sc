@@ -238,6 +238,8 @@ Warp {
 		^this.copy.spec_(inSpec)
 	}
 
+	gridClass { ^GridLines }
+
 	*initClass {
 		// support Symbol-asWarp
 		warps = IdentityDictionary[
@@ -279,6 +281,7 @@ LinearWarp : Warp {
 }
 
 ExponentialWarp : Warp {
+	gridClass { ^ExponentialGridLines }
 	// minval and maxval must both be non zero and have the same sign.
 	map { arg value;
 		// maps a value from [0..1] to spec range
