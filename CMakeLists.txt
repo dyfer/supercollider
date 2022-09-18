@@ -156,8 +156,8 @@ if( CCacheExectuable )
   # only used with >=cmake-3.4
   set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
-  if(NOT CMAKE_GENERATOR STREQUAL "Xcode") # we already post a message when using Xcode
-    message(STATUS "Detected ccache at ${CCacheExectuable}: using ccache to speed up build process")
+  if(NOT CMAKE_GENERATOR STREQUAL "Xcode" AND NOT CMAKE_GENERATOR STREQUAL "Visual Studio") # we already post a message when using Xcode or MSVC
+    message(STATUS "Found ccache at ${CCacheExectuable}: using ccache to speed up build process")
   endif()
 
   # fix for Visual Studio adapted from https://github.com/ccache/ccache/wiki/MS-Visual-Studio#usage
@@ -166,6 +166,7 @@ if( CCacheExectuable )
   # the solution is to add the path to the actual ccache executable earlier in the path
   # e.g. in bash: export PATH=`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`:$PATH
   if (MSVC)
+    message(STATUS "MSVC and ccache detected at ${CCacheExectuable}: using ccache to speed up build process")
     file(COPY_FILE
       ${CCacheExectuable} ${CMAKE_BINARY_DIR}/cl.exe
       ONLY_IF_DIFFERENT)
