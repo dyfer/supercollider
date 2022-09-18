@@ -2,7 +2,6 @@ DrawGrid {
 
 	var <bounds, <>x, <>y;
 	var <>opacity=0.7, <>smoothing=false, <>linePattern;
-	var <>testView;
 
 	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
@@ -28,7 +27,7 @@ DrawGrid {
 
 		w = Window("Grid test", bounds.center_(Window.screenBounds.center)).front;
 
-		grid.testView = UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
+		UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
 		.drawFunc_({ |v|
 			var units;
 
@@ -106,11 +105,6 @@ DrawGrid {
 	}
 	vertGrid_ { arg g;
 		y.grid = g;
-	}
-	tickSpacing_ { arg val;
-		x.tickSpacing = val;
-		y.tickSpacing = val;
-		testView !? {testView.refresh};
 	}
 	copy {
 		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
