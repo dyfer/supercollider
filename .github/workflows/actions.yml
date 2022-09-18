@@ -667,7 +667,9 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: install ccache
         shell: bash
-        run: choco install ccache --no-progress
+        run: |
+          choco install ccache --no-progress
+          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
       - name: install libsndfile
         shell: bash
         run: |
