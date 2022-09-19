@@ -616,6 +616,7 @@ jobs:
             qt-arch: 'win64_mingw81'
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'MinGW Makefiles'
+            vcpkg-triplet: x64-mingw-release
             chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
             ableton-link: 'OFF' # might need to be turned off for MinGW
