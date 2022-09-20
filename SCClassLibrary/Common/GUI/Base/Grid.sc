@@ -480,7 +480,7 @@ ExponentialGridLines : AbstractGridLines {
 }
 
 
-BlankGridLines : GridLines {
+BlankGridLines : AbstractGridLines {
 
 	getParams {
 		^()
