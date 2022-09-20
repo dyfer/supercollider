@@ -11,6 +11,9 @@ Spec {
 		^spec
 	}
 	asSpec { ^this }
+	gridClass {
+		^this.subclassResponsibility(thisMethod)
+	}
 	defaultControl {
 		^this.subclassResponsibility(thisMethod)
 	}
@@ -99,6 +102,8 @@ ControlSpec : Spec {
 
 		^numStep
 	}
+
+	gridClass { ^this.warp.gridClass }
 
 	grid { ^grid ?? { GridLines(this) } }
 
@@ -238,7 +243,7 @@ Warp {
 		^this.copy.spec_(inSpec)
 	}
 
-	gridClass { ^GridLines }
+	gridClass { ^LinearGridLines }
 
 	*initClass {
 		// support Symbol-asWarp

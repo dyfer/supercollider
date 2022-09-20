@@ -294,18 +294,7 @@ GridLines {
 	var <>spec;
 
 	*new { arg spec;
-		var gridClass;
-		if(spec.isNil) {
-			gridClass = BlankGridLines;
-		} {
-			gridClass = spec.asSpec.warp.gridClass;
-		};
-		if(this.name != \GridLines) {
-			if(this.name != gridClass.name) {
-				"% is designed to use %, but the user requested % instead.".format(spec.asSpec.warp.class.name, gridClass.name, this.name).warn;
-			};
-		};
-		^gridClass.newCopyArgs(spec.asSpec);
+		^spec.gridClass.newCopyArgs(spec.asSpec);
 	}
 
 	asGrid { ^this }
@@ -385,7 +374,23 @@ GridLines {
 	}
 }
 
-ExponentialGridLines : GridLines {
+AbstractGridLines : GridLines {
+
+	*new { arg spec;
+		^super.newCopyArgs(spec.asSpec).prCheckWarp;
+	}
+
+	prCheckWarp {
+		if(this.class.name != this.spec.gridClass.name) {
+			"% is designed to use %, but % was requested instead.".format(spec.asSpec.warp.class.name, this.spec.gridClass.name, this.class.name).warn;
+		};
+	}
+}
+
+LinearGridLines : AbstractGridLines {
+}
+
+ExponentialGridLines : AbstractGridLines {
 
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
 		var lines,p,pixRange;
@@ -485,4 +490,5 @@ BlankGridLines : GridLines {
 
 + Nil {
 	asGrid { ^BlankGridLines.new }
+	gridClass { ^BlankGridLines }
 }
