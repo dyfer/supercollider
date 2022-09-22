@@ -1,0 +1,7 @@
+  [
+	(
+		'suite': "TestArray",
+		'test': "*",
+	),
+
+]
