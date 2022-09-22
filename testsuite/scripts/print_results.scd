@@ -54,7 +54,7 @@ results.do({|dict|
 	if(dict[\skip].asBoolean) {
 		// "skipped: %".format(dict[\skipReason]).postln;
 		header = makeYellow.("[-]");
-		print.("%   % Skipped (reason: %)".format(header, name, dict[\skipReason]));
+		print.("    %   % Skipped (reason: %)".format(header, name, dict[\skipReason]));
 		skipped = skipped + 1;
 	} {
 		allResults = dict[\results].size;
@@ -67,7 +67,7 @@ results.do({|dict|
 			} {
 				header = makeRed.(header);
 			};
-			print.("% % (%s)".format(header, name, (dict[\duration] ? 0).round(0.01)));
+			print.("    % % (%s)".format(header, name, (dict[\duration] ? 0).round(0.01)));
 			dict[\results].do({|resDict|
 				if(resDict[\pass]) {
 					header = makeGreen.("*");
@@ -76,32 +76,36 @@ results.do({|dict|
 					header = makeRed.("!");
 					failed = failed + 1;
 				};
-				print.("       % %".format(header, resDict[\test].asString));
+				print.("           % %".format(header, resDict[\test].asString));
 			})
 		} {
-			print.("%   % (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)));
+			print.("    %   % (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)));
 			failed = failed + 1;
 		}
 	};
 });
 
 if(failed > 0) {
-	print.(("%, %, out of %").format(makeRed.("% TESTS FAILED".format(failed)), makeYellow.("% skipped".format(skipped)), passed + skipped + failed));
+	print.("    %, %, out of %".format(makeRed.("% TESTS FAILED".format(failed)), makeYellow.("% skipped".format(skipped)), passed + skipped + failed));
+	print.("Search for ! to find failed tests");
 } {
-	print.(("%, %").format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))));
+	print.("    %, %".format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))));
 };
 
 if(useColors) {
-	// "echo \"%\"".format(allStr.escapeChar($")).unixCmd; // problem with long strings
-	tmpPath = PathName.tmp +/+ 10000.rand.asString ++ "testStr.txt";
-	file = File(tmpPath, "w");
-	file.putString(allStr);
-	file.close;
-	// ~file.close;
-	// "cat %".format(tmpPath.shellQuote).unixCmd;
-	"echo -ne \"$(</%)\"".format(tmpPath.shellQuote).unixCmd({
-		File.delete(tmpPath);
-	});
+	try {
+		tmpPath = PathName.tmp +/+ 10000.rand.asString ++ "testStr.txt";
+		file = File(tmpPath, "w");
+		file.putString(allStr);
+		file.close;
+		// ~file.close;
+		// "cat %".format(tmpPath.shellQuote).unixCmd;
+		"echo -ne \"$(</%)\"".format(tmpPath.shellQuote).unixCmd({
+			File.delete(tmpPath);
+		});
+	} { |err|
+		("    % TESTS PASSED, % TESTS FAILED, % skipped, out of %".format(passed, failed, skipped, passed + skipped + failed)).postln; // provide rudimentary posting in case something goes wrong with the posting
+	};
 };
 
 if(exitWhenDone) {failed.exit};
