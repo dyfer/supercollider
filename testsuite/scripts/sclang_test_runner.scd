@@ -243,5 +243,5 @@ if(File.exists(~testProto).not) {
 	// 0.exit;
 	if(thisProcess.argv.size > 0) {
 		0.exit;
-	}; // exit only if the script was called with command line arguments
+	}; // exit only if the script was called with arguments
 }.forkIfNeeded(AppClock);
