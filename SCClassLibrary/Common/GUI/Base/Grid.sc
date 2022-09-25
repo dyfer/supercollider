@@ -289,12 +289,26 @@ DrawGridY : DrawGridX {
 
 // DrawGridRadial : DrawGridX {}
 
+// "factory" class
 GridLines {
+
+	*new { arg spec;
+		^spec.gridClass.new(spec.asSpec);
+	}
+}
+
+AbstractGridLines {
 
 	var <>spec;
 
 	*new { arg spec;
-		^spec.gridClass.newCopyArgs(spec.asSpec);
+		^super.newCopyArgs(spec.asSpec).prCheckWarp;
+	}
+
+	prCheckWarp {
+		if(this.class.name != this.spec.gridClass.name) {
+			"% expects a spec with %, but was passed a spec with % instead.".format(this.class.name, this.spec.warp.class.name, spec.asSpec.warp.class.name).warn;
+		};
 	}
 
 	asGrid { ^this }
@@ -340,6 +354,19 @@ GridLines {
 	looseRange { arg min,max,ntick=5;
 		^this.ideals(min,max).at( [ 0,1] )
 	}
+	getParams {
+		^()
+	}
+	formatLabel { arg val, numDecimalPlaces;
+		if (numDecimalPlaces == 0) {
+			^val.asInteger.asString
+		} {
+			^val.round( (10**numDecimalPlaces).reciprocal).asString
+		}
+	}
+}
+
+LinearGridLines : AbstractGridLines {
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
 		var lines,p,pixRange;
 		var nfrac,d,graphmin,graphmax,range;
@@ -365,29 +392,6 @@ GridLines {
 		};
 		^p
 	}
-	formatLabel { arg val, numDecimalPlaces;
-		if (numDecimalPlaces == 0) {
-			^val.asInteger.asString
-		} {
-			^val.round( (10**numDecimalPlaces).reciprocal).asString
-		}
-	}
-}
-
-AbstractGridLines : GridLines {
-
-	*new { arg spec;
-		^super.newCopyArgs(spec.asSpec).prCheckWarp;
-	}
-
-	prCheckWarp {
-		if(this.class.name != this.spec.gridClass.name) {
-			"% is designed to use %, but % was requested instead.".format(spec.asSpec.warp.class.name, this.spec.gridClass.name, this.class.name).warn;
-		};
-	}
-}
-
-LinearGridLines : AbstractGridLines {
 }
 
 ExponentialGridLines : AbstractGridLines {
@@ -485,6 +489,7 @@ BlankGridLines : AbstractGridLines {
 	getParams {
 		^()
 	}
+	prCheckWarp {}
 }
 
 
