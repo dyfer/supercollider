@@ -11,7 +11,7 @@ Spec {
 		^spec
 	}
 	asSpec { ^this }
-	gridClass {
+	asGridLines {
 		^this.subclassResponsibility(thisMethod)
 	}
 	defaultControl {
@@ -38,7 +38,7 @@ Spec {
 }
 
 ControlSpec : Spec {
-	var <minval, <maxval, <warp, <step, <>default, <>units, >grid;
+	var <minval, <maxval, <warp, <step, <>default, <>units;
 	var <clipLo, <clipHi;
 
 	*new { arg minval = (0.0), maxval = (1.0), warp = ('lin'), step = (0.0), default, units, grid;
@@ -103,9 +103,7 @@ ControlSpec : Spec {
 		^numStep
 	}
 
-	gridClass { ^this.warp.gridClass }
-
-	grid { ^grid ?? { GridLines(this) } }
+	asGridLines { ^this.warp.asGridLines() }
 
 	looseRange { |data, defaultRange, minval, maxval|
 		var newMin, newMax;
@@ -243,7 +241,9 @@ Warp {
 		^this.copy.spec_(inSpec)
 	}
 
-	gridClass { ^LinearGridLines }
+	asGridLines {
+		^LinearGridLines(spec)
+	}
 
 	*initClass {
 		// support Symbol-asWarp
@@ -286,7 +286,10 @@ LinearWarp : Warp {
 }
 
 ExponentialWarp : Warp {
-	gridClass { ^ExponentialGridLines }
+	asGridLines {
+		"herE".postln;
+		^ExponentialGridLines(spec)
+	}
 	// minval and maxval must both be non zero and have the same sign.
 	map { arg value;
 		// maps a value from [0..1] to spec range

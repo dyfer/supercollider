@@ -126,7 +126,7 @@ DrawGridX {
 	var <>numTicks = nil; // nil for dynamic with view size
 
 	*new { arg grid;
-		^super.newCopyArgs(grid.asGrid).init
+		^super.newCopyArgs(grid.asGridLines).init
 	}
 
 	init {
@@ -135,7 +135,7 @@ DrawGridX {
 		labelOffset = "20000".bounds.size.asPoint;
 	}
 	grid_ { arg g;
-		grid = g.asGrid;
+		grid = g.asGridLines;
 		range = [grid.spec.minval, grid.spec.maxval];
 		this.clearCache;
 	}
@@ -293,7 +293,7 @@ DrawGridY : DrawGridX {
 GridLines {
 
 	*new { arg spec;
-		^spec.gridClass.new(spec.asSpec);
+		^spec.asGridLines;
 	}
 }
 
@@ -306,12 +306,13 @@ AbstractGridLines {
 	}
 
 	prCheckWarp {
-		if(this.class.name != this.spec.gridClass.name) {
+		"chec".postln;
+		if(this.class.name != this.spec.asGridLines.class.name) {
 			"% expects a spec with %, but was passed a spec with % instead.".format(this.class.name, this.spec.warp.class.name, spec.asSpec.warp.class.name).warn;
 		};
 	}
 
-	asGrid { ^this }
+	asGridLines { ^this }
 	niceNum { arg val,round;
 		// http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
 		var exp,f,nf,rf;
@@ -494,6 +495,5 @@ BlankGridLines : AbstractGridLines {
 
 
 + Nil {
-	asGrid { ^BlankGridLines.new }
-	gridClass { ^BlankGridLines }
+	asGridLines { ^BlankGridLines.new }
 }
