@@ -381,11 +381,7 @@ jobs:
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
           # brew uninstall --ignore-dependencies readline
-          # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
-          # vcpkg readline currently fails on arm64 (ncurses dependency)
-          # see https://github.com/microsoft/vcpkg/issues/22654
-          # as a workaround, let's install arm64 readline bottle manually
-          # this is currently done in the "install qt universal binary" step
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
         run: |
@@ -404,7 +400,7 @@ jobs:
           # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
           mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
 
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5) # note it needs to be qt@5, not qt5 here
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp qt@5) # note it needs to be qt@5, not qt5 here
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
           TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
@@ -512,7 +508,7 @@ jobs:
 
           # prepare universal versions of the dependencies
 
-          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5)
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp qt@5)
 
           DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
           TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
