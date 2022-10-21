@@ -251,8 +251,8 @@ jobs:
             verify-app: true
 
           - job-name: 'universal'
-            os-version: '11'
-            xcode-version: '13.2.1'
+            os-version: '12'
+            xcode-version: '14.0.1'
             deployment-target: '10.14'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
