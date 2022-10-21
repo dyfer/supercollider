@@ -252,7 +252,7 @@ jobs:
 
           - job-name: 'universal'
             os-version: '11'
-            xcode-version: '12.4'
+            xcode-version: '13.2.1'
             deployment-target: '10.14'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
