@@ -353,7 +353,7 @@ jobs:
         if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
         with:
           path: ${{ env.QT_UNIVERSAL_WORK_DIR }}
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ hashFiles('/usr/local/Homebrew/.git/refs/heads/master') }} # note: this is specific to macOS 11; in macOS 12 homebrew repo is in /opt/homebrew/.git/
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v3
