@@ -1,5 +1,5 @@
 var makeRed, makeYellow, makeGreen, makeBold, print, allStr = "";
-var useColors = false, exitWhenDone = false;
+var useColors = true, exitWhenDone = true;
 var passed = 0, failed = 0, skipped = 0;
 var results, path, tmpPath, file;
 
