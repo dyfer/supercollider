@@ -255,7 +255,7 @@ jobs:
             xcode-version: '12.4'
             deployment-target: '11.0'
             cmake-architectures: arm64
-            cmake-flags: '-D NOVA_SIMD=OFF' # temporary workaround
+            cmake-flags: '-D NOVA_SIMD=OFF -D SUPERNOVA=OFF' # temporary workaround
             use-syslibs: false
             shared-libscsynth: false
             system-portaudio: false
