@@ -185,7 +185,6 @@ set(ide_webengine_moc_hdrs
     widgets/util/IDEWebChannelWrapper.hpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.h
-    ${CMAKE_SOURCE_DIR}/QtCollider/QcCallback.hpp
 )
 set(ide_webengine_src
     widgets/help_browser.cpp
