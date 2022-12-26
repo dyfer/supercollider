@@ -92,7 +92,10 @@ void QtCollider::init() {
 
 #ifdef SC_USE_QTWEBENGINE
         // Enable javascript localStorage for WebViews
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QWebEngineSettings::defaultSettings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+        // TODO: enable this for Qt6
+#    endif
 #endif
 
         // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.

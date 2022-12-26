@@ -45,7 +45,14 @@ public:
 
     template <typename CallbackT> void call(const CallbackT& result) { Q_EMIT(onCalled(result)); }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QcCallbackWeakFunctor asFunctor() { return QcCallbackWeakFunctor(QPointer<QcCallback>(this)); }
+#else
+    // note: this doesn't work
+    const std::function<void(const QObject&)> asFunctor() {
+        return [](const QObject&) {};
+    }
+#endif
 
 Q_SIGNALS:
     void onCalled(bool);
