@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QWebEngineFindTextResult>
 
 namespace QtCollider {
 
@@ -52,6 +53,7 @@ Q_SIGNALS:
     void onCalled(const QString&);
     void onCalled(const QVariant&);
     void onCalled(const QUrl&);
+    void onCalled(const QWebEngineFindTextResult&);
 };
 
 template <typename RESULT> void QcCallbackWeakFunctor::operator()(RESULT r) const {
