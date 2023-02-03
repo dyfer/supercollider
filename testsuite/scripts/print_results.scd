@@ -13,7 +13,7 @@ if(thisProcess.argv.size > 0) {
 
 if(File.exists(path).not) {
 	"No file found at %".format(path).error;
-	if(exitWhenDone) {1.exit; this.halt};
+	if(exitWhenDone) {2.exit; this.halt};
 };
 
 results = Object.readArchive(path);
@@ -87,6 +87,6 @@ if(failed > 0) {
 	"\t%, %".format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))).postln;
 };
 
-if(exitWhenDone) {2.exit};
+if(exitWhenDone) {(failed > 0).asInteger.exit};
 
 )
