@@ -7,13 +7,13 @@
 		'suite': "TestCondition",
 		'test': "*",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in qpm (FIXME)",
+		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestCondVar",
 		'test': "test_waitFor_withPredicate_signaledButFalseSoTimedOut",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in qpm (FIXME)",
+		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestCoreUGens",
@@ -31,13 +31,13 @@
 		'suite': "TestDocumentEnvironment",
 		'test': "*",
 		'skip': "true",
-		'skipReason': "UnitTest creates issues when run in qpm (FIXME)",
+		'skipReason': "UnitTest creates issues when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestEnvironmentDocument",
 		'test': "*",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in qpm (FIXME)",
+		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestEnvGen_server",
@@ -49,13 +49,13 @@
 		'suite': "TestEnvGen_server",
 		'test': "test_trig_gate_nonsustain_env",
 		'skip': "true",
-		'skipReason': "UnitTest fails on supernova in qpm on Linux (FIXME)",
+		'skipReason': "UnitTest fails on supernova in GHA on Linux (FIXME)",
 	),
 	(
 		'suite': "TestLinkClock",
 		'test': "*",
 		'skip': "true",
-		'skipReason': "UnitTest has unknown issues when run in qpm (FIXME)",
+		'skipReason': "UnitTest has unknown issues when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestNodeProxy",
@@ -66,7 +66,7 @@
 	(
 		'suite': "TestNodeProxyRoles",
 		'test': "test_proxyroles_xfade_smoothly",
-		'skipReason': "UnitTest fails in qpm (FIXME)",
+		'skipReason': "UnitTest fails in GHA (FIXME)",
 		'skip': "true",
 	),
 	(
@@ -79,7 +79,7 @@
 		'suite': "TestOSCFunc",
 		'test': "test_argSizeMatching_Succeeds",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in qpm on Linux (FIXME)",
+		'skipReason': "UnitTest fails when run in GHA on Linux (FIXME)",
 	),
 	(
 		'suite': "TestSCDoc",
@@ -109,7 +109,7 @@
 		'suite': "TestUGen_RTAlloc",
 		'test': "test_allUGens",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in qpm (FIXME)",
+		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
 		'suite': "TestVolume",
@@ -121,13 +121,13 @@
 		'suite': "TestWebView",
 		'test': "test_findText_found",
 		'skip': "true",
-		'skipReason': "UnitTest sometimes fails when run in qpm",
+		'skipReason': "UnitTest sometimes fails when run in GHA",
 	),
 	(
 		'suite': "TestWebView",
 		'test': "test_findText_notFound",
 		'skip': "true",
-		'skipReason': "UnitTest sometimes fails when run in qpm",
+		'skipReason': "UnitTest sometimes fails when run in GHA",
 	),
 	(
 		'suite': "TestMIDI",
