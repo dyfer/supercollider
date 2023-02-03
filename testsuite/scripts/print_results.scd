@@ -49,7 +49,7 @@ results.do({|dict|
 	if(dict[\skip].asBoolean) {
 		// "skipped: %".format(dict[\skipReason]).postln;
 		header = makeYellow.("[-]");
-		"    %   % Skipped (reason: %)".format(header, name, dict[\skipReason]).postln;
+		"\t%\t% Skipped (reason: %)".format(header, name, dict[\skipReason]).postln;
 		skipped = skipped + 1;
 	} {
 		allResults = dict[\results].size;
@@ -62,7 +62,7 @@ results.do({|dict|
 			} {
 				header = makeRed.(header);
 			};
-			"    % % (%s)".format(header, name, (dict[\duration] ? 0).round(0.01)).postln;
+			"\t%\t% (%s)".format(header, name, (dict[\duration] ? 0).round(0.01)).postln;
 			dict[\results].do({|resDict|
 				if(resDict[\pass]) {
 					header = makeGreen.("*");
@@ -71,20 +71,20 @@ results.do({|dict|
 					header = makeRed.("!");
 					failed = failed + 1;
 				};
-				"           % %".format(header, resDict[\test].asString).postln;
+				"\t\t % %".format(header, resDict[\test].asString).postln;
 			})
 		} {
-			"    %   % (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
+			"\t%\t% (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
 			failed = failed + 1;
 		}
 	};
 });
 
 if(failed > 0) {
-	"    %, %, out of %".format(makeRed.("% TESTS FAILED".format(failed)), makeYellow.("% skipped".format(skipped)), passed + skipped + failed).postln;
+	"\t%, %, out of %".format(makeRed.("% TESTS FAILED".format(failed)), makeYellow.("% skipped".format(skipped)), passed + skipped + failed).postln;
 	"Search for ! to find failed tests".postln;
 } {
-	"    %, %".format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))).postln;
+	"\t%, %".format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))).postln;
 };
 
 if(exitWhenDone) {2.exit};
