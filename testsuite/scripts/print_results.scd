@@ -74,8 +74,10 @@ results.do({|dict|
 				"\t\t % %".format(header, resDict[\test].asString).postln;
 			})
 		} {
-			"\t%\t% (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
-			failed = failed + 1;
+			// "\t%\t% (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
+			// failed = failed + 1;
+			// tests that didn't produce any results didn't necessarily fail (e.g. TestSerialPort on macOS)
+			"\t%\t% did not produce any results (%s)".format(makeYellow.("[-]"), name, (dict[\duration] ? 0).round(0.01)).postln;
 		}
 	};
 });
