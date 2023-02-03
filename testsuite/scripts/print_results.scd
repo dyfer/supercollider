@@ -15,37 +15,41 @@ results = Object.readArchive(path);
 
 makeRed = {|str|
 	if(useColors) {
-		str = "\\x1b[31m%\\x1b[0m".format(str);
+		// str = "\\x1b[31m%\\x1b[0m".format(str);
+		str = "%[31m%%[0m".format(27.asAscii, str, 27.asAscii);
 	};
 	str;
 };
 makeYellow = {|str|
 	if(useColors) {
-		str = "\\x1b[33m%\\x1b[0m".format(str);
+		// str = "\\x1b[33m%\\x1b[0m".format(str);
+		str = "%[33m%%[0m".format(27.asAscii, str, 27.asAscii);
 	};
 	str;
 };
 makeGreen = {|str|
 	if(useColors) {
-		str = "\\x1b[32m%\\x1b[0m".format(str);
+		// str = "\\x1b[32m%\\x1b[0m".format(str);
+		str = "%[32m%%[0m".format(27.asAscii, str, 27.asAscii);
 	};
 	str;
 };
 makeBold = {|str|
 	if(useColors) {
-		str = "\\x1b[1m%\\x1b[0m".format(str);
+		// str = "\\x1b[1m%\\x1b[0m".format(str);
+		str = "%[1m%%[0m".format(27.asAscii, str, 27.asAscii);
 	};
 	str;
 };
 print = {|str|
-	if(useColors) {
+	// if(useColors) {
 		// "echo \"%\"".format(str.escapeChar($")).systemCmd
 		// "echo \"%\"".format(str.escapeChar($")).unixCmd;
 		// ["echo", str].unixCmd;
-		allStr = allStr ++ str ++ "\n";
-	} {
+		// allStr = allStr ++ str ++ "\n";
+	// } {
 		str.postln;
-	};
+	// };
 };
 
 results.do({|dict|
@@ -92,21 +96,21 @@ if(failed > 0) {
 	print.("    %, %".format(makeGreen.("% TESTS PASSED".format(passed)), makeYellow.("% skipped".format(skipped))));
 };
 
-if(useColors) {
-	try {
-		tmpPath = PathName.tmp +/+ 10000.rand.asString ++ "testStr.txt";
-		file = File(tmpPath, "w");
-		file.putString(allStr);
-		file.close;
-		// ~file.close;
-		// "cat %".format(tmpPath.shellQuote).unixCmd;
-		"echo -ne \"$(</%)\"".format(tmpPath.shellQuote).unixCmd({
-			File.delete(tmpPath);
-		});
-	} { |err|
-		("    % TESTS PASSED, % TESTS FAILED, % skipped, out of %".format(passed, failed, skipped, passed + skipped + failed)).postln; // provide rudimentary posting in case something goes wrong with the posting
-	};
-};
+// if(useColors) {
+// 	try {
+// 		tmpPath = PathName.tmp +/+ 10000.rand.asString ++ "testStr.txt";
+// 		file = File(tmpPath, "w");
+// 		file.putString(allStr);
+// 		file.close;
+// 		// ~file.close;
+// 		// "cat %".format(tmpPath.shellQuote).unixCmd;
+// 		"echo -ne \"$(</%)\"".format(tmpPath.shellQuote).unixCmd({
+// 			File.delete(tmpPath);
+// 		});
+// 	} { |err|
+// 		("    % TESTS PASSED, % TESTS FAILED, % skipped, out of %".format(passed, failed, skipped, passed + skipped + failed)).postln; // provide rudimentary posting in case something goes wrong with the posting
+// 	};
+// };
 
 if(exitWhenDone) {failed.exit};
 
