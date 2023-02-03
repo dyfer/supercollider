@@ -2,7 +2,7 @@
 // File.copy("../../../supercollider/testsuite/scripts/gha_test_run_proto.json".resolveRelative, "~/Desktop/tests.json".standardizePath);
 
 // this script is meant to be run with two arguments: path to test prototype indicating tests to be run, and path to test result
-
+(
 if(thisProcess.argv.size > 0) {
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
@@ -245,3 +245,4 @@ if(File.exists(~testProto).not) {
 		0.exit;
 	}; // exit only if the script was called with arguments
 }.forkIfNeeded(AppClock);
+)
