@@ -844,6 +844,7 @@ jobs:
 
           # start virtual display server
           export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
           Xvfb $DISPLAY -screen 0 1024x768x16 &
       - name: setup macOS environment
         if: runner.os == 'macOS'
