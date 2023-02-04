@@ -8,27 +8,21 @@ if(thisProcess.argv.size > 0) {
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
 	~exitWhenDone = true;
+} {
+	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd";
+	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd"; // for testing
+	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar";
 };
-
-~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd" };
-// ~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd" }; // for testing
-~testResult ?? { ~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar" };
 
 if(File.exists(~testProto).not) {
-	Error("test prototype file doesn't exist").throw
+	Error("Test prototype file doesn't exist at %".format(~testProto)).throw
 };
-// ~testRecord = "~/Desktop/tests.json".standardizePath;
 
 ~writeResult = {|results, path|
-	// var resultsString = JSON.stringify(results);
-	// var file = File(path, "w");
-	// var success = false;
-	// file.putString(resultsString);
 	results.writeArchive(path);
-	// file.close();
 };
 
-// safely extract the test record dictionary from the input file
+// extract the test record dictionary from the input file
 ~getTestRecord = {|file|
 	var test_record, test_record_string;
 	var success = false;
@@ -68,10 +62,6 @@ if(File.exists(~testProto).not) {
 	tests = ~expandSuiteGlob.(tests);
 
 	tests = List.newFrom(tests.collect(Dictionary.newFrom(_)));
-
-	// tests = test_record["tests"];
-	// settings = test_record["settings"];
-	// ~tests = tests;
 
 	// Expand *'s
 	toExpand = tests.select({|t| (t[\test] == "*") && (t[\completed] != true) });
