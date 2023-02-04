@@ -10,8 +10,8 @@ if(thisProcess.argv.size > 0) {
 	~exitWhenDone = true;
 };
 
-~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "gha_test_run_proto_gha.scd" };
-// ~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "gha_test_run_proto_all.scd" }; // for testing
+~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd" };
+// ~testProto ?? { ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd" }; // for testing
 ~testResult ?? { ~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar" };
 
 if(File.exists(~testProto).not) {

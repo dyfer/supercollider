@@ -801,7 +801,7 @@ jobs:
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
-      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto_gha.scd
+      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
       TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
       SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
       SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
