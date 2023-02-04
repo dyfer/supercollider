@@ -8,7 +8,7 @@ if(thisProcess.argv.size > 0) {
 	~testResult = thisProcess.argv[1];
 } {
 	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "gha_test_run_proto_gha.scd";
-	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "gha_test_run_proto_arr.scd";
+	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "gha_test_run_proto_all.scd"; // for testing
 	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar";
 };
 
