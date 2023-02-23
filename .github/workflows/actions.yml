@@ -253,7 +253,7 @@ jobs:
 
           - job-name: 'x64 legacy'
             os-version: '11'
-            xcode-version: '12.4'
+            xcode-version: '11.7'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
             cmake-architectures: x86_64
