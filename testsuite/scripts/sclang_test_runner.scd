@@ -100,20 +100,32 @@ if(File.exists(~testProto).not) {
 
 	// Ensure excluded tests are not run
 	toExclude = tests.select({|t|
-		if (t[\skip].notNil) {
-			t[\skip] = (t[\skip].asString.toLower == "true")
-		};
+		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
+			if (t[\skip].notNil) {
+				t[\skip] = (t[\skip].asString.toLower == "true")
+			};
 
-		t[\skip] == true
+			t[\skip] == true
+		} {
+			"detected a non-dictionary entry: %. Skipping...".format(t.asCompileString).warn;
+			Dictionary.newFrom([
+				\test: \error
+			])[\skip] == true;
+		}
 	});
 
 	"Excluding: %".format(toExclude.join(", ")).postln;
 	tests = tests.reject({|t|
-		(toExclude.detect({|excluded|
-			(t[\suite].asString == excluded[\suite].asString)
-			&& (t[\test].asString == excluded[\test].asString)
-			&& (t !== excluded)
-		}).size > 0)
+		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
+			(toExclude.detect({|excluded|
+				(t[\suite].asString == excluded[\suite].asString)
+				&& (t[\test].asString == excluded[\test].asString)
+				&& (t !== excluded)
+			}).size > 0)
+		} {
+			"detected a non-dictionary entry: %. Rejecting...".format(t.asCompileString).warn;
+			true;
+		}
 	});
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
