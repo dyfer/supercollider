@@ -649,12 +649,18 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          choco install jack --no-progress --yes --version 1.9.22
+          # install jack
+          # even though SC on Windows doesn't use JACK directly
+          # it will use JackRouter ASIO device
+          curl -O -J -L https://github.com/jackaudio/jack2-releases/releases/download/v1.9.22/jack2-win64-v1.9.22.exe
+
+          echo "installing JACK2"
+          ./jack2-win64-v1.9.22.exe //TYPE="router" //SILENT //SUPPRESSMSGBOXES
 
           # add bin to PATH so that scsynth can be found
           echo "$INSTALL_PATH/SuperCollider" >> $GITHUB_PATH
 
-          # start jack; even though SC doesn't use JACK directly, it will use JackRouter ASIO device
+          # start jack
           /c/Program\ Files/JACK2/jackd.exe --no-realtime -d dummy &
       - name: run tests
         shell: bash
