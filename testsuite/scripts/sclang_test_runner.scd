@@ -18,6 +18,15 @@ if(File.exists(~testProto).not) {
 	Error("Test prototype file doesn't exist at %".format(~testProto)).throw
 };
 
+~useColors = \Document.asClass.isNil; // use colors if we're running outside of the IDE
+
+~makeBold = {|str|
+	if(~useColors) {
+		str = "%[1m%%[0m".format(27.asAscii, str, 27.asAscii);
+	};
+	str;
+};
+
 ~writeResult = {|results, path|
 	results.writeArchive(path);
 };
@@ -37,10 +46,11 @@ if(File.exists(~testProto).not) {
 
 // expand { suite: * } to a dictionary of { test: * } records
 ~expandSuiteGlob = { |testsDict|
+	var all;
 	var suiteGlob = testsDict.select { |item| item[\suite] == "*" };
 
 	if (suiteGlob.notEmpty) {
-		var all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect({ |className|
+		all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect({ |className|
 			Dictionary.newFrom((\suite: "Test" ++ className, \test: "*"))
 		});
 		testsDict.removeAll(suiteGlob);
@@ -100,20 +110,32 @@ if(File.exists(~testProto).not) {
 
 	// Ensure excluded tests are not run
 	toExclude = tests.select({|t|
-		if (t[\skip].notNil) {
-			t[\skip] = (t[\skip].asString.toLower == "true")
-		};
+		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
+			if (t[\skip].notNil) {
+				t[\skip] = (t[\skip].asString.toLower == "true")
+			};
 
-		t[\skip] == true
+			t[\skip] == true
+		} {
+			"detected a non-dictionary entry: %. Skipping...".format(t.asCompileString).warn;
+			Dictionary.newFrom([
+				\test: \error
+			])[\skip] == true;
+		}
 	});
 
 	"Excluding: %".format(toExclude.join(", ")).postln;
 	tests = tests.reject({|t|
-		(toExclude.detect({|excluded|
-			(t[\suite].asString == excluded[\suite].asString)
-			&& (t[\test].asString == excluded[\test].asString)
-			&& (t !== excluded)
-		}).size > 0)
+		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
+			(toExclude.detect({|excluded|
+				(t[\suite].asString == excluded[\suite].asString)
+				&& (t[\test].asString == excluded[\test].asString)
+				&& (t !== excluded)
+			}).size > 0)
+		} {
+			"detected a non-dictionary entry: %. Rejecting...".format(t.asCompileString).warn;
+			true;
+		}
 	});
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
@@ -130,97 +152,87 @@ if(File.exists(~testProto).not) {
 		success = false;
 
 		if(currentSuite != test[\suite]) {
-			"\n\t\tSuite: %\n".postf(test[\suite]);
+			"\n\n\tSuite: %\n".postf(~makeBold.(test[\suite]));
 			currentSuite = test[\suite];
 		};
 
-		"\n\tTest: %\n".postf(test[\test]);
+		"\n\tTest: %\n".postf(~makeBold.(test[\test]));
 
-		try {
-			if (test[\completed].isNil) {
-				if (test[\skip] == true) {
+		if (test[\completed].isNil) {
+			if (test[\skip] == true) {
+				test[\completed] = true;
+				test[\attemptsRemaining] = nil;
+				~writeResult.(tests, resultFile);
+			} {
+				test[\completed] = false;
+				class = test[\suite].asSymbol.asClass;
+				testname = test[\test].asSymbol;
+				if (class.isNil) {
+					test[\error] = "Class % not found".format(class);
 					test[\completed] = true;
-					test[\attemptsRemaining] = nil;
 					~writeResult.(tests, resultFile);
 				} {
-					test[\completed] = false;
-					class = test[\suite].asSymbol.asClass;
-					testname = test[\test].asSymbol;
-					if (class.isNil) {
-						test[\error] = "Class % not found".format(class);
-						test[\completed] = true;
+					class.findTestMethods();
+					class.setUpClass();
+
+					script = class.findTestMethods().detect({ |m| m.name == testname });
+					if (script.notNil) {
+						// This is a bad way to get the results, but there's no other for now.
+						// One this is working end-to-end, then UnitTest can be improved incrementally.
+						oldPasses = IdentitySet.newFrom(class.passes);
+						oldFailures = IdentitySet.newFrom(class.failures);
+
+						// RUN THE TEST ///////////////
 						~writeResult.(tests, resultFile);
-					} {
-						class.findTestMethods();
-						class.setUpClass();
+						startTime = Date.localtime();
 
-						script = class.findTestMethods().detect({ |m| m.name == testname });
-						if (script.notNil) {
-							// This is a bad way to get the results, but there's no other for now.
-							// One this is working end-to-end, then UnitTest can be improved incrementally.
-							oldPasses = IdentitySet.newFrom(class.passes);
-							oldFailures = IdentitySet.newFrom(class.failures);
-
-							// RUN THE TEST ///////////////
-							~writeResult.(tests, resultFile);
-							startTime = Date.localtime();
-
+						try {
 							result = class.new.runTestMethod(script);
-							endTime = Date.localtime();
-							test[\completed] = true;
-							test[\attemptsRemaining] = nil;
-							test[\duration] = endTime.rawSeconds - startTime.rawSeconds;
-							///////////////////////////////
-
-							newPasses = IdentitySet.newFrom(class.passes).difference(oldPasses);
-							newFailures = IdentitySet.newFrom(class.failures).difference(oldFailures);
-							test[\results] = List();
-							newPasses.do {|pass|
-								test[\results].add((
-									\test: ("" ++ pass.message)[0..1000],
-									\pass: true,
-								))
-							};
-							newFailures.do {|fail|
-								test[\results].add((
-									\pass: false,
-									\test: ("" ++ fail.message.split($\n)[0])[0..1000],
-									\reason: (fail.message.split($\n)[1..])[0..1000]
-								))
-							};
-
-							~writeResult.(tests, resultFile);
-						} {
-							test[\error] = "Test not found.";
-							test[\completed] = true;
-							~writeResult.(tests, resultFile);
+						} { |error|
+							class.new.failed(script, error.errorString, true, nil);
 						};
 
-						class.tearDownClass();
-					}
+						endTime = Date.localtime();
+						test[\completed] = true;
+						test[\attemptsRemaining] = nil;
+						test[\duration] = endTime.rawSeconds - startTime.rawSeconds;
+						///////////////////////////////
+
+						newPasses = IdentitySet.newFrom(class.passes).difference(oldPasses);
+						newFailures = IdentitySet.newFrom(class.failures).difference(oldFailures);
+						test[\results] = List();
+						newPasses.do {|pass|
+							test[\results].add((
+								\test: ("" ++ pass.message)[0..1000],
+								\pass: true,
+							))
+						};
+						newFailures.do {|fail|
+							test[\results].add((
+								\pass: false,
+								\test: ("" ++ fail.message.split($\n)[0])[0..1000],
+								\reason: (fail.message.split($\n)[1..])[0..1000]
+							))
+						};
+
+						~writeResult.(tests, resultFile);
+					} {
+						test[\error] = "Test not found.";
+						test[\completed] = true;
+						~writeResult.(tests, resultFile);
+					};
+
+					class.tearDownClass();
 				}
-			};
-		} {	|err|
-			err.reportError;
-			test[\error] = err.errorString;
-			~writeResult.(tests, resultFile);
-		}
+			}
+		};
 	}
-	// } {
-	// 	|err|
-	// 	err.reportError;
-	// }
 };
 
 
 {
-	try {
-		~testrun.(~testProto, ~testResult);
-	} { |err|
-		"~testrun.(~testRecord) failed:".postln;
-		err.errorString.postln;
-	};
-	"******** DONE ********".postln;
+	~testrun.(~testProto, ~testResult);
+	"\n\n******** DONE ********\n\n".postln;
 	// 0.exit;
 	if(~exitWhenDone) {
 		0.exit;
