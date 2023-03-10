@@ -37,10 +37,11 @@ if(File.exists(~testProto).not) {
 
 // expand { suite: * } to a dictionary of { test: * } records
 ~expandSuiteGlob = { |testsDict|
+	var all;
 	var suiteGlob = testsDict.select { |item| item[\suite] == "*" };
 
 	if (suiteGlob.notEmpty) {
-		var all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect({ |className|
+		all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect({ |className|
 			Dictionary.newFrom((\suite: "Test" ++ className, \test: "*"))
 		});
 		testsDict.removeAll(suiteGlob);
