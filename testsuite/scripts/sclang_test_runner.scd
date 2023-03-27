@@ -227,12 +227,7 @@ if(File.exists(~testProto).not) {
 
 
 {
-	try {
-		~testrun.(~testProto, ~testResult);
-	} { |err|
-		"~testrun.(~testRecord) failed:".postln;
-		err.reportError;
-	};
+	~testrun.(~testProto, ~testResult);
 	"******** DONE ********".postln;
 	// 0.exit;
 	if(~exitWhenDone) {
