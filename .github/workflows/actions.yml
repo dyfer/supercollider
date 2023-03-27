@@ -707,6 +707,9 @@ jobs:
           $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
           # run tests
           timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+      - name: Setup tmate session
+        if: runner.os == 'Windows'
+        uses: mxschmitt/action-tmate@v3
       - name: post test results
         shell: bash
         run: |
