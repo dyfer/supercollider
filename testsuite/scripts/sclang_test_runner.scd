@@ -149,7 +149,7 @@ if(File.exists(~testProto).not) {
 
 		"\n\tTest: %\n".postf(test[\test]);
 
-		try {
+		// try {
 			if (test[\completed].isNil) {
 				if (test[\skip] == true) {
 					test[\completed] = true;
@@ -218,11 +218,11 @@ if(File.exists(~testProto).not) {
 					}
 				}
 			};
-		} {	|err|
-			err.reportError;
-			test[\error] = err.errorString;
-			~writeResult.(tests, resultFile);
-		}
+	// } {	|err|
+	// 	err.reportError;
+	// 	test[\error] = err.errorString;
+	// 	~writeResult.(tests, resultFile);
+	// }
 	}
 	// } {
 	// 	|err|
