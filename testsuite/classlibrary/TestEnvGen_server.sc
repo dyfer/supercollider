@@ -7,8 +7,7 @@ TestEnvGen_server : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
-		server.remove;
+		this.quitServer(server);
 	}
 
 	test_zero_gate_n_off_not_sent {

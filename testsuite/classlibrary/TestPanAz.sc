@@ -7,8 +7,7 @@ TestPanAz : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
-		server.remove;
+		this.quitServer(server);
 	}
 
 	test_PanAz_ak_initializesAmps {

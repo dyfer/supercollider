@@ -285,7 +285,7 @@ UnitTest {
 	// wait for the server to quit; if the server hangs, end the process
 	// if this is called inside a routine, the routine waits until server quits
 	quitServer { |server, remove|
-		var cond = Condition(false);
+		var cond = CondVar();
 		server = server ? Server.default;
 		if(server == Server.default) {
 			remove = remove ? false;
@@ -293,16 +293,12 @@ UnitTest {
 			remove = remove ? true; // by default remove non-default servers only
 		};
 		forkIfNeeded {
-			server.quit({
-				cond.test = true;
-				cond.signal;
-			}, {
+			server.quit({cond.signalOne}, watchShutDown: true);
+			cond.waitFor(1, {server.pid.isNil});
+			server.pid !? {
 				"Server '%' failed to quit. Forcing process to stop via system command.".format(server.name).warn;
 				thisProcess.platform.killProcessByID(server.pid);
-				cond.test = true;
-				cond.signal;
-			}, true);
-			cond.wait;
+			};
 			if(remove) {server.remove};
 		}
 	}
