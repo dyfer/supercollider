@@ -284,8 +284,13 @@ UnitTest {
 
 	// wait for the server to quit; if the server hangs, end the process
 	// if this is called inside a routine, the routine waits until server quits
-	quitServer { |server, remove = true|
+	quitServer { |server, remove|
 		var cond = Condition(false);
+		if(server.isNil) {
+			remove = remove ? false;
+		} {
+			remove = remove ? true; // by default remove non-default servers only
+		};
 		server = server ? Server.default;
 		forkIfNeeded {
 			server.quit({
