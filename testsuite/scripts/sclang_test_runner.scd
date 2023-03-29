@@ -233,7 +233,7 @@ if(File.exists(~testProto).not) {
 
 {
 	~testrun.(~testProto, ~testResult);
-	"******** DONE ********".postln;
+	"\n\n******** DONE ********\n\n".postln;
 	// 0.exit;
 	if(~exitWhenDone) {
 		0.exit;
