@@ -178,7 +178,12 @@ if(File.exists(~testProto).not) {
 							~writeResult.(tests, resultFile);
 							startTime = Date.localtime();
 
-							result = class.new.runTestMethod(script);
+							try {
+								result = class.new.runTestMethod(script);
+							} { |error|
+								class.new.failed(script, error.errorString, true, nil);
+							};
+
 							endTime = Date.localtime();
 							test[\completed] = true;
 							test[\attemptsRemaining] = nil;
