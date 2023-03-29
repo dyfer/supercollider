@@ -286,12 +286,12 @@ UnitTest {
 	// if this is called inside a routine, the routine waits until server quits
 	quitServer { |server, remove|
 		var cond = Condition(false);
-		if(server.isNil) {
+		server = server ? Server.default;
+		if(server == Server.default) {
 			remove = remove ? false;
 		} {
 			remove = remove ? true; // by default remove non-default servers only
 		};
-		server = server ? Server.default;
 		forkIfNeeded {
 			server.quit({
 				cond.test = true;
