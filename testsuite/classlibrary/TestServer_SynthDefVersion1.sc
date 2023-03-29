@@ -20,7 +20,7 @@ TestServer_SynthDefVersion1 : UnitTest {
 
 		this.assert(server.serverRunning, "sonic-pi-beep synthdef should not crash server");
 		if (server.serverRunning) {
-			server.quit;
+			this.quitServer(server);
 		};
 
 		server.remove;

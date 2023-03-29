@@ -26,7 +26,7 @@ TestVolume : UnitTest {
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
 
 		s.volume.reset;
-		s.quit.remove;
+		this.quitServer(s);
 	}
 
 	test_setVolume {
@@ -47,7 +47,7 @@ TestVolume : UnitTest {
 		this.assertFloatEquals(ampSynthVolume, s.volume.volume.dbamp, "volume level correctly set", 0.0001);
 
 		s.volume.reset;
-		s.quit.remove;
+		this.quitServer(s);
 	}
 
 	test_numOutputs {
@@ -62,7 +62,7 @@ TestVolume : UnitTest {
 
 		this.assert(s.outputBus.numChannels == s.volume.numOutputChannels, "volume synth has correct number of channels");
 
-		s.quit.remove;
+		this.quitServer(s);
 	}
 
 }

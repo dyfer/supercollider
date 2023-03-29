@@ -75,8 +75,7 @@ TestBus : UnitTest {
 		this.assertFloatEquals(get_value, set_value, "Bus:get works", 0.001);
 
 		bus.free;
-		s.quit;
-		s.remove;
+		this.quitServer(s);
 	}
 
 	test_getn {
@@ -104,8 +103,7 @@ TestBus : UnitTest {
 		this.assertArrayFloatEquals(get_values, set_values[0..1], "Bus:getn works", 0.001);
 
 		bus.free;
-		s.quit;
-		s.remove;
+		this.quitServer(s);
 	}
 
 }

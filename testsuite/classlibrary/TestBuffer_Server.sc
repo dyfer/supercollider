@@ -9,7 +9,7 @@ TestBuffer_Server : UnitTest {
 
 	tearDown {
 		Buffer.freeAll(server);
-		server.quit;
+		this.quitServer(server);
 		server.remove;
 	}
 

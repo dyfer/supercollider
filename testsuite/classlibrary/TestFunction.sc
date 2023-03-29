@@ -48,7 +48,7 @@ TestFunction : UnitTest {
 			})
 		});
 		condition.waitFor(2);
-		server.quit;
+		this.quitServer(server);
 		server.remove;
 	}
 

@@ -16,7 +16,7 @@ TestDoneActions : UnitTest {
 
 	tearDown {
 
-		server.quit.remove;
+		this.quitServer(server);
 
 	}
 

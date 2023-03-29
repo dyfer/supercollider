@@ -12,7 +12,7 @@ TestQuery : UnitTest {
 	tearDown {
 
 		Buffer.freeAll;
-		server.quit.remove;
+		this.quitServer(server);
 
 	}
 

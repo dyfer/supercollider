@@ -36,7 +36,7 @@ TestServer : UnitTest {
 	}
 
 	tearDown {
-		server.quit;
+		this.quitServer(server);
 		server.remove;
 	}
 

@@ -85,8 +85,7 @@ pv_equivalencetests_common { |fakeframe, tests, equaltothis, message|
 		b.free;
 	};
 	s.sync;
-	s.quit;
-	s.remove;
+	this.quitServer(s);
 }
 
 

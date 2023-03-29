@@ -282,6 +282,26 @@ UnitTest {
 		server.newAllocators; // new nodes, busses regardless
 	}
 
+	// wait for the server to quit; if the server hangs, end the process
+	// if this is called inside a routine, the routine waits until server quits
+	quitServer { |server, remove = true|
+		var cond = Condition(false);
+		server = server ? Server.default;
+		forkIfNeeded {
+			server.quit({
+				cond.test = true;
+				cond.signal;
+			}, {
+				"Server '%' failed to quit. Forcing process to stop via system command.".format(server.name).warn;
+				thisProcess.platform.killProcessByID(server.pid);
+				cond.test = true;
+				cond.signal;
+			}, true);
+			cond.wait;
+			if(remove) {server.remove};
+		}
+	}
+
 	debug { |text|
 		debug = debug ++ text;
 	}

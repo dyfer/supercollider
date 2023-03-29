@@ -56,7 +56,7 @@ TestEnvGen_server : UnitTest {
 		var cleanup = {
 			tr_resp.free;
 			n_end_resp.free;
-			server.quit;
+			this.quitServer(server);
 			Server.scsynth;
 		};
 

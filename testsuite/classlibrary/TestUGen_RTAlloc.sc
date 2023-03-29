@@ -10,7 +10,7 @@ TestUGen_RTAlloc : UnitTest {
 	}
 
 	tearDown {
-		server.quit.remove;
+		this.quitServer(server);
 	}
 
 	test_allocFail_clearUnit {
