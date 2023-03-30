@@ -632,7 +632,7 @@ jobs:
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
 
           # start jack
-          jackd --no-realtime -d dummy &
+          jackd --no-realtime --silent -d dummy &
 
           # start virtual display server
           export DISPLAY=:99
