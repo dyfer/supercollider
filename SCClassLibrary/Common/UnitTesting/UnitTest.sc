@@ -272,8 +272,14 @@ UnitTest {
 	// if already booted, then freeAll and create new allocators
 	// if this is called inside a routine, the routine waits until server is booted
 
-	bootServer { | server |
+	bootServer { |server, silent|
 		server = server ? Server.default;
+		if(server == Server.default) {
+			silent = silent ? false;
+		} {
+			silent = silent ? true; // if not explicitly specified, silence only non-default servers
+		};
+		if(silent) {server.options.verbosity_(-1)};
 		if(server.serverRunning.not) {
 			server.bootSync
 		} {
