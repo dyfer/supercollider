@@ -43,7 +43,7 @@ TestUnitTest : UnitTest {
 
 	test_bootServer {
 		var server = Server(this.class.name);
-		server.bootSync;
+		this.bootServer(server);
 		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
 		this.quitServer(server);
 	}

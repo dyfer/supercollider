@@ -6,7 +6,7 @@ TestNodeProxy_Server : UnitTest {
 		server = Server(this.class.name);
 		server.options.numWireBufs = 2048;
 		proxy = NodeProxy(server);
-		server.bootSync;
+		this.bootServer(server);
 	}
 
 	tearDown {

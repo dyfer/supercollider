@@ -18,7 +18,7 @@ TestEnvGen_server : UnitTest {
 			n_end_resp.free;
 		};
 
-		server.bootSync;
+		this.bootServer(server);
 		synth = {
 			// doneAction: 1 should reach end *after* doneAction: 2 envelope ends
 			// correct behavior is that '/n_off' is never sent
@@ -73,7 +73,7 @@ TestEnvGen_server : UnitTest {
 			var gotTrigger = false;
 
 			Server.perform(p);
-			server.bootSync;
+			this.bootServer(server);
 
 			synth = {
 				var gate = Impulse.kr(0);
@@ -104,7 +104,7 @@ TestEnvGen_server : UnitTest {
 			n_end_resp.free;
 		};
 
-		server.bootSync;
+		this.bootServer(server);
 		synth = {|gate=1|
 			var env = EnvGen.kr(Env([0,0.1,1,0], [0.1], releaseNode:1), gate, doneAction: 2);
 			SendReply.kr(env>0.1, '/failed')
@@ -139,7 +139,7 @@ TestEnvGen_server : UnitTest {
 			n_end_resp.free;
 		};
 
-		server.bootSync;
+		this.bootServer(server);
 		synth = {|gate=1|
 			var env = EnvGen.kr(Env([0,1,0], [0.1], \step, releaseNode: 1), gate, doneAction: 2);
 			SendReply.kr((env > 0.1) * (env < 0.9), '/failed')
@@ -172,7 +172,7 @@ TestEnvGen_server : UnitTest {
 		var condvar = CondVar();
 		var result = [];
 
-		server.bootSync;
+		this.bootServer(server);
 
 		{ EnvGen.kr(env, timeScale: 0.01, doneAction:2) }.loadToFloatArray(0.01, server){ |values|
 			result = values;

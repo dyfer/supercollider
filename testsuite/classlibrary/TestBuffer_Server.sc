@@ -4,7 +4,7 @@ TestBuffer_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		this.bootServer(server);
 	}
 
 	tearDown {

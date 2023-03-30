@@ -15,7 +15,7 @@ TestTWindex : UnitTest {
 		success = true,
 		node, failResp;
 
-		server.bootSync;
+		this.bootServer(server);
 
 		// testing a specific bug:
 		// TWindex should initialize its 'sum' variable per trigger

@@ -274,7 +274,7 @@ TestCoreUGens : UnitTest {
 		};
 
 
-		server.bootSync;
+		this.bootServer(server);
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
@@ -299,7 +299,7 @@ TestCoreUGens : UnitTest {
 			"Pan2.ar(ar, , kr) should converge properly to zero when amp set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
 
 		];
-		server.bootSync;
+		this.bootServer(server);
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
@@ -325,7 +325,7 @@ TestCoreUGens : UnitTest {
 			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
 		};
 
-		server.bootSync;
+		this.bootServer(server);
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(0.1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
@@ -345,7 +345,7 @@ TestCoreUGens : UnitTest {
 		var condvar = CondVar();
 		var completed = 0;
 
-		server.bootSync;
+		this.bootServer(server);
 
 		// channel sizes for test:
 		tests.do{ |numchans|
@@ -386,7 +386,7 @@ TestCoreUGens : UnitTest {
 		var rates = [\kr,\ar];
 		var renderCond = Condition();
 
-		server.bootSync;
+		this.bootServer(server);
 
 		frq = server.sampleRate / server.options.blockSize * 2.123; // 2.123 impulses per block
 		phs = 0;
@@ -476,7 +476,7 @@ TestCoreUGens : UnitTest {
 	test_demand {
 		var nodesToFree, tests, testNaN;
 
-		server.bootSync;
+		this.bootServer(server);
 		nodesToFree = [];
 
 		OSCFunc({ |message|
@@ -535,7 +535,7 @@ TestCoreUGens : UnitTest {
 				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
 		];
 
-		server.bootSync;
+		this.bootServer(server);
 
 		tests.keysValuesDo{|text, func|
 			func.loadToFloatArray(10, server, { |data|
@@ -613,7 +613,7 @@ TestCoreUGens : UnitTest {
 			fails and: works
 		};
 
-		server.bootSync;
+		this.bootServer(server);
 		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
 		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
 

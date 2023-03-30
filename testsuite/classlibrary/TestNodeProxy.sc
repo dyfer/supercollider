@@ -260,7 +260,7 @@ TestNodeProxy : UnitTest {
 		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
 		var resp;
 
-		server.bootSync;
+		this.bootServer(server);
 
 		proxy = NodeProxy(server);
 		proxy.source = { DC.kr(2000) };

@@ -8,7 +8,7 @@ TestVolume : UnitTest {
 
 		// set volume so its synthdef, synth and set get sent right after boot
 		s.volume.volume = -1;
-		s.bootSync;
+		this.bootServer(s);
 
 		// FIXME: wait for Volume synth to be requested after boot. Since there is no programmatic way
 		// to check when this request has been sent, we have to do this the uncomfortable way.

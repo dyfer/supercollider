@@ -39,7 +39,7 @@ TestFunction : UnitTest {
 	test_plot {
 		var condition = CondVar.new;
 		var server = Server(thisMethod.name);
-		server.bootSync;
+		this.bootServer(server);
 		{ |x| DC.ar(x) }.asBuffer(duration: 0.01, target: server, action: { |b|
 			b.get(3, { |val|
 				this.assertEquals(val, 0, "unspecified function arguments should pass as 0 when function is written to a buffer");

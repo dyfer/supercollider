@@ -4,7 +4,7 @@ TestNodeProxyRoles : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		this.bootServer(server);
 		proxy = NodeProxy(server);
 		server.sync;
 	}

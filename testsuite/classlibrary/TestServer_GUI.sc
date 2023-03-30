@@ -92,7 +92,7 @@ TestServer_GUI : UnitTest {
 		updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerQuit.add(updateFunc, server);
 
-		server.bootSync;
+		this.bootServer(server);
 		this.quitServer(server);
 
 		fork { 3.wait; cond.test_(true).signal };

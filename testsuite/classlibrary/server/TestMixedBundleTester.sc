@@ -4,7 +4,7 @@ TestMixedBundleTester : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		this.bootServer(server);
 		tester = MixedBundleTester.new;
 		MixedBundleTester.reset;
 	}

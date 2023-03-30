@@ -14,7 +14,7 @@ TestPanAz : UnitTest {
 		var firstSample = nil;
 		var cond = CondVar();
 
-		server.bootSync;
+		this.bootServer(server);
 
 		{
 			PanAz.ar(2, DC.ar(1), -0.5)
@@ -35,7 +35,7 @@ TestPanAz : UnitTest {
 		var firstSample = nil;
 		var cond = CondVar();
 
-		server.bootSync;
+		this.bootServer(server);
 
 		{
 			PanAz.ar(2, DC.ar(1), DC.ar(-0.5))
@@ -56,7 +56,7 @@ TestPanAz : UnitTest {
 		var cond = Condition.new;
 		var expected = [0.0, 1.0, 0.0, 0.0];
 
-		server.bootSync;
+		this.bootServer(server);
 
 		{ PanAz.ar(4, DC.ar(1), DC.ar(0.25), orientation: 0.5) }
 		.loadToFloatArray( 1 / server.sampleRate, server, { |output|
@@ -73,7 +73,7 @@ TestPanAz : UnitTest {
 		var result;
 		var cond = Condition.new;
 
-		server.bootSync;
+		this.bootServer(server);
 
 		{ PanAz.ar(4, DC.ar(1), DC.ar(0), orientation: 0.5) }
 		.loadToFloatArray( 1 / server.sampleRate, server, { |output|
