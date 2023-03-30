@@ -289,6 +289,12 @@ Wait for server boot until continued. Only valid within a test (or a routine).
 
 If already booted, then freeAll and create new allocators.
 
+argument:: server
+code::Server:: instance to boot. Defaults to code::Server.default::
+
+argument:: silent
+If code::true::, sets code::server.options.verbosity:: to code::-1::. Defaults to code::false:: if server is code::Server.default::, otherwise defaults to code::true::.
+
 code::
 (
 {
@@ -296,6 +302,16 @@ code::
 }.fork
 )
 ::
+
+METHOD:: quitServer
+Wait for the server to quit before continuing. Only valid within a test (or a routine).
+
+argument:: server
+code::Server:: instance to quit. Defaults to code::Server.default::
+
+argument:: remove
+If code::true::, calls code::server.remove:: after quitting. Defaults to code::false:: if server is code::Server.default::, otherwise defaults to code::true::.
+
 
 METHOD:: debug
 Supply some debugging information relevant to the currently running
