@@ -18,6 +18,15 @@ if(File.exists(~testProto).not) {
 	Error("Test prototype file doesn't exist at %".format(~testProto)).throw
 };
 
+~useColors = \Document.asClass.isNil; // use colors if we're running outside of the IDE
+
+~makeBold = {|str|
+	if(~useColors) {
+		str = "%[1m%%[0m".format(27.asAscii, str, 27.asAscii);
+	};
+	str;
+};
+
 ~writeResult = {|results, path|
 	results.writeArchive(path);
 };
@@ -143,11 +152,11 @@ if(File.exists(~testProto).not) {
 		success = false;
 
 		if(currentSuite != test[\suite]) {
-			"\n\t\tSuite: %\n".postf(test[\suite]);
+			"\n\n\tSuite: %\n".postf(~makeBold.(test[\suite]));
 			currentSuite = test[\suite];
 		};
 
-		"\n\tTest: %\n".postf(test[\test]);
+		"\n\tTest: %\n".postf(~makeBold.(test[\test]));
 
 		// try {
 			if (test[\completed].isNil) {
