@@ -18,6 +18,11 @@ if(File.exists(~testProto).not) {
 	Error("Test prototype file doesn't exist at %".format(~testProto)).throw
 };
 
+"~testProto path: %".format(~testProto).postln;
+"~testResult path: %".format(~testResult).postln;
+
+~verboseSetup = false; // true or false
+
 ~useColors = \Document.asClass.isNil; // use colors if we're running outside of the IDE
 
 ~makeBold = {|str|
@@ -75,7 +80,7 @@ if(File.exists(~testProto).not) {
 
 	// Expand *'s
 	toExpand = tests.select({|t| (t[\test] == "*") && (t[\completed] != true) });
-	"Expanding %\n".postf(toExpand);
+	~verboseSetup.if({"Expanding %\n".postf(toExpand)});
 	toExpand.do {|wildcardTest|
 		var allTests, newTest, class;
 
@@ -90,9 +95,9 @@ if(File.exists(~testProto).not) {
 			wildcardTest[\completed] = true;
 			// ~writeResult.(test_record, file);
 		} {
-			"class: %".format(class).postln;
+			~verboseSetup.if({"class: %".format(class).postln});
 			class.tryPerform(\findTestMethods).do {|testMethod|
-				"method: %".format(testMethod.name).postln;
+				~verboseSetup.if({"method: %".format(testMethod.name).postln});
 				newTest = Dictionary.newFrom((
 					\suite: class.name.asString,
 					\test: testMethod.name,
@@ -101,7 +106,7 @@ if(File.exists(~testProto).not) {
 				));
 
 				tests.add(newTest);
-				"tests.size: %".format(tests.size).postln;
+				~verboseSetup.if({"tests.size: %".format(tests.size).postln});
 			};
 			tests.remove(wildcardTest);
 			// ~writeResult.(test_record, file);
@@ -124,7 +129,7 @@ if(File.exists(~testProto).not) {
 		}
 	});
 
-	"Excluding: %".format(toExclude.join(", ")).postln;
+	~verboseSetup.if({"Excluding: %".format(toExclude.join(", ")).postln});
 	tests = tests.reject({|t|
 		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
 			(toExclude.detect({|excluded|
@@ -139,8 +144,7 @@ if(File.exists(~testProto).not) {
 	});
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
-	"After exclude: ".post;
-	tests.do(_.postln);
+	~verboseSetup.if({"After exclude: ".post; tests.do(_.postln)});
 
 	"\n\n\t*** Running the tests ***\n\n".post;
 
