@@ -4,6 +4,10 @@
 		'test': "*",
 	),
 	(
+		'suite': "TestProxySpace",
+		'test': "*",
+	),
+	(
 		'suite': "TestCondition",
 		'test': "*",
 		'skip': "true",
