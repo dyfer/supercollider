@@ -1,6 +1,6 @@
 [
 	(
-		'suite': "*",
+		'suite': "TestArray",
 		'test': "*",
 	),
 	(
