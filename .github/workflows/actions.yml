@@ -673,13 +673,7 @@ jobs:
       - name: post test results
         shell: bash
         run: |
-          if [[ ${{ runner.os }} == "Windows" ]]; then
-            taskkill //F //IM sclang.exe //T
-            sleep 1
-            timeout 10 $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
-          else  
-            $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
-          fi
+          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
 
   deploy_s3:
     strategy:
