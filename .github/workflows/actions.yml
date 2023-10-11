@@ -51,19 +51,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'focal gcc7'
-            os-version: '20.04'
-            c-compiler: 'gcc-7'
-            cxx-compiler: 'g++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
           - job-name: 'focal gcc9 shared libscsynth'
             os-version: '20.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
             use-syslibs: false
             shared-libscsynth: true
+            qt-version: '6.6.0'
 
           - job-name: 'jammy gcc10 use system libraries'
             os-version: '22.04'
@@ -93,6 +87,7 @@ jobs:
             cxx-compiler: 'clang++-7'
             use-syslibs: false
             shared-libscsynth: false
+            qt-version: '6.6.0'
 
           - job-name: 'focal clang11'
             os-version: '20.04'
@@ -100,6 +95,7 @@ jobs:
             cxx-compiler: 'clang++-11'
             use-syslibs: false
             shared-libscsynth: false
+            qt-version: '6.6.0'
 
           - job-name: 'focal clang12'
             os-version: '20.04'
@@ -107,6 +103,7 @@ jobs:
             cxx-compiler: 'clang++-12'
             use-syslibs: false
             shared-libscsynth: false
+            qt-version: '6.6.0'
 
           - job-name: 'jammy clang13'
             os-version: '22.04'
@@ -149,7 +146,7 @@ jobs:
       - name: install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
+          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
           # install appropriate clang/gcc compilers
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
@@ -161,7 +158,16 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+        if: ${{ !matrix.qt-version }}
+        run: sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v3
+        if: matrix.qt-version
+        with:
+          modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat' # modules for qt6 only
+          version: ${{ matrix.qt-version }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -198,7 +204,9 @@ jobs:
           - job-name: 'universal'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            qt-version: '6.6.0' # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
+            deployment-target: '11.0'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
             shared-libscsynth: false
@@ -212,8 +220,9 @@ jobs:
           - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
-            qt-version: '5.9.9' # will use qt from aqtinstall
-            deployment-target: '10.11'
+            qt-version: '5.15.2' # will use qt from aqtinstall
+            qt-modules: 'qtwebengine'
+            deployment-target: '10.13'
             cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
@@ -225,7 +234,7 @@ jobs:
           - job-name: 'x64 use system libraries'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            deployment-target: '11.0'
             cmake-architectures: x86_64
             use-syslibs: true
             shared-libscsynth: false
@@ -234,7 +243,7 @@ jobs:
           - job-name: 'x64 shared libscsynth'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            deployment-target: '11.0'
             cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: true
@@ -332,17 +341,17 @@ jobs:
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
-        run: brew install qt5
+        run: brew install qt6
       - name: install qt universal binary from homebrew
         if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt5
+        run: ./brew-install-universal.sh qt6
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
         if: matrix.qt-version
         env:
           DEVELOPER_DIR: '' # remove developer dir which causes installation to fail
         with:
-          modules: 'qtwebengine'
+          modules: ${{ matrix.qt-modules }}
           version: ${{ matrix.qt-version }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
@@ -357,7 +366,7 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt6` $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
@@ -421,7 +430,7 @@ jobs:
             fftw-arch: 'x64'
             cmake-arch: 'x64'
             os-version: '2019'
-            qt-version: '5.15.2'
+            qt-version: '6.6.0'
             qt-arch: 'win64_msvc2019_64'
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'Visual Studio 16 2019'
@@ -429,21 +438,21 @@ jobs:
             vcvars-script: 'vcvars64.bat'
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
-            qt-modules: 'qtwebengine'
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: 'win64-installer'
 
           - job-name: '64-bit MinGW'
             fftw-arch: 'x64'
-            os-version: '2019'
-            qt-version: '5.15.2'
-            qt-arch: 'win64_mingw81'
+            os-version: '2022'
+            qt-version: '6.6.0'
+            qt-arch: 'win64_mingw'
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'MinGW Makefiles'
             chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
-            qt-modules: ''
+            qt-modules: 'qtpositioning qt5compat'
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
 
     name: Windows ${{ matrix.job-name }}
@@ -527,12 +536,11 @@ jobs:
       - name: configure
         shell: bash
         run: |
-          export PATH=$Qt5_DIR/bin:$PATH
           export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
         shell: bash
