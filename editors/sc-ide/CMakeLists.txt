@@ -28,7 +28,10 @@ endif()
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     list(APPEND QT_IDE_COMPONENTS Core5Compat)
-    list(APPEND QT_IDE_LIBRARIES Qt::Core5Compat Qt::DBus)
+    list(APPEND QT_IDE_LIBRARIES Qt::Core5Compat)
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        list(APPEND QT_IDE_LIBRARIES Qt::DBus)
+    endif()
 endif()
 
 find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} COMPONENTS ${QT_IDE_COMPONENTS} REQUIRED)
