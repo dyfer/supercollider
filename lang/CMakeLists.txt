@@ -245,7 +245,7 @@ target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_li
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if(WIN32 AND (NOT MSVC))
-    target_link_libraries(libsclang PUBLIC "-municode")
+    target_link_libraries(libsclang "-municode")
 endif()
 
 if (SCLANG_SERVER)
