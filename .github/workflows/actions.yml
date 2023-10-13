@@ -540,12 +540,13 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" ..
+          EXTRA_CMAKE_FLAGS=
 
-          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then
-            echo "\nsetting additional CMake flags for MinGW\n"
-            cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_TESTSUITE=OFF .. # building tests is disabled due to issues with unicode support
+          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then 
+            EXTRA_CMAKE_FLAGS="-D CMAKE_BUILD_TYPE=Release -D ENABLE_TESTSUITE=OFF $EXTRA_CMAKE_FLAGS"; # building tests is disabled in MinGW due to issues with unicode support
           fi
+
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" $EXTRA_CMAKE_FLAGS ..
 
       - name: build
         shell: bash
