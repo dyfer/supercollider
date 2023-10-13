@@ -244,6 +244,10 @@ endif()
 target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
+if(WIN32 AND (NOT MSVC))
+    target_link_libraries(libsclang PUBLIC "-municode")
+endif()
+
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
 else()
