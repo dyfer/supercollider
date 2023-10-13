@@ -540,7 +540,11 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" ..
+
+          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then
+            cmake -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTING=OFF .. # building tests is disabled due to issues with unicode support
+          fi
 
       - name: build
         shell: bash
