@@ -410,7 +410,7 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars32.bat'
-            vcpkg-triplet: x86-windows-release
+            vcpkg-triplet: x86-windows
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             qt-modules: 'qtwebengine'
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
@@ -427,7 +427,7 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars64.bat'
-            vcpkg-triplet: x64-windows-release
+            vcpkg-triplet: x64-windows
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             qt-modules: 'qtwebengine'
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
