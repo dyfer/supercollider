@@ -523,6 +523,9 @@ jobs:
         if: matrix.vcpkg-triplet
         shell: bash
         run: |
+          cd $VCPKG_INSTALLATION_ROOT
+          git fetch origin d71315b15eeb295d808282adfe74195c08d3435a
+          git checkout d71315b15eeb295d808282adfe74195c08d3435a -- ports/readline*
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: configure
         shell: bash
