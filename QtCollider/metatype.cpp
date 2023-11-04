@@ -24,7 +24,9 @@
 #include "Common.h" // Make sure PyrObject* is declared to QMetaType
 #include <PyrKernel.h>
 
-#include "QcCallback.hpp"
+#ifdef SC_USE_QTWEBENGINE
+#    include "QcCallback.hpp"
+#endif
 
 namespace QtCollider {
 
@@ -81,7 +83,9 @@ void MetaType::initAll() {
     qc_init_metatype<QVector<int>>();
     qc_init_metatype<QVariantList>();
     qc_init_metatype<QUrl>();
+#ifdef SC_USE_QTWEBENGINE
     qc_init_metatype<QcCallback*>();
+#endif
 }
 
 MetaType* MetaType::find(PyrSlot* slot) {
@@ -122,8 +126,10 @@ MetaType* MetaType::find(PyrSlot* slot) {
             return metaType<QFont>();
         } else if (isKindOfSlot(slot, SC_CLASS(QPalette))) {
             return metaType<QPalette>();
+#ifdef SC_USE_QTWEBENGINE
         } else if (isKindOfSlot(slot, SC_CLASS(QCallback))) {
             return metaType<QcCallback*>();
+#endif
         } else if (isKindOfSlot(slot, SC_CLASS(AbstractMenuAction))) {
             return metaType<QAction*>();
         } else if (isKindOfSlot(slot, SC_CLASS(Menu))) {

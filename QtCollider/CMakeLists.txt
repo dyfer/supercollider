@@ -67,7 +67,6 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QObjectProxy.h
   ${QT_COLLIDER_DIR}/QWidgetProxy.h
   ${QT_COLLIDER_DIR}/QtDownload.h
-  ${QT_COLLIDER_DIR}/QcCallback.hpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.h
   ${QT_COLLIDER_DIR}/widgets/QcButton.h
   ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
@@ -110,7 +109,6 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/QWidgetProxy.cpp
   ${QT_COLLIDER_DIR}/QcObjectFactory.cpp
   ${QT_COLLIDER_DIR}/QtDownload.cpp
-  ${QT_COLLIDER_DIR}/QcCallback.cpp
   ${QT_COLLIDER_DIR}/hacks/hacks_x11.cpp
   ${QT_COLLIDER_DIR}/primitives/primitives.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QObject.cpp
@@ -161,12 +159,14 @@ if(QT_COLLIDER_LANG_CLIENT)
 endif()
 
 set(QT_COLLIDER_WEBENGINE_HDRS
+  ${QT_COLLIDER_DIR}/QcCallback.hpp
   ${QT_COLLIDER_DIR}/widgets/QcWebView.h
   ${QT_COLLIDER_DIR}/widgets/web_page.hpp
 )
 
 if(SC_USE_QTWEBENGINE)
   list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_WEBENGINE_HDRS})
+  list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/QcCallback.cpp)
 endif()
 
 ###############################################################################
