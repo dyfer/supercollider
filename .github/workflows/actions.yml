@@ -215,7 +215,7 @@ jobs:
             build-readline: false
             build-fftw: false
             artifact-suffix: 'macOS-universal'
-            verify-app: true
+            verify-app: false # verify_app doesn't work properly with qt's rpaths
 
           - job-name: 'x64 legacy'
             os-version: '12'
