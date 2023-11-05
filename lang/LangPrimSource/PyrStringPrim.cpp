@@ -569,12 +569,16 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
 #ifdef _WIN32
     char buf[1024];
-    wchar_t wbuf[1024];
-    DWORD size = GetEnvironmentVariable(key, wbuf, 1024);
+    wchar_t key_w[256];
+    wchar_t value_w[1024];
+    auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0, nullptr, nullptr);
+    DWORD size = 0;
+    if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1, nullptr, nullptr) != 0)
+        size = GetEnvironmentVariable(key_w, value_w, 1024);
     if (size == 0 || size > 1024)
         value = 0;
     else {
-        if (WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, buf, size + 1, nullptr, nullptr) != 0) {
+        if (WideCharToMultiByte(CP_UTF8, 0, value_w, -1, buf, size + 1, nullptr, nullptr) != 0) {
             value = buf;
         } else {
             value = 0;
@@ -607,7 +611,10 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
     if (IsNil(args + 1)) {
 #ifdef _WIN32
-        SetEnvironmentVariable(key, NULL);
+        wchar_t key_w[256];
+        auto size = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0, nullptr, nullptr);
+        if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size + 1, nullptr, nullptr) != 0)
+            SetEnvironmentVariable(key_w, NULL);
 #else
         unsetenv(key);
 #endif
@@ -617,7 +624,12 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         if (err)
             return err;
 #ifdef _WIN32
-        SetEnvironmentVariable(key, value);
+        wchar_t key_w[256];
+        wchar_t value_w[1024];
+        auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0, nullptr, nullptr);
+        auto size_v = MultiByteToWideChar(CP_UTF8, 0, value, -1, nullptr, 0, nullptr, nullptr);
+        if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1, nullptr, nullptr) != 0) && (MultiByteToWideChar(CP_UTF8, 0, value, -1, value_W, size_v + 1, nullptr, nullptr))
+            SetEnvironmentVariable(wkey, wvalue);
 #else
         setenv(key, value, 1);
 #endif
