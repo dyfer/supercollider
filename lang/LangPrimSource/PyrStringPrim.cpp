@@ -571,9 +571,9 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     char buf[1024];
     wchar_t key_w[256];
     wchar_t value_w[1024];
-    auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0, nullptr, nullptr);
+    auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
     DWORD size = 0;
-    if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1, nullptr, nullptr) != 0)
+    if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1) != 0)
         size = GetEnvironmentVariable(key_w, value_w, 1024);
     if (size == 0 || size > 1024)
         value = 0;
