@@ -569,11 +569,21 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
 #ifdef _WIN32
     char buf[1024];
-    DWORD size = GetEnvironmentVariable(key, buf, 1024);
+    wchar_t key_w[256 * sizeof(wchar_t)];
+    wchar_t value_w[1024 * sizeof(wchar_t)];
+    auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
+    DWORD size = 0;
+    if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k) != 0)
+        size = GetEnvironmentVariable(key_w, value_w, 1024);
     if (size == 0 || size > 1024)
         value = 0;
-    else
-        value = buf;
+    else {
+        if (WideCharToMultiByte(CP_UTF8, 0, value_w, -1, buf, size, nullptr, nullptr) != 0) {
+            value = buf;
+        } else {
+            value = 0;
+        }
+    }
 #else
     value = getenv(key);
 #endif
@@ -601,7 +611,10 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
     if (IsNil(args + 1)) {
 #ifdef _WIN32
-        SetEnvironmentVariable(key, NULL);
+        wchar_t key_w[256 * sizeof(wchar_t)];
+        auto size = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
+        if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size) != 0)
+            SetEnvironmentVariable(key_w, NULL);
 #else
         unsetenv(key);
 #endif
@@ -611,7 +624,13 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         if (err)
             return err;
 #ifdef _WIN32
-        SetEnvironmentVariable(key, value);
+        wchar_t key_w[256 * sizeof(wchar_t)];
+        wchar_t value_w[1024 * sizeof(wchar_t)];
+        auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
+        auto size_v = MultiByteToWideChar(CP_UTF8, 0, value, -1, nullptr, 0);
+        if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k) != 0)
+            && (MultiByteToWideChar(CP_UTF8, 0, value, -1, value_w, size_v) != 0))
+            SetEnvironmentVariable(key_w, value_w);
 #else
         setenv(key, value, 1);
 #endif
