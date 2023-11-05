@@ -569,8 +569,8 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
 #ifdef _WIN32
     char buf[1024];
-    wchar_t key_w[256];
-    wchar_t value_w[1024];
+    wchar_t key_w[256 * sizeof(wchar_t)];
+    wchar_t value_w[1024 * sizeof(wchar_t)];
     auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
     DWORD size = 0;
     if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1) != 0)
@@ -611,7 +611,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
     if (IsNil(args + 1)) {
 #ifdef _WIN32
-        wchar_t key_w[256];
+        wchar_t key_w[256 * sizeof(wchar_t)];
         auto size = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
         if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size + 1) != 0)
             SetEnvironmentVariable(key_w, NULL);
@@ -624,8 +624,8 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         if (err)
             return err;
 #ifdef _WIN32
-        wchar_t key_w[256];
-        wchar_t value_w[1024];
+        wchar_t key_w[256 * sizeof(wchar_t)];
+        wchar_t value_w[1024 * sizeof(wchar_t)];
         auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
         auto size_v = MultiByteToWideChar(CP_UTF8, 0, value, -1, nullptr, 0);
         if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1) != 0) && (MultiByteToWideChar(CP_UTF8, 0, value, -1, value_w, size_v + 1) != 0)
