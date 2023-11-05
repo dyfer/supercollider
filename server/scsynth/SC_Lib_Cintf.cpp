@@ -283,17 +283,21 @@ bool checkServerVersion(void* f, const char* filename) {
 
 static bool PlugIn_Load(const bfs::path& filename) {
 #ifdef _WIN32
-    HINSTANCE hinstance = LoadLibraryW(filename.wstring().c_str());
+    HINSTANCE hinstance = LoadLibrary(filename.wstring().c_str());
     // here, we have to use a utf-8 version of the string for printing
     // because the native encoding on Windows is utf-16.
     const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
     if (!hinstance) {
-        char* s;
+        wchar_t* w;
         DWORD lastErr = GetLastError();
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+                      lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&w, 0, NULL);
+        auto size = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
+        char* s = new char[size];
+        WideCharToMultiByte(CP_UTF8, 0, w, -1, s, size, nullptr, nullptr);
         scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(), s);
-        LocalFree(s);
+        LocalFree(w);
+        delete[] s;
         return false;
     }
 
@@ -311,11 +315,15 @@ static bool PlugIn_Load(const bfs::path& filename) {
 
     void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char* s;
+        wchar_t* w;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+                      GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&w, 0, NULL);
+        auto size = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
+        char* s = new char[size];
+        WideCharToMultiByte(CP_UTF8, 0, w, -1, s, size, nullptr, nullptr);
         scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
-        LocalFree(s);
+        LocalFree(w);
+        delete[] s;
 
         FreeLibrary(hinstance);
         return false;
