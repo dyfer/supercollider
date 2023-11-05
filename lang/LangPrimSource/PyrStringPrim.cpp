@@ -612,8 +612,8 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
     if (IsNil(args + 1)) {
 #ifdef _WIN32
         wchar_t key_w[256];
-        auto size = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0, nullptr, nullptr);
-        if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size + 1, nullptr, nullptr) != 0)
+        auto size = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
+        if (MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size + 1) != 0)
             SetEnvironmentVariable(key_w, NULL);
 #else
         unsetenv(key);
