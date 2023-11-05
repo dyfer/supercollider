@@ -57,7 +57,7 @@ void win32_GetKnownFolderPath(int folderId, char* dest, int size) {
     // to be at least MAX_PATH size, but destination size may be less
     wchar_t buf[MAX_PATH * sizeof(wchar_t)];
     SHGetFolderPath(NULL, folderId, NULL, 0, buf);
-    WideCharToMultiByte(CP_UTF8, 0, buf, -1, dest, size, nullptr, nullptr) // how to handle errors here?
+    WideCharToMultiByte(CP_UTF8, 0, buf, -1, dest, size, nullptr, nullptr); // how to handle errors here?
 }
 
 char* win32_basename(char* path) {
