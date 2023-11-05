@@ -313,7 +313,7 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
 
     // std::cout << "try open plugin: " << path << std::endl;
     const char* filename = path.string().c_str();
-    HINSTANCE hinstance = LoadLibrary(path.string().c_str());
+    HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
     if (!hinstance) {
         char* s;
         DWORD lastErr = GetLastError();
