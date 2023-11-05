@@ -569,7 +569,7 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
 #ifdef _WIN32
     char buf[1024];
-    wchar_t wbuf[1024]
+    wchar_t wbuf[1024];
     DWORD size = GetEnvironmentVariable(key, wbuf, 1024);
     if (size == 0 || size > 1024)
         value = 0;
