@@ -25,6 +25,7 @@
 #include <QTextDocumentFragment>
 
 #include <QtConcurrent>
+#include <QException>
 
 #include "main.hpp"
 #include "main_window.hpp"
