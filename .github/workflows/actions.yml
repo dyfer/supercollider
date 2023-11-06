@@ -165,11 +165,11 @@ jobs:
             ls /usr/bin
             dpkg -L lld-${CC##clang-}
             # sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` -t /usr/bin ld
-            echo "first link"
+            # echo "first link"
             # sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
             # ls /usr/bin
             echo "second link"
-            sudo ln -sf /usr/bin/ld /usr/bin/lld-${CC##clang-}
+            sudo ln -sf /usr/bin/lld-${CC##clang-} /usr/bin/ld
             ls /usr/bin
             # which ld
             # ld --help
