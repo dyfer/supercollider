@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QString>
 #include <QByteArray>
 #include <QKeySequence>
 #include <boost/iostreams/concepts.hpp>
