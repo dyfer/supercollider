@@ -33,16 +33,12 @@
 #    include <QVBoxLayout>
 #    include <QToolBar>
 #    include <QWebEngineSettings>
-<<<<<<< Updated upstream
+#    include <QWebEnginePage>
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
 #        include <QWebEngineContextMenuData>
 #    else
 #        include <QWebEngineContextMenuRequest>
 #    endif
-=======
-#    include <QWebEngineContextMenuData>
-#    include <QWebEnginePage>
->>>>>>> Stashed changes
 #    include <QAction>
 #    include <QMenu>
 #    include <QStyle>
