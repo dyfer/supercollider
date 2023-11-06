@@ -169,7 +169,7 @@ jobs:
             sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
             ls /usr/bin
             echo "second link"
-            sudo ln -s /usr/bin/lld-${CC##clang-} /usr/bin/ld || true
+            sudo ln -s /usr/bin/ld /usr/bin/lld-${CC##clang-}
             ls /usr/bin
             # which ld
             # ld --help
