@@ -47,6 +47,8 @@
 #include <QStyle>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QMetaType>
+#include <QByteArray>
 
 
 namespace ScIDE {
