@@ -121,7 +121,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-            - job-name: 'jammy clang15'
+          - job-name: 'jammy clang15'
             os-version: '22.04'
             c-compiler: 'clang-15'
             cxx-compiler: 'clang++-15'
