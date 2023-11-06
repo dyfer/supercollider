@@ -321,7 +321,7 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
                       nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&w, 0, NULL);
 
         auto size = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
-        char* s = new int[size];
+        char* s = new char[size];
         WideCharToMultiByte(CP_UTF8, 0, w, -1, s, size, nullptr, nullptr);
         std::cout << "Cannot open plugin: " << path << s << std::endl;
         LocalFree(w);
@@ -355,7 +355,7 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&w, 0, NULL);
         auto size = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
-        char* s = new int[size];
+        char* s = new char[size];
         WideCharToMultiByte(CP_UTF8, 0, w, -1, s, size, nullptr, nullptr);
         std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
         LocalFree(w);
