@@ -99,12 +99,12 @@ jobs:
             shared-libscsynth: false
 
           # disabled due to an apparent issue with clang-12 and apparent lack of libunwind
-          # - job-name: 'jammy clang12'
-          #   os-version: '22.04'
-          #   c-compiler: 'clang-12'
-          #   cxx-compiler: 'clang++-12'
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+          - job-name: 'jammy clang12'
+            os-version: '22.04'
+            c-compiler: 'clang-12'
+            cxx-compiler: 'clang++-12'
+            use-syslibs: false
+            shared-libscsynth: false
 
           - job-name: 'jammy clang13'
             os-version: '22.04'
@@ -162,7 +162,9 @@ jobs:
             sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev lld-${CC##clang-} # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev, lld-X
             # use the lld linker
             sudo mv /usr/bin/ld /usr/bin/ld.old
-            sudo ln -s /usr/lib/llvm-{CC##clang-}/bin/lld /usr/bin/ld
+            dpkg -L lld-${CC##clang-}
+            sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` /usr/bin/ld
+            ld --help
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
