@@ -318,7 +318,7 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
         wchar_t* w;
         DWORD lastErr = GetLastError();
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&w, 0, NULL);
+                      nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&w, 0, NULL);
 
         auto size = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
         char* s = new int[size];
