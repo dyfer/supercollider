@@ -84,13 +84,13 @@ jobs:
           # clang <11 is available only in Ubuntu 20.04,
           # but in 20.04 Qt6 can only be installed from aqt install
           # which is not available for clang, only for gcc
-          # - job-name: 'jammy clang7'
-          #   os-version: '20.04'
-          #   c-compiler: 'clang-7'
-          #   cxx-compiler: 'clang++-7'
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   qt-version: '6.6.0'
+          - job-name: 'jammy clang7'
+            os-version: '20.04'
+            c-compiler: 'clang-7'
+            cxx-compiler: 'clang++-7'
+            use-syslibs: false
+            shared-libscsynth: false
+            qt-version: '5.15.2'
 
           - job-name: 'jammy clang11'
             os-version: '22.04'
@@ -118,6 +118,13 @@ jobs:
             os-version: '22.04'
             c-compiler: 'clang-14'
             cxx-compiler: 'clang++-14'
+            use-syslibs: false
+            shared-libscsynth: false
+
+            - job-name: 'jammy clang15'
+            os-version: '22.04'
+            c-compiler: 'clang-15'
+            cxx-compiler: 'clang++-15'
             use-syslibs: false
             shared-libscsynth: false
 
@@ -153,7 +160,7 @@ jobs:
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y clang
             sudo apt-get install -y $CC # package names are clang-X
-            sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
+            sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev lld-${CC##clang-} # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev, lld-X
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
