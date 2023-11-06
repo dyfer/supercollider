@@ -158,10 +158,13 @@ jobs:
           # install appropriate clang/gcc compilers
           if [[ "$CC" =~ clang-[1-9] ]]; then
             # sudo apt-get install -y clang
+            # workaround for failing builds
+            sudo apt-get remove -y gcc-13
+            sudo apt-get install -y --allow-downgrades gcc-12
             sudo apt-get install -y $CC # package names are clang-X
-            # sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev lld-${CC##clang-} # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev, lld-X
-            sudo apt-get install -y clang-tools-${CC##clang-} # install additional libraries
-            sudo apt-get install -y g++-${CC##clang-} # package names are g++-X - to get stdlib
+            # sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev
+            # sudo apt-get install -y clang-tools-${CC##clang-} # install additional libraries
+            # sudo apt-get install -y g++-${CC##clang-} # package names are g++-X - to get stdlib
             # # use the lld linker
             # sudo mv /usr/bin/ld /usr/bin/ld.old
             # ls /usr/bin
