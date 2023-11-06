@@ -167,10 +167,12 @@ jobs:
             # sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` -t /usr/bin ld
             echo "first link"
             sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
+            ls /usr/bin
             echo "second link"
             sudo ln -s /usr/bin/lld-${CC##clang-} /usr/bin/ld || true
-            which ld
-            ld --help
+            ls /usr/bin
+            # which ld
+            # ld --help
             
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
