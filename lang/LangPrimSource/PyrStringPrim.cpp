@@ -628,7 +628,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         wchar_t value_w[1024 * sizeof(wchar_t)];
         auto size_k = MultiByteToWideChar(CP_UTF8, 0, key, -1, nullptr, 0);
         auto size_v = MultiByteToWideChar(CP_UTF8, 0, value, -1, nullptr, 0);
-        if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1) != 0) && (MultiByteToWideChar(CP_UTF8, 0, value, -1, value_w, size_v + 1) != 0)
+        if ((MultiByteToWideChar(CP_UTF8, 0, key, -1, key_w, size_k + 1) != 0) && (MultiByteToWideChar(CP_UTF8, 0, value, -1, value_w, size_v + 1) != 0))
             SetEnvironmentVariable(key_w, value_w);
 #else
         setenv(key, value, 1);
