@@ -166,10 +166,10 @@ jobs:
             dpkg -L lld-${CC##clang-}
             # sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` -t /usr/bin ld
             echo "first link"
-            sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
-            ls /usr/bin
+            # sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
+            # ls /usr/bin
             echo "second link"
-            sudo ln -s /usr/bin/ld /usr/bin/lld-${CC##clang-}
+            sudo ln -sf /usr/bin/ld /usr/bin/lld-${CC##clang-}
             ls /usr/bin
             # which ld
             # ld --help
