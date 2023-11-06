@@ -99,12 +99,13 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'jammy clang12'
-            os-version: '22.04'
-            c-compiler: 'clang-12'
-            cxx-compiler: 'clang++-12'
-            use-syslibs: false
-            shared-libscsynth: false
+          # disabled due to an apparent issue with clang-12 and apparent lack of libunwind
+          # - job-name: 'jammy clang12'
+          #   os-version: '22.04'
+          #   c-compiler: 'clang-12'
+          #   cxx-compiler: 'clang++-12'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
           - job-name: 'jammy clang13'
             os-version: '22.04'
@@ -152,7 +153,6 @@ jobs:
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
             sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
-            if [[ "$CC" =~ clang-12 ]]; then sudo apt-get install -y libunwind-12; fi # fix for clang-12
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
