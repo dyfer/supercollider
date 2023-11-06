@@ -159,18 +159,19 @@ jobs:
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y clang
             sudo apt-get install -y $CC # package names are clang-X
-            sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev lld-${CC##clang-} # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev, lld-X
-            # use the lld linker
-            sudo mv /usr/bin/ld /usr/bin/ld.old
-            ls /usr/bin
-            dpkg -L lld-${CC##clang-}
-            # sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` -t /usr/bin ld
-            # echo "first link"
-            # sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
+            # sudo apt-get install -y clang-tools-${CC##clang-} libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev lld-${CC##clang-} # install additional libraries; package names are clang-tools-X, libc++-X-dev, libc++abi-X-dev, lld-X
+            sudo apt-get install -y clang-tools-${CC##clang-} # install additional libraries
+            # # use the lld linker
+            # sudo mv /usr/bin/ld /usr/bin/ld.old
             # ls /usr/bin
-            echo "second link"
-            sudo ln -sf /usr/bin/lld-${CC##clang-} /usr/bin/ld
-            ls /usr/bin
+            # dpkg -L lld-${CC##clang-}
+            # # sudo ln -s `dpkg -L lld-${CC##clang-} | grep bin/ld.lld` -t /usr/bin ld
+            # # echo "first link"
+            # # sudo ln -s /usr/bin/lld-${CC##clang-} -t /usr/bin ld || true
+            # # ls /usr/bin
+            # echo "second link"
+            # sudo ln -sf /usr/bin/lld-${CC##clang-} /usr/bin/ld
+            # ls /usr/bin
             # which ld
             # ld --help
             
