@@ -153,12 +153,12 @@ Token::Type ScLexer::nextTokenInCode(int& lengthResult) {
 
         for (; it != end; ++it) {
             LexicalRule const& rule = *it;
-            int matchIndex = rule.expr.indexIn(mText, mOffset, QRegExp::CaretAtOffset);
-            // a guard to ensure all regexps match only at beginning of string:
-            Q_ASSERT(matchIndex <= mOffset);
-            if (matchIndex != -1) {
+            QRegularExpressionMatch match = rule.expr.match(mText, mOffset);
+            // a guard to ensure all regexps match only at the beginning of the string:
+            Q_ASSERT(match.hasMatch() && match.capturedStart() == mOffset);
+            if (match.hasMatch()) {
                 type = rule.type;
-                length = rule.expr.matchedLength();
+                length = match.capturedLength();
                 break;
             }
         }

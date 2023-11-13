@@ -179,48 +179,77 @@ void GenericCodeEditor::setShowWhitespace(bool show) {
 
 void GenericCodeEditor::setShowLinenumber(bool show) { mLineIndicator->setHideLineIndicator(!show); }
 
-static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegExp& expr, int offset,
+static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegularExpression& expr, int offset,
                         QTextDocument::FindFlags options, QTextCursor& cursor) {
     QString text = block.text();
     if (options & QTextDocument::FindBackward)
         text.truncate(offset);
     text.replace(QChar::Nbsp, QLatin1Char(' '));
 
-    int idx = -1;
-    while (offset >= 0 && offset <= text.length()) {
-        idx = (options & QTextDocument::FindBackward) ? expr.lastIndexIn(text, offset) : expr.indexIn(text, offset);
-        if (idx == -1)
+    if (options & QTextDocument::FindBackward) {
+        QString reversedText = text;
+        std::reverse(reversedText.begin(), reversedText.end());
+        QRegularExpression reversedExpr(expr.pattern());
+        reversedExpr.setPatternOptions(expr.patternOptions() | QRegularExpression::InvertedGreedinessOption);
+
+        QRegularExpressionMatch reversedMatch = reversedExpr.match(reversedText);
+        if (!reversedMatch.hasMatch())
             return false;
+
+        int idx = text.length() - reversedMatch.capturedEnd();
+        int length = reversedMatch.capturedLength();
 
         if (options & QTextDocument::FindWholeWords) {
             const int start = idx;
-            const int end = start + expr.matchedLength();
+            const int end = start + length;
             if ((start != 0 && text.at(start - 1).isLetterOrNumber())
                 || (end != text.length() && text.at(end).isLetterOrNumber())) {
-                // if this is not a whole word, continue the search in the string
-                offset = (options & QTextDocument::FindBackward) ? idx - 1 : end + 1;
-                idx = -1;
-                continue;
+                // If this is not a whole word, continue the search in the string
+                cursor = QTextCursor(doc);
+                cursor.setPosition(block.position() + idx);
+                cursor.setPosition(cursor.position() + length, QTextCursor::KeepAnchor);
+                return false;
             }
         }
-        // we have a hit, return the cursor for that.
-        break;
+
+        cursor = QTextCursor(doc);
+        cursor.setPosition(block.position() + idx);
+        cursor.setPosition(cursor.position() + length, QTextCursor::KeepAnchor);
+    } else {
+        QRegularExpressionMatch match = expr.match(text, offset);
+        if (!match.hasMatch())
+            return false;
+
+        int idx = match.capturedStart();
+        int length = match.capturedLength();
+
+        if (options & QTextDocument::FindWholeWords) {
+            const int start = idx;
+            const int end = start + length;
+            if ((start != 0 && text.at(start - 1).isLetterOrNumber())
+                || (end != text.length() && text.at(end).isLetterOrNumber())) {
+                // If this is not a whole word, continue the search in the string
+                cursor = QTextCursor(doc);
+                cursor.setPosition(block.position() + idx);
+                cursor.setPosition(cursor.position() + length, QTextCursor::KeepAnchor);
+                return false;
+            }
+        }
+
+        cursor = QTextCursor(doc);
+        cursor.setPosition(block.position() + idx);
+        cursor.setPosition(cursor.position() + length, QTextCursor::KeepAnchor);
     }
 
-    if (idx == -1)
-        return false;
-
-    cursor = QTextCursor(doc);
-    cursor.setPosition(block.position() + idx);
-    cursor.setPosition(cursor.position() + expr.matchedLength(), QTextCursor::KeepAnchor);
     return true;
 }
 
-bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags options) {
+
+bool GenericCodeEditor::find(const QRegularExpression& expr, QTextDocument::FindFlags options) {
     // Although QTextDocument provides a find() method, we implement
     // our own, because the former one is not adequate.
 
-    if (expr.isEmpty())
+    if (!expr.isValid())
         return true;
 
     bool backwards = options & QTextDocument::FindBackward;
@@ -228,7 +257,7 @@ bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags optio
     QTextCursor c(textCursor());
     int pos;
     if (c.hasSelection()) {
-        bool matching = expr.exactMatch(c.selectedText());
+        bool matching = expr.match(c.selectedText()).hasMatch();
 
         if (backwards == matching)
             pos = c.selectionStart();
@@ -288,10 +317,10 @@ bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags optio
         return false;
 }
 
-int GenericCodeEditor::findAll(const QRegExp& expr, QTextDocument::FindFlags options) {
+int GenericCodeEditor::findAll(const QRegularExpression& expr, QTextDocument::FindFlags options) {
     mSearchSelections.clear();
 
-    if (expr.isEmpty()) {
+    if (!expr.isValid()) {
         this->updateExtraSelections();
         return 0;
     }
@@ -325,24 +354,28 @@ int GenericCodeEditor::findAll(const QRegExp& expr, QTextDocument::FindFlags opt
 
 //#define CSTR(QSTR) QSTR.toStdString().c_str()
 
-static QString resolvedReplacement(const QString& replacement, const QRegExp& expr) {
+static QString resolvedReplacement(const QString& replacement, const QRegularExpression& expr) {
     // qDebug("START");
-    static const QRegExp rexpr("(\\\\\\\\)|(\\\\[0-9]+)");
+    static const QRegularExpression rexpr("(\\\\\\\\)|(\\\\[0-9]+)");
     QString str(replacement);
     int i = 0;
-    while (i < str.size() && ((i = rexpr.indexIn(str, i)) != -1)) {
-        int len = rexpr.matchedLength();
-        if (rexpr.pos(1) != -1) {
-            // qDebug("%i (%s): escape", i, CSTR(rexpr.cap(1)));
+    while (i < str.size()) {
+        QRegularExpressionMatch match = rexpr.match(str, i);
+        if (!match.hasMatch())
+            break;
+        int len = match.capturedLength();
+        if (match.captured(1).isEmpty()) {
+            // qDebug("%i (%s): escape", i, CSTR(rexpr.matched(1)));
             str.replace(i, len, "\\");
             i += 1;
-        } else if (rexpr.pos(2) != -1) {
-            QString num_str = rexpr.cap(2);
+        } else if (!match.captured(2).isEmpty()) {
+            QString num_str = rexpr.match(str, i).captured(2);
             num_str.remove(0, 1);
             int num = num_str.toInt();
-            // qDebug("%i (%s): backref = %i", i, CSTR(rexpr.cap(2)), num);
-            if (num <= expr.captureCount()) {
-                QString cap = expr.cap(num);
+            // qDebug("%i (%s): backref = %i", i, CSTR(rexpr.matched(2)), num);
+            QRegularExpressionMatch exprMatch = expr.match(""); // Create an empty match
+            if (num <= exprMatch.lastCapturedIndex()) {
+                QString cap = exprMatch.captured(num);
                 // qDebug("resolving ref to: %s", CSTR(cap));
                 str.replace(i, len, cap);
                 i += cap.size();
@@ -351,7 +384,7 @@ static QString resolvedReplacement(const QString& replacement, const QRegExp& ex
                 str.remove(i, len);
             }
         } else {
-            // qDebug("%i (%s): unknown match", i, CSTR(rexpr.cap(0)));
+            // qDebug("%i (%s): unknown match", i, CSTR(rexpr.matched(0)));
             str.remove(i, len);
         }
         // qDebug(">> [%s] %i", CSTR(str), i);
@@ -360,30 +393,33 @@ static QString resolvedReplacement(const QString& replacement, const QRegExp& ex
     return str;
 }
 
-bool GenericCodeEditor::replace(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options) {
-    if (expr.isEmpty())
+bool GenericCodeEditor::replace(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options) {
+    if (!expr.isValid())
         return true;
 
     QTextCursor cursor = textCursor();
-    if (cursor.hasSelection() && expr.exactMatch(cursor.selectedText())) {
-        QString rstr = replacement;
-        if (expr.patternSyntax() != QRegExp::FixedString)
-            rstr = resolvedReplacement(rstr, expr);
-        cursor.insertText(rstr);
+    if (cursor.hasSelection()) {
+        QString selectedText = cursor.selectedText();
+        if (expr.match(selectedText).hasMatch()) {
+            QString rstr = replacement;
+            if (expr.patternOptions() & QRegularExpression::DontCaptureOption) // not sure if this is correct
+                rstr = resolvedReplacement(rstr, expr);
+            cursor.insertText(rstr);
+        }
     }
 
     return find(expr, options);
 }
 
-int GenericCodeEditor::replaceAll(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options) {
+int GenericCodeEditor::replaceAll(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options) {
     mSearchSelections.clear();
     updateExtraSelections();
 
-    if (expr.isEmpty())
+    if (!expr.isValid())
         return 0;
 
     int replacements = 0;
-    bool caps = expr.patternSyntax() != QRegExp::FixedString;
+    bool caps = expr.patternOptions() & QRegularExpression::DontCaptureOption;
 
     QTextDocument* doc = QPlainTextEdit::document();
     QTextBlock block = doc->begin();
@@ -1128,7 +1164,7 @@ void GenericCodeEditor::gotoPreviousEmptyLine() { gotoEmptyLineUpDown(true); }
 void GenericCodeEditor::gotoNextEmptyLine() { gotoEmptyLineUpDown(false); }
 
 void GenericCodeEditor::gotoEmptyLineUpDown(bool up) {
-    static const QRegExp whiteSpaceLine("^\\s*$");
+    static const QRegularExpression whiteSpaceLine("^\\s*$");
 
     const QTextCursor::MoveOperation direction = up ? QTextCursor::PreviousBlock : QTextCursor::NextBlock;
 
@@ -1139,13 +1175,13 @@ void GenericCodeEditor::gotoEmptyLineUpDown(bool up) {
 
     // find first non-whitespace line
     while (cursor.movePosition(direction)) {
-        if (!whiteSpaceLine.exactMatch(cursor.block().text()))
+        if (!whiteSpaceLine.match(cursor.block().text()).hasMatch())
             break;
     }
 
     // find first whitespace line
     while (cursor.movePosition(direction)) {
-        if (whiteSpaceLine.exactMatch(cursor.block().text())) {
+        if (whiteSpaceLine.match(cursor.block().text()).hasMatch()) {
             setTextCursor(cursor);
             cursorMoved = true;
             break;
