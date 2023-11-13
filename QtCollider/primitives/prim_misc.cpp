@@ -25,10 +25,8 @@
 #include "../type_codec.hpp"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
+#include "../widgets/QcWebView.h"
 #include "../style/style.hpp"
-#ifdef SC_USE_QTWEBENGINE
-#    include "QcCallback.hpp"
-#endif
 #include "QtCollider.h"
 
 #ifdef Q_OS_MAC

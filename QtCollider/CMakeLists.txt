@@ -159,14 +159,12 @@ if(QT_COLLIDER_LANG_CLIENT)
 endif()
 
 set(QT_COLLIDER_WEBENGINE_HDRS
-  ${QT_COLLIDER_DIR}/QcCallback.hpp
   ${QT_COLLIDER_DIR}/widgets/QcWebView.h
   ${QT_COLLIDER_DIR}/widgets/web_page.hpp
 )
 
 if(SC_USE_QTWEBENGINE)
   list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_WEBENGINE_HDRS})
-  list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/QcCallback.cpp)
 endif()
 
 ###############################################################################
