@@ -151,12 +151,12 @@ jobs:
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
         if: ${{ !matrix.qt-version }}
-        run: sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools
+        run: sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
         if: matrix.qt-version
         with:
-          modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat' # modules for qt6 only
+          modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning' # modules for qt6 only
           version: ${{ matrix.qt-version }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
@@ -197,7 +197,7 @@ jobs:
             os-version: '12'
             xcode-version: '13.4.1'
             qt-version: '6.6.0' # will use qt from aqtinstall
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: '11.0'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
@@ -433,7 +433,7 @@ jobs:
             vcvars-script: 'vcvars64.bat'
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: 'win64-installer'
@@ -447,7 +447,7 @@ jobs:
             cmake-generator: 'MinGW Makefiles'
             chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
-            qt-modules: 'qtpositioning qt5compat'
+            qt-modules: 'qtpositioning'
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
 
     name: Windows ${{ matrix.job-name }}
