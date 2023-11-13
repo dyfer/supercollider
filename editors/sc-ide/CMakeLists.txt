@@ -24,12 +24,7 @@ if(SC_USE_QTWEBENGINE)
         Qt::WebEngineWidgets
         Qt::WebSockets
     )
-endif()
-
-if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    list(APPEND QT_IDE_COMPONENTS Core5Compat)
-    list(APPEND QT_IDE_LIBRARIES Qt::Core5Compat)
-    if(UNIX AND SC_USE_QTWEBENGINE)
+    if(UNIX AND (${QT_VERSION_MAJOR} GREATER_EQUAL 6))
         list(APPEND QT_IDE_LIBRARIES Qt::DBus)
     endif()
 endif()
