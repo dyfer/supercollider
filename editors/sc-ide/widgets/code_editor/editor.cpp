@@ -393,7 +393,8 @@ static QString resolvedReplacement(const QString& replacement, const QRegularExp
     return str;
 }
 
-bool GenericCodeEditor::replace(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options) {
+bool GenericCodeEditor::replace(const QRegularExpression& expr, const QString& replacement,
+                                QTextDocument::FindFlags options) {
     if (!expr.isValid())
         return true;
 
@@ -411,7 +412,8 @@ bool GenericCodeEditor::replace(const QRegularExpression& expr, const QString& r
     return find(expr, options);
 }
 
-int GenericCodeEditor::replaceAll(const QRegularExpression& expr, const QString& replacement, QTextDocument::FindFlags options) {
+int GenericCodeEditor::replaceAll(const QRegularExpression& expr, const QString& replacement,
+                                  QTextDocument::FindFlags options) {
     mSearchSelections.clear();
     updateExtraSelections();
 
