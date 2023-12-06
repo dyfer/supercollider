@@ -31,6 +31,7 @@
 #    include <QKeyEvent>
 #    include <QApplication>
 #    include <QStyle>
+#    include <iostream>
 
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #        include <QWebEngineCallback>
@@ -203,6 +204,10 @@ void WebView::findText(const QString& searchText, bool reversed, QcCallback* cb)
         QWebEngineView::findText(searchText, flags);
     } else {
         QWebEngineView::findText(searchText, flags, cb->asFunctor());
+        // QWebEngineView::findText(searchText, flags, [&cb](const QWebEngineFindTextResult& result) {
+        //     std::cout << result.activeMatch() << "of" << result.numberOfMatches() << "matches" << std::endl;
+        //     cb->asFunctor()(result.numberOfMatches() > 0);
+        // });
     }
 }
 
@@ -270,7 +275,10 @@ bool WebView::event(QEvent* ev) {
     return QWebEngineView::event(ev);
 }
 
-void WebView::pageLoaded(bool ok) { this->focusProxy()->installEventFilter(this); }
+void WebView::pageLoaded(bool ok) { 
+    std::cout << "fire pageLoaded" << std::endl;
+    this->focusProxy()->installEventFilter(this); 
+    }
 
 void WebView::setEditable(bool b) {
     _editable = b;

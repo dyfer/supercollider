@@ -25,6 +25,7 @@
 #include <PyrKernel.h>
 #include <VMGlobals.h>
 #include <PyrLexer.h>
+#include <iostream>
 
 // WARNING: QtCollider::lockLang() must be called before
 void QtCollider::runLang(PyrObjectHdr* receiver, PyrSymbol* method, const QList<QVariant>& args, PyrSlot* result) {
@@ -33,6 +34,7 @@ void QtCollider::runLang(PyrObjectHdr* receiver, PyrSymbol* method, const QList<
     ++g->sp;
     SetObject(g->sp, receiver);
     Q_FOREACH (QVariant var, args) {
+        std::cout << "var: " << var.typeName() << std::endl;
         ++g->sp;
         if (!QtCollider::set(g->sp, var)) {
             qcErrorMsg("Failed to write a slot when trying to run interpreter!");
