@@ -47,6 +47,7 @@ set(sclang_sources
 	LangPrimSource/PyrPlatformPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
+        LangPrimSource/PyrGit.cpp
 	LangPrimSource/PyrUnixPrim.cpp
 	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
@@ -245,6 +246,17 @@ target_link_libraries(
   Boost::regex
   Boost::sync
 )
+
+if(SYSTEM_LIBGIT2)
+	message(STATUS "Using system libgit2")
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(LIBGIT2 REQUIRED IMPORTED_TARGET libgit2)
+	target_link_libraries(libsclang PkgConfig::LIBGIT2)
+else()
+	# defined in external_libraries/libgit2/CMakeLists.txt
+	target_link_libraries(libsclang libgit2package)
+endif()
+
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
