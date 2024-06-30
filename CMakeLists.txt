@@ -215,6 +215,8 @@ else()
     mark_as_advanced(SYSTEM_PORTAUDIO)
 endif()
 
+option(SYSTEM_LIBGIT2 "Use libgit2 libraries from system" OFF)
+
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
 if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
