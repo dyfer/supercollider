@@ -45,6 +45,7 @@
 #include <QVector>
 #include <QUrl>
 #include <QVariantList>
+#include <QList>
 
 class QObjectProxy;
 
@@ -325,6 +326,7 @@ template <> struct TypeCodec<QVector<double>> {
     static void write(PyrSlot* slot, const QVector<double>&);
 };
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 template <typename ContainedT> struct TypeCodec<QVector<ContainedT>> {
     static QVector<ContainedT> read(PyrSlot* slot) {
         qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
@@ -335,8 +337,7 @@ template <typename ContainedT> struct TypeCodec<QVector<ContainedT>> {
         setObjectList(slot, vec.size(), vec.begin(), vec.end());
     }
 };
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#endif
 template <typename ContainedT> struct TypeCodec<QList<ContainedT>> {
     static QList<ContainedT> read(PyrSlot* slot) {
         qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
@@ -347,7 +348,7 @@ template <typename ContainedT> struct TypeCodec<QList<ContainedT>> {
         setObjectList(slot, vec.size(), vec.begin(), vec.end());
     }
 };
-#endif
+
 
 template <> struct TypeCodec<QVariantList> {
     static QVariantList read(PyrSlot* slot);

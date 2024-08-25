@@ -264,6 +264,7 @@ bool WebView::eventFilter(QObject* obj, QEvent* event) {
     }
 
     event->ignore();
+    std::cout << "end of WebView::eventFilter" << std::endl;
     return false;
 }
 
