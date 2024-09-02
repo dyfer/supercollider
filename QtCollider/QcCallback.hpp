@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QWebEngineFindTextResult>
 
 namespace QtCollider {
 
@@ -43,7 +44,20 @@ class QcCallback : public QObject {
 public:
     QcCallback() {}
 
-    template <typename CallbackT> void call(const CallbackT& result) { Q_EMIT(onCalled(result)); }
+      void call(const bool& result) { Q_EMIT onCalled(result); }
+    void call(const QString& result) { Q_EMIT onCalled(result); }
+    void call(const QVariant& result) { Q_EMIT onCalled(result); }
+    void call(const QUrl& result) { Q_EMIT onCalled(result); }
+
+    // Add handling for QWebEngineFindTextResult
+    void call(const QWebEngineFindTextResult& result) {
+        // Convert the result to a type that can be emitted, if possible
+        // For example, you might convert it to a QString, QVariant, etc.
+        // Here, let's assume you want to emit it as a QVariant:
+        // QVariant variantResult = QVariant::fromValue(result);
+        // Q_EMIT onCalled(variantResult);
+        Q_EMIT onCalled(result.numberOfMatches()); 
+    }
 
     QcCallbackWeakFunctor asFunctor() { return QcCallbackWeakFunctor(QPointer<QcCallback>(this)); }
 
@@ -52,6 +66,7 @@ Q_SIGNALS:
     void onCalled(const QString&);
     void onCalled(const QVariant&);
     void onCalled(const QUrl&);
+    void onCalled(const QWebEngineFindTextResult&);
 };
 
 template <typename RESULT> void QcCallbackWeakFunctor::operator()(RESULT r) const {

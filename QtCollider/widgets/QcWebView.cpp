@@ -160,7 +160,9 @@ void WebView::toPlainText(QcCallback* cb) const {
 void WebView::runJavaScript(const QString& script, QcCallback* cb) {
     if (page()) {
         if (cb) {
-            page()->runJavaScript(script, cb->asFunctor());
+            page()->runJavaScript(script, [cb](const QVariant &result) {
+                cb->asFunctor()(result);
+            });
         } else {
             page()->runJavaScript(script, [](const QVariant&) {});
         }
@@ -195,10 +197,18 @@ void WebView::findText(const QString& searchText, bool reversed, QcCallback* cb)
     if (reversed)
         flags |= QWebEnginePage::FindBackward;
 
-    if (!cb) {
+    if (cb) {
+        // Clear any previous connections to avoid connecting multiple times
+        disconnect(page, SIGNAL(findTextFinished(const QWebEngineFindTextResult&)), nullptr, nullptr);
+
+        // Connect the signal to the callback functor
+        connect(page, SIGNAL(findTextFinished(const QWebEngineFindTextResult&)), this, [cb](const QWebEngineFindTextResult &result) {
+            cb->asFunctor()(result);
+        });
+
         QWebEngineView::findText(searchText, flags);
     } else {
-        QWebEngineView::findText(searchText, flags, cb->asFunctor());
+        QWebEngineView::findText(searchText, flags);
     }
 }
 
