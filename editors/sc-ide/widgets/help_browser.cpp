@@ -37,7 +37,6 @@
 #    include <QStyle>
 #    include <QShortcut>
 #    include <QApplication>
-#    include <QDesktopWidget>
 #    include <QScreen>
 #    include <QWindow>
 #    include <QDebug>
