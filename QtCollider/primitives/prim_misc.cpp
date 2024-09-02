@@ -289,12 +289,14 @@ QC_LANG_PRIMITIVE(Qt_SetUrlHandler, 2, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
 
     QString str = QtCollider::get(a);
 
+#ifdef SC_USE_QTWEBENGINE
     if (IsNil(a + 1)) {
         QDesktopServices::unsetUrlHandler(str);
     } else {
         QcCallback* cb = QtCollider::get(a + 1);
         QDesktopServices::setUrlHandler(str, cb, "onCalled");
     }
+#endif
 
     return errNone;
 }
