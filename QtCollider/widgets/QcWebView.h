@@ -24,10 +24,14 @@
 #include "../QcCallback.hpp"
 #include <QWebEngineView>
 #include <QWebEnginePage>
-#include <QWebEngineCallback>
 #include <QPointer>
 #include <QUrl>
 #include <QException>
+#include <QWebEngineFindTextResult>
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#    include <QWebEngineCallback>
+#endif
 
 const static int kWebEngineTimeout = 10000;
 
