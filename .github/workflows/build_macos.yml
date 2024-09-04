@@ -24,6 +24,7 @@ jobs:
             build-libsndfile: true
             build-readline: true
             build-fftw: true
+            vcpkg-triplet: x64-arm64-osx-release-supercollider # required for building libraries
             artifact-suffix: "macOS-universal"
             verify-app: false
 
@@ -150,8 +151,6 @@ jobs:
         run: |
           brew uninstall --ignore-dependencies readline
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-          # vcpkg readline currently fails on arm64 (ncurses dependency)
-          # see https://github.com/microsoft/vcpkg/issues/22654
 
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
