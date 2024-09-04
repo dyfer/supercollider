@@ -14,16 +14,16 @@ jobs:
       matrix:
         include:
           - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.14"
+            os-version: "14"
+            xcode-version: "15.4"
+            deployment-target: "11"
             cmake-architectures: "x86_64;arm64"
-            use-syslibs: false
+            use-syslibs: true # temp until we update boost past 1:80
             shared-libscsynth: false
             system-portaudio: true
-            build-libsndfile: false
-            build-readline: false
-            build-fftw: false
+            build-libsndfile: true
+            build-readline: true
+            build-fftw: true
             artifact-suffix: "macOS-universal"
             verify-app: false
 
