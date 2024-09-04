@@ -136,6 +136,7 @@ jobs:
           if [[ "${{ matrix.os-version }}" == "20.04" ]]; then
               BACKPORTS_STR="-t focal-backports"
           fi
+          echo "BACKPORTS_STR:" $BACKPORTS_STR
           sudo apt-get install $BACKPORTS_STR qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
 
       - name: configure
