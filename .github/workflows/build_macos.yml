@@ -143,7 +143,7 @@ jobs:
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
+          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus || true
           vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install readline # to allow cross-compiling
