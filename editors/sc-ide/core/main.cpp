@@ -52,7 +52,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
     const int maxNumberOfInstances = 128;
     if (!arguments.empty()) {
         for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
-            QString serverName = QStringLiteral("SuperColliderIDE_Singleton_%1").arg(socketID);
+            // QString serverName = QStringLiteral("SuperColliderIDE_Singleton_%1").arg(socketID);
             QSharedPointer<QLocalSocket> socket(new QLocalSocket(this));
             socket->connectToServer(serverName);
 
