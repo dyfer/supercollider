@@ -207,7 +207,11 @@ jobs:
           cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS ..
 
       - name: build
-        run: set -o pipefail && cmake --build $BUILD_PATH --config Release --target install | xcbeautify --renderer github-actions
+        run: set -o pipefail && cmake --build $BUILD_PATH --config Release --target install | tee xcodeoutput.log | xcbeautify --renderer github-actions
+
+      - name: post full build output
+        if: always()
+        run: cat xcodeoutput.log
 
       - name: create archive
         if: matrix.artifact-suffix
