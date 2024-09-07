@@ -149,7 +149,7 @@ jobs:
       - name: install readline # to allow cross-compiling
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies readline
+          brew uninstall --ignore-dependencies readline || true
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install fftw # to allow cross-compiling
