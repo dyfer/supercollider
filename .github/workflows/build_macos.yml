@@ -149,7 +149,8 @@ jobs:
             cd vcpkg
             ls -a
             ./bootstrap-vcpkg.sh
-            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV # using the same env var that was previously used for VCPKG
+            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV # use the same env var that was previously used for VCPKG
+            echo "`pwd`" >> $GITHUB_PATH
           else
             echo "VCPKG_INSTALLATION_ROOT is present, assuming that vcpkg is set up"
           fi
