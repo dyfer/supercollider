@@ -139,6 +139,19 @@ jobs:
               if [[ "${{ matrix.build-fftw }}" != "true" ]]; then ./brew-install-universal.sh fftw; fi
               if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then ./brew-install-universal.sh portaudio; fi
           fi
+      - name: install vcpkg # it's not available in newer macOS images
+        if: matrix.vcpkg-triplet
+        working-directory: ${{ github.workspace }}/../
+        run: |
+          if [[ -z "${VCPKG_INSTALLATION_ROOT}" ]]; then
+            echo "setting up vcpkg in `pwd`"
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            bootstrap-vcpkg.sh
+            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV
+          else
+            echo "VCPKG_INSTALLATION_ROOT is present, assuming that vcpkg is set up"
+          fi
 
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
