@@ -14,20 +14,6 @@ jobs:
       matrix:
         include:
 
-          - job-name: "jammy gcc9"
-            os-version: "22.04"
-            c-compiler: "gcc-9"
-            cxx-compiler: "g++-9"
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: "jammy gcc11"
-            os-version: "22.04"
-            c-compiler: "gcc-11"
-            cxx-compiler: "g++-11"
-            use-syslibs: false
-            shared-libscsynth: false
-
           - job-name: "jammy gcc12"
             os-version: "22.04"
             c-compiler: "gcc-12"
@@ -36,26 +22,29 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: "linux-jammy-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
 
-          - job-name: "noble gcc13 use system libraries"
-            os-version: "24.04"
-            c-compiler: "gcc-13"
-            cxx-compiler: "g++-13"
-            use-syslibs: true
+          - job-name: "jammy gcc14"
+            os-version: "22.04"
+            c-compiler: "gcc-14"
+            cxx-compiler: "g++-14"
+            use-syslibs: false
             shared-libscsynth: false
+            artifact-suffix: "linux-jammy-gcc14"
 
-          - job-name: "noble gcc14 shared libscsynth"
+          - job-name: "noble gcc12"
+            os-version: "24.04"
+            c-compiler: "gcc-12"
+            cxx-compiler: "g++-12"
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: "linux-noble-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+
+          - job-name: "noble gcc14"
             os-version: "24.04"
             c-compiler: "gcc-14"
             cxx-compiler: "g++-14"
             use-syslibs: false
-            shared-libscsynth: true
-            
-          - job-name: "jammy clang11"
-            os-version: "22.04"
-            c-compiler: "clang-11"
-            cxx-compiler: "clang++-11"
-            use-syslibs: false
             shared-libscsynth: false
+            artifact-suffix: "linux-noble-gcc14"
 
           - job-name: "noble clang15"
             os-version: "24.04"
@@ -63,28 +52,7 @@ jobs:
             cxx-compiler: "clang++-15"
             use-syslibs: false
             shared-libscsynth: false
-
-            # clang 16-18 disabled due to incompatible boost code - re-enable after updating bundled boost > ~1.80
-          # - job-name: "noble clang16"
-          #   os-version: "24.04"
-          #   c-compiler: "clang-16"
-          #   cxx-compiler: "clang++-16"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-
-          # - job-name: "noble clang17"
-          #   os-version: "24.04"
-          #   c-compiler: "clang-17"
-          #   cxx-compiler: "clang++-17"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-
-          # - job-name: "noble clang18"
-          #   os-version: "24.04"
-          #   c-compiler: "clang-18"
-          #   cxx-compiler: "clang++-18"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+            artifact-suffix: "linux-noble-clang15"
 
     name: Linux ${{ matrix.job-name }}
     env:
