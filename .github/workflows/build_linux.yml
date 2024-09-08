@@ -22,14 +22,6 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: "linux-jammy-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
 
-          - job-name: "jammy gcc14"
-            os-version: "22.04"
-            c-compiler: "gcc-14"
-            cxx-compiler: "g++-14"
-            use-syslibs: false
-            shared-libscsynth: false
-            artifact-suffix: "linux-jammy-gcc14"
-
           - job-name: "noble gcc12"
             os-version: "24.04"
             c-compiler: "gcc-12"

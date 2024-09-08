@@ -19,10 +19,6 @@ jobs:
             os-version: "22.04"
             artifact-file: "SuperCollider-${{ inputs.sc-version }}-linux-jammy-gcc12"
 
-          - job-name: "gcc14"
-            os-version: "22.04"
-            artifact-file: "SuperCollider-${{ inputs.sc-version }}-linux-jammy-gcc14"
-
           - job-name: "gcc12"
             os-version: "24.04"
             artifact-file: "SuperCollider-${{ inputs.sc-version }}-linux-noble-gcc12"
