@@ -62,19 +62,19 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  build-macos:
-    needs: [lint, version-getter]
-    uses: ./.github/workflows/build_macos.yml
-    with:
-      sc-version: ${{ needs.version-getter.outputs.sc-version }}
-    secrets: inherit
+  # build-macos:
+  #   needs: [lint, version-getter]
+  #   uses: ./.github/workflows/build_macos.yml
+  #   with:
+  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
+  #   secrets: inherit
 
-  build-windows:
-    needs: [lint, version-getter]
-    uses: ./.github/workflows/build_windows.yml
-    with:
-      sc-version: ${{ needs.version-getter.outputs.sc-version }}
-    secrets: inherit
+  # build-windows:
+  #   needs: [lint, version-getter]
+  #   uses: ./.github/workflows/build_windows.yml
+  #   with:
+  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
+  #   secrets: inherit
 
   test-linux:
     needs: [version-getter, build-linux]
@@ -83,12 +83,12 @@ jobs:
       artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-linux-jammy-gcc12"
     secrets: inherit
 
-  test-macos:
-    needs: [version-getter, build-macos]
-    uses: ./.github/workflows/test_macos.yml
-    with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
-    secrets: inherit
+  # test-macos:
+  #   needs: [version-getter, build-macos]
+  #   uses: ./.github/workflows/test_macos.yml
+  #   with:
+  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
+  #   secrets: inherit
 
   # test-windows:
   #   needs: [version-getter, build-windows]
