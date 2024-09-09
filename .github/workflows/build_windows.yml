@@ -50,7 +50,7 @@ jobs:
           - job-name: "64-bit MinGW"
             fftw-arch: "x64"
             os-version: "2022"
-            qt-version: "6.7.2"
+            qt-version: "6.7.0"
             qt-arch: "win64_mingw"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
             cmake-generator: "MinGW Makefiles"
