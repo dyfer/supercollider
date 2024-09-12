@@ -122,6 +122,7 @@ jobs:
 
       - name: install dependencies
         run: |
+          brew upgrade
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
