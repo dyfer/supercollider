@@ -43,6 +43,8 @@
 
 #    include <algorithm> // std::mismatch
 
+#    include <cassert>
+
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
