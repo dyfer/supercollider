@@ -16,8 +16,6 @@ jobs:
           - job-name: "universal"
             os-version: "12"
             xcode-version: "13.4.1"
-            qt-version: '6.7.2' # will use qt from aqtinstall
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
             deployment-target: "12"
             cmake-architectures: "x86_64;arm64"
             use-syslibs: false
