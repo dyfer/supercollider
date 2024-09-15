@@ -498,7 +498,8 @@ if(APPLE OR WIN32)
             ")
         endif()
         set(VERIFY_CMD "include(BundleUtilities)")
-        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
+
+        if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND SC_USE_QTWEBENGINE)
             # Fix deployment with qt from homebrew
             execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
             get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
@@ -507,7 +508,7 @@ if(APPLE OR WIN32)
             if(QT_IS_FROM_HOMEBREW)
                 message(STATUS "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets")
                 execute_process(COMMAND brew --prefix qt6 OUTPUT_VARIABLE QT_BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-                if(QT_BREW_PREFIX AND SC_USE_QTWEBENGINE)
+                if(QT_BREW_PREFIX)
                     string(APPEND VERIFY_CMD "
                         message(STATUS \"Manually copying QtQuickWidgets due to an issue with macdeployqt\")
                         file(COPY ${QT_BREW_PREFIX}/lib/QtQuickWidgets.framework DESTINATION ${CONTENTS_DIR}/Frameworks)
