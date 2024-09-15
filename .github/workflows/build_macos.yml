@@ -139,6 +139,8 @@ jobs:
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
+          if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then brew install libsndfile; fi
+          if [[ "${{ matrix.build-readline }}" != "true" ]]; then brew install readline; fi
           if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
           if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
 
