@@ -505,7 +505,7 @@ if(APPLE OR WIN32)
             cmake_path(IS_PREFIX BREW_PREFIX ${QtCore_location} QT_IS_FROM_HOMEBREW)
 
             if(QT_IS_FROM_HOMEBREW)
-                message(STATUS "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets and libbrotli")
+                message(STATUS "Detected Qt6 from homebrew: will fix deployment of QtQuickWidgets")
                 execute_process(COMMAND brew --prefix qt6 OUTPUT_VARIABLE QT_BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
                 if(QT_BREW_PREFIX AND SC_USE_QTWEBENGINE)
                     string(APPEND VERIFY_CMD "
