@@ -138,12 +138,12 @@ jobs:
         run: |
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
           if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
           if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
 
           # install universal versions of homebrew libraries
-          if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
+          if [[ "${{ matrix.cmake-architectures }}" != "`uname -m`" ]]; then
               UNIVERSAL_PACKAGES=
               if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then UNIVERSAL_PACKAGES="libsndfile $UNIVERSAL_PACKAGES"; fi
               if [[ "${{ matrix.build-readline }}" != "true" ]]; then UNIVERSAL_PACKAGES="readline $UNIVERSAL_PACKAGES"; fi
@@ -179,12 +179,12 @@ jobs:
         run: brew install yaml-cpp boost
 
       - name: install qt from homebrew
-        if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
+        if: !matrix.qt-version
         run: brew install qt@5
 
-      - name: install qt universal binary from homebrew
-        if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt@5
+      # - name: install qt universal binary from homebrew
+      #   if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
+      #   run: ./brew-install-universal.sh qt@5
 
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
