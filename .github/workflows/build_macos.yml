@@ -17,14 +17,14 @@ jobs:
             os-version: "12"
             xcode-version: "13.4.1"
             deployment-target: "12"
-            cmake-architectures: "x86_64;arm64"
+            cmake-architectures: "x86_64"
             use-syslibs: false
             shared-libscsynth: false
             system-portaudio: true
             build-libsndfile: false
             build-readline: false
             build-fftw: false
-            artifact-suffix: "macOS-universal"
+            artifact-suffix: "macOS-x64"
             verify-app: false # verify_app doesn't work properly with qt's rpaths
 
           - job-name: "x64 legacy"
