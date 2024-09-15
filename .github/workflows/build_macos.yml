@@ -13,33 +13,47 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.15"
-            cmake-architectures: "x86_64;arm64"
+          - job-name: "arm64"
+            os-version: "14"
+            xcode-version: "15.4"
+            deployment-target: "12"
+            cmake-architectures: "arm64"
             use-syslibs: false
             shared-libscsynth: false
             system-portaudio: true
             build-libsndfile: false
             build-readline: false
             build-fftw: false
-            artifact-suffix: "macOS-universal"
+            artifact-suffix: "macOS-arm64"
             verify-app: true
 
-          - job-name: "x64 legacy"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            qt-version: "5.15.2" # will use qt from aqtinstall
-            deployment-target: "10.15"
-            cmake-architectures: x86_64
+          - job-name: "x86_64"
+            os-version: "13"
+            xcode-version: "15.2"
+            deployment-target: "11"
+            cmake-architectures: "x86_64"
             use-syslibs: false
             shared-libscsynth: false
-            build-libsndfile: true
-            system-portaudio: false
-            build-fftw: true
-            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
+            system-portaudio: true
+            build-libsndfile: false
+            build-readline: false
+            build-fftw: false
+            artifact-suffix: "macOS-x86_64"
+            verify-app: true
+
+          # - job-name: "x64 legacy"
+          #   os-version: "12"
+          #   xcode-version: "13.4.1"
+          #   qt-version: "5.15.2" # will use qt from aqtinstall
+          #   deployment-target: "10.15"
+          #   cmake-architectures: x86_64
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   build-libsndfile: true
+          #   system-portaudio: false
+          #   build-fftw: true
+          #   vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
+          #   artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
 
           - job-name: "x64 use system libraries"
             os-version: "12"
@@ -50,14 +64,14 @@ jobs:
             shared-libscsynth: false
             verify-app: true
 
-          - job-name: "x64 shared libscsynth"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.15"
-            cmake-architectures: x86_64
-            use-syslibs: false
-            shared-libscsynth: true
-            verify-app: true
+          # - job-name: "x64 shared libscsynth"
+          #   os-version: "12"
+          #   xcode-version: "13.4.1"
+          #   deployment-target: "10.15"
+          #   cmake-architectures: x86_64
+          #   use-syslibs: false
+          #   shared-libscsynth: true
+          #   verify-app: true
 
     name: macOS ${{ matrix.job-name }}
     env:
