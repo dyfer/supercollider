@@ -13,23 +13,37 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.15"
-            cmake-architectures: "x86_64;arm64"
+          - job-name: "arm64"
+            os-version: "14"
+            xcode-version: "15.4"
+            deployment-target: "11"
+            cmake-architectures: "arm64"
             use-syslibs: false
             shared-libscsynth: false
             system-portaudio: true
             build-libsndfile: false
             build-readline: false
             build-fftw: false
-            artifact-suffix: "macOS-universal"
+            artifact-suffix: "macOS-arm64"
+            verify-app: true
+
+          - job-name: "x64"
+            os-version: "13"
+            xcode-version: "15.2"
+            deployment-target: "11"
+            cmake-architectures: "x86_64"
+            use-syslibs: false
+            shared-libscsynth: false
+            system-portaudio: true
+            build-libsndfile: false
+            build-readline: false
+            build-fftw: false
+            artifact-suffix: "macOS-x64"
             verify-app: true
 
           - job-name: "x64 legacy"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "15.2"
             qt-version: "5.15.2" # will use qt from aqtinstall
             deployment-target: "10.15"
             cmake-architectures: x86_64
@@ -41,20 +55,20 @@ jobs:
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
 
-          - job-name: "x64 use system libraries"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.15"
-            cmake-architectures: x86_64
+          - job-name: "arm64 use system libraries"
+            os-version: "14"
+            xcode-version: "15.4"
+            deployment-target: "11"
+            cmake-architectures: arm64
             use-syslibs: true
             shared-libscsynth: false
             verify-app: true
 
-          - job-name: "x64 shared libscsynth"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.15"
-            cmake-architectures: x86_64
+          - job-name: "arm64 shared libscsynth"
+            os-version: "14"
+            xcode-version: "15.4"
+            deployment-target: "11"
+            cmake-architectures: arm64
             use-syslibs: false
             shared-libscsynth: true
             verify-app: true
@@ -104,14 +118,6 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-
 
-      - name: cache homebrew universal packages
-        uses: actions/cache@v4
-        if: matrix.cmake-architectures != 'x86_64' && (matrix.build-libsndfile != true || matrix.build-readline != true || matrix.build-fftw != true)
-        with:
-          path: ${{ env.BREW_UNIVERSAL_WORKDIR }}
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-${{ steps.current-date.outputs.week }}
-          restore-keys: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-
-
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v4
@@ -122,35 +128,36 @@ jobs:
 
       - name: install dependencies
         run: |
-          brew install ccache
+          brew install ccache --quiet
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-          if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
-          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
+          if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then brew install libsndfile --quiet; fi
+          if [[ "${{ matrix.build-readline }}" != "true" ]]; then brew install readline --quiet; fi
+          if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio --quiet; fi
+          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw --quiet; fi
 
-          # install universal versions of homebrew libraries
-          if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
-              UNIVERSAL_PACKAGES=
-              if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then UNIVERSAL_PACKAGES="libsndfile $UNIVERSAL_PACKAGES"; fi
-              if [[ "${{ matrix.build-readline }}" != "true" ]]; then UNIVERSAL_PACKAGES="readline $UNIVERSAL_PACKAGES"; fi
-              if [[ "${{ matrix.build-fftw }}" != "true" ]]; then UNIVERSAL_PACKAGES="fftw $UNIVERSAL_PACKAGES"; fi
-              if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then UNIVERSAL_PACKAGES="portaudio $UNIVERSAL_PACKAGES"; fi
-              echo "Downloading script for creating universal binaries from homebrew packages"
-              curl --no-progress-meter -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/98e073d755cc3ca8426e20c30f51e9bac2bc9858/brew-install-universal.sh
-              chmod +x brew-install-universal.sh
-              ./brew-install-universal.sh $UNIVERSAL_PACKAGES
+          # vcpkg is not automatically installed in newer macOS runner images
+          if [[ -n "${{ matrix.vcpkg-triplet }}" && -z "${VCPKG_INSTALLATION_ROOT}" ]]; then
+            cd ${{ github.workspace }}/..
+            echo "setting up vcpkg in `pwd`"
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            ls -a
+            ./bootstrap-vcpkg.sh
+            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV # use the same env var that was used for VCPKG in older runner images
+            echo "`pwd`" >> $GITHUB_PATH
           fi
 
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
+          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus || true
           vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install readline # to allow cross-compiling
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies readline
+          brew uninstall --ignore-dependencies readline || true
           vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
           # vcpkg readline currently fails on arm64 (ncurses dependency)
           # see https://github.com/microsoft/vcpkg/issues/22654
@@ -165,12 +172,8 @@ jobs:
         run: brew install yaml-cpp boost
 
       - name: install qt from homebrew
-        if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
-        run: brew install qt@5
-
-      - name: install qt universal binary from homebrew
-        if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt@5
+        if: ${{ !matrix.qt-version }}
+        run: brew install qt@5 --quiet
 
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
