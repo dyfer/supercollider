@@ -87,7 +87,7 @@ jobs:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-x64.dmg"
     secrets: inherit
 
   # test-windows:
@@ -102,7 +102,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-suffix: macOS-universal
+          - artifact-suffix: macOS-x64
             s3-os-name: osx
             s3-artifact-suffx: ''
             s3-artifact-extension: 'dmg'
