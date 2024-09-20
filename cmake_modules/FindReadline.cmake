@@ -5,7 +5,11 @@ endif()
 
 if(APPLE)
     # look in homebrew paths
-    execute_process(COMMAND brew --prefix readline OUTPUT_VARIABLE READLINE_BREW_PREFIX)
+    # first check if readline if installed, as brew --prefix will return a path even after uninstalling readline
+    execute_process(COMMAND brew list readline RESULT_VARIABLE READLINE_LIST_RES OUTPUT_QUIET ERROR_QUIET)
+    if (NOT READLINE_LIST_RES)
+        execute_process(COMMAND brew --prefix readline OUTPUT_VARIABLE READLINE_BREW_PREFIX) # this will only run if brew list readline was successful
+    endif()
     if (READLINE_BREW_PREFIX)
         string(STRIP ${READLINE_BREW_PREFIX} READLINE_BREW_PREFIX)
         message(STATUS "Found a homebrew install of readline ${READLINE_BREW_PREFIX}")
@@ -14,7 +18,7 @@ if(APPLE)
     endif()
 endif()
 
-if(WIN32)
+if(WIN32 OR (APPLE AND NOT READLINE_INCLUDE_DIR AND NOT READLINE_LIBRARY)) # this will also search vcpkg install on macOS
     find_path(READLINE_INCLUDE_DIR
         NAMES readline/readline.h
         HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
@@ -33,7 +37,7 @@ if(WIN32)
     )
 
     find_path(READLINE_LIBRARY_DIR
-        NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
+        NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll libreadline.a libreadline.dylib
         HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
           "$ENV{ProgramW6432}/GnuWin32/bin"
           "$ENV{ProgramFiles}/GnuWin32/bin"
