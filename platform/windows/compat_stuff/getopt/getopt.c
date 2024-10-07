@@ -366,7 +366,14 @@ static void exchange(argv) char** argv;
 
 /* Initialize the internal data when the first call is made.  */
 
-static const char* _getopt_initialize(int argc, char* const* argv, const char* optstring) {
+#if defined __STDC__ && __STDC__
+static const char* _getopt_initialize(int, char* const*, const char*);
+#endif
+static const char* _getopt_initialize(argc, argv, optstring)
+int argc;
+char* const* argv;
+const char* optstring;
+{
     /* Start processing options with ARGV-element 1 (since ARGV-element 0
        is the program name); the sequence of previously skipped
        non-option ARGV-elements is empty.  */
@@ -471,8 +478,14 @@ static const char* _getopt_initialize(int argc, char* const* argv, const char* o
    If LONG_ONLY is nonzero, '-' as well as '--' can introduce
    long-named options.  */
 
-int _getopt_internal(int argc, char* const* argv, const char* optstring, const struct option* longopts, int* longind,
-                     int long_only) {
+int _getopt_internal(argc, argv, optstring, longopts, longind, long_only)
+int argc;
+char* const* argv;
+const char* optstring;
+const struct option* longopts;
+int* longind;
+int long_only;
+{
     int print_errors = opterr;
     if (optstring[0] == ':')
         print_errors = 0;
@@ -1043,9 +1056,11 @@ int _getopt_internal(int argc, char* const* argv, const char* optstring, const s
     }
 }
 
-int getopt(int argc, char* const* argv, const char* optstring) {
-    return _getopt_internal(argc, argv, optstring, (const struct option*)0, (int*)0, 0);
-}
+int getopt(argc, argv, optstring)
+int argc;
+char* const* argv;
+const char* optstring;
+{ return _getopt_internal(argc, argv, optstring, (const struct option*)0, (int*)0, 0); }
 
 #endif /* Not ELIDE_CODE.  */
 
