@@ -123,6 +123,7 @@ jobs:
         shell: bash
         run: |
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+            vcpkg update && vcpkg upgrade
             vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
           else
             choco install libsndfile --no-progress ${{ matrix.chocolatey-options }}
