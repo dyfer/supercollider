@@ -13,31 +13,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "arm64"
+          - job-name: "universal"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
             deployment-target: "11"
-            cmake-architectures: "arm64"
-            homebrew-packages: "libsndfile readline fftw portaudio"
-            vcpkg-packages: ""
-            vcpkg-triplet: ""
+            cmake-architectures: 'x86_64;arm64'
+            homebrew-packages: "" # use this instead when cross-compiling for x86_64 on arm64
+            homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
+            vcpkg-packages: "portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
+            vcpkg-triplet: "x64-arm64-osx-release-supercollider"
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
-            artifact-suffix: "macOS-arm64"
-
-          - job-name: "x64"
-            os-version: "13"
-            xcode-version: "15.2"
-            qt-version: "6.7.3" # will use qt from aqtinstall
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
-            deployment-target: "11"
-            cmake-architectures: "x86_64"
-            homebrew-packages: "libsndfile readline fftw portaudio"
-            vcpkg-packages: ""
-            vcpkg-triplet: ""
-            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
-            artifact-suffix: "macOS-x64"
+            artifact-suffix: "macOS-universal"
 
           - job-name: "x64 legacy"
             os-version: "13"
