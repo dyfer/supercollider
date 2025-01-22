@@ -466,12 +466,8 @@ bool GenericCodeEditor::gestureEvent(QGestureEvent* event) {
         auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
         if (pinchGesture->state() == Qt::GestureUpdated) {
             qreal scaleFactor = pinchGesture->scaleFactor();
-            if (scaleFactor >= 1.0) {
-                // some magic number - 2 seems to "feel good"
-                zoomFont(2);
-            } else {
-                zoomFont(-2);
-            }
+            // qDebug() << "scaleFactor:" << scaleFactor; 
+            zoomFontScaler(scaleFactor);
         }
         return true;
     }
@@ -882,6 +878,15 @@ void GenericCodeEditor::zoomFont(int steps) {
     if (newSize <= 7 || newSize >= 50)
         return;
     currentFont.setPointSize(newSize);
+    mDoc->setDefaultFont(currentFont);
+}
+
+void GenericCodeEditor::zoomFontScaler(float scaler) {
+    QFont currentFont = mDoc->defaultFont();
+    const qreal newSize = currentFont.pointSizeF() * scaler;
+    if (newSize <= 7 || newSize >= 50)
+        return;
+    currentFont.setPointSizeF(newSize);
     mDoc->setDefaultFont(currentFont);
 }
 
