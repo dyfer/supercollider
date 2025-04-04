@@ -120,6 +120,8 @@ jobs:
 
       - name: install libsndfile
         shell: bash
+        env:
+          CMAKE_POLICY_VERSION_MINIMUM: 3.5 # FIXME: temporary measure to enable compatibility with cmake 4
         run: |
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
