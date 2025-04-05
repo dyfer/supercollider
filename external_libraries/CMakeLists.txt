@@ -105,8 +105,12 @@ if(NOT SYSTEM_YAMLCPP)
   set(YAMLCPP_LIBRARY yaml)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
 
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
+  if(WIN32)
+    if(MSVC) # MSVC needs these exports even for the static library
+      target_compile_definitions(yaml PRIVATE yaml_cpp_EXPORTS YAML_CPP_DLL)
+    else() # for MinGW we need to set YAML_CPP_STATIC_DEFINE as public for some reason
+      target_compile_definitions(yaml PUBLIC YAML_CPP_STATIC_DEFINE)
+    endif()
   endif()
 
 endif()
