@@ -95,20 +95,13 @@ endif()
 if(NOT SYSTEM_YAMLCPP)
   message(STATUS "Using bundled yaml-cpp")
 
-  # yaml-cpp
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
-  CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
+  cmake_policy(PUSH)
+  cmake_policy(SET CMP0077 NEW)
 
-  add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${boost_include_dirs})
-  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
-  set(YAMLCPP_LIBRARY yaml)
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
-
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
-  endif()
-
+  set(YAML_CPP_FORMAT_SOURCE OFF CACHE BOOL "Disable format target in yaml-cpp") # avoid the duplicate target "format" in yaml-cpp
+  add_subdirectory(yaml-cpp)
+  
+  cmake_policy(POP)
 endif()
 
 
