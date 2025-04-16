@@ -86,7 +86,7 @@ TestPV_ChainUGen : UnitTest {
 			b.free;
 		};
 		s.sync;
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 
