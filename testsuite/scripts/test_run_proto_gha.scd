@@ -70,6 +70,24 @@
 		'skipReason': "UnitTest fails (FIXME)",
 	),
 	(
+		'suite': "TestNodeProxy_Server",
+		'test': "test_loaded_after_quit",
+		'skip': "true",
+		'skipReason': "UnitTest stops the test suite (FIXME)",
+	),
+	(
+		'suite': "TestNodeProxy_Server",
+		'test': "test_send_after_quit",
+		'skip': "true",
+		'skipReason': "UnitTest stops the test suite (FIXME)",
+	),
+	(
+		'suite': "TestNodeProxy_Server",
+		'test': "test_rebuild_after_quit",
+		'skip': "true",
+		'skipReason': "UnitTest stops the test suite (FIXME)",
+	),
+	(
 		'suite': "TestOSCFunc",
 		'test': "test_argSizeMatching_Succeeds",
 		'skip': "true",
