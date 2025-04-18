@@ -237,6 +237,10 @@ if(File.exists(~testProto).not) {
 	"\n\n******** DONE ********\n\n".postln;
 	// 0.exit;
 	if(~exitWhenDone) {
+		"stopping all servers...".postln;
+		Server.killAll;
+		3.wait;
+		"exiting...".postln;
 		0.exit;
 	}; // exit only if the script was called with arguments
 }.forkIfNeeded(AppClock);
