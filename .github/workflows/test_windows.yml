@@ -68,4 +68,4 @@ jobs:
       - name: Post test results
         shell: bash
         run: |
-          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
+          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT || $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
