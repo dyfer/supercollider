@@ -21,6 +21,9 @@ if(File.exists(~testProto).not) {
 
 ~verboseSetup = false; // true or false
 
+//temp set server protocol
+ServerOptions.defaultValues[\protocol] = \tcp;
+
 ~useColors = \Document.asClass.isNil; // use colors if we're running outside of the IDE
 
 ~makeBold = {|str|
