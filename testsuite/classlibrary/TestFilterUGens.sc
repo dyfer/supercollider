@@ -114,7 +114,7 @@ TestFilterUGens : UnitTest {
 					condvar.signalOne;
 				});
 
-				rrand(0.012,0.035).wait;
+				server.sync;
 			}
 		};
 
@@ -198,7 +198,7 @@ TestFilterUGens : UnitTest {
 				completed = completed + 1;
 				condvar.signalOne;
 			});
-			20.reciprocal.wait;
+			server.sync
 		};
 
 		condvar.waitFor(1, { completed == tests.size });
