@@ -1053,7 +1053,7 @@ Server {
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out
-			this.connectToServerAddr(onComplete, maxAttempts: 20);
+			this.connectToServerAddr(onComplete, maxAttempts: 100);
 		}
 	}
 
