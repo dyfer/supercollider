@@ -359,6 +359,14 @@ int prDateResolve(struct VMGlobals* g, int numArgsPushed) {
     tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
 
     time_t tt = mktime(&tm0);
+#ifdef _WIN32
+    // on Windows, Daylight Saving Time detection may fail for historical dates
+    // if that's the case, we fall back to non-DST time
+    if (tt == -1 && tm0.tm_isdst == -1) {
+        tm0.tm_isdst = 0;
+        tt = mktime(&tm0);
+    }
+#endif
     if (tt == -1) {
         error("no valid time\n");
         return errFailed;
