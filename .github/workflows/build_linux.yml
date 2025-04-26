@@ -29,12 +29,12 @@ jobs:
             shared-libscsynth: false
 
           - job-name: ""
-            os-version: "22.04"
+            os-version: "24.04"
             c-compiler: "gcc-12"
             cxx-compiler: "g++-12"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            artifact-suffix: "ubuntu-24.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
 
           - job-name: "use system libraries"
             os-version: "24.04"
