@@ -47,9 +47,9 @@
 	),
 	(
 		'suite': "TestLinkClock",
-		'test': "*",
+		'test': "test_newLinkClock_shouldNotChangeLinkTempo",
 		'skip': "true",
-		'skipReason': "UnitTest has unknown issues when run in GHA (FIXME)",
+		'skipReason': "UnitTest occasionally fails in CI (FIXME)",
 	),
 	(
 		'suite': "TestNodeProxy",
