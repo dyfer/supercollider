@@ -207,7 +207,7 @@ TestLinkClock : UnitTest {
 
 	test_LinkClock_meter_change_beats_keep_continuity {
 		var clock1, clock2,
-		tempo = 12, beatDurThresh = 0.4 / tempo,
+		tempo = 4, beatDurThresh = 0.4 / tempo,
 		secList1 = List.new, secList2 = List.new,
 		trials = 20,
 		cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
