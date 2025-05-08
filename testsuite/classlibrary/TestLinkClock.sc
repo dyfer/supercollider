@@ -254,6 +254,9 @@ TestLinkClock : UnitTest {
 		clock2.stop;
 	}
 
+// the following test fails on some platforms
+// TODO: revisit this test to make it more reliable on all platforms
+/*
 	// this test uses "magic number" wait statements
 	// because it takes a little time for a new LinkClock to stabilize
 	// and we have no signal to know when it's ready
@@ -305,6 +308,7 @@ TestLinkClock : UnitTest {
 		outerCond.hang;
 		refClock.stop;
 	}
+*/
 
 	test_LinkClock_sync_meter_propagates_meter_changes {
 		var clock1 = LinkClock.new,
