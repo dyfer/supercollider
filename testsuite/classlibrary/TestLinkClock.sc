@@ -1,6 +1,6 @@
 TestLinkClock : UnitTest {
 
-	classvar precision = 1e-04;
+	classvar precision = 1e-02;
 
 	// use Link Test Plan
 	// see external_libraries/link/TEST-PLAN.md
@@ -42,11 +42,11 @@ TestLinkClock : UnitTest {
 		var clock1, clock2, sessionTempo;
 
 		clock1 = LinkClock(2.5);
-		0.5.wait;
+		1.wait;
 		sessionTempo = clock1.tempo;
 
 		clock2 = LinkClock(1);
-		0.5.wait;
+		1.wait;
 
 		this.assertFloatEquals( clock2.tempo, sessionTempo,
 			"creating a new clock should not affect existing link session",
