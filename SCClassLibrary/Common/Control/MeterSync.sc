@@ -4,7 +4,7 @@
 
 MeterSync {
 	var <clock, <id, <ports;
-	var <repeats = 4, <delta = 0.01, lastReceived;
+	var <repeats = 4, <delta = 0.1, lastReceived;
 	var addrs, meterChangeResp, meterQueryResp;
 
 	// normally clock.setMeterAtBeat notifies \meter
