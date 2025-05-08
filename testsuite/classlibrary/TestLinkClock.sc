@@ -180,7 +180,7 @@ TestLinkClock : UnitTest {
 		var routine, streamplayer;
 		var semaphore = Semaphore(0);
 
-		tempoClock.sched(0.5, {
+		tempoClock.sched(1, {
 			this.assertEquals( thisThread.clock, linkClock,
 				"starting a LinkClock with newFromTempoClock should reschedule functions"
 			);
