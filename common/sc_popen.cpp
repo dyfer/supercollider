@@ -156,21 +156,24 @@ static SC_Lock processlist_mutex;
 #    define THREAD_LOCK() processlist_mutex.lock()
 #    define THREAD_UNLOCK() processlist_mutex.unlock()
 
+std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+    std::vector<std::string> argv;
+    argv.emplace_back("cmd");
+    argv.emplace_back("/k");
+    argv.push_back(std::move(command));
+    return sc_popen_argv(argv, type);
+}
 
 std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
-    // joins strings using space as delimeter
-    std::string commandLine = std::accumulate(
-        strings.begin(), strings.end(), std::string(),
-        [](const std::string& a, const std::string& b) -> std::string { return a + (a.length() > 0 ? " " : "") + b; });
-
-    return sc_popen(std::move(commandLine), type);
+    std::vector<char*> argv(strings.size() + 1);
+    for (int i = 0; i < strings.size(); ++i) {
+        argv[i] = const_cast<char*>(strings[i].data());
+    }
+    argv[strings.size()] = nullptr;
+    return sc_popen_c_argv(argv[0], argv.data(), type.c_str());
 }
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
-    return sc_popen_c(command.data(), type.data());
-}
-
-std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
+std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[], const char* mode) {
     PROCESS_INFORMATION pi;
     FILE* f = NULL;
     int fno;
@@ -183,11 +186,21 @@ std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
     BOOL read_mode, write_mode;
     const std::tuple<int, FILE*> error_result = std::make_tuple(-1, nullptr);
 
-    if (utf8_cmd == NULL) {
+    if (argv == NULL || argv[0] == NULL) {
+        fprintf(stderr, "popen: argv is null or empty\n");
         return error_result;
     }
 
-    std::wstring cmd = L"cmd /c " + SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
+    // Convert filename to a wide string
+    std::wstring filenameW = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
+
+    // Convert the entire argv array into a single wide string command line
+    std::wstring cmd;
+    for (int i = 0; argv[i] != NULL; ++i) {
+        if (i > 0)
+            cmd += L" ";
+        cmd += SC_Codecvt::utf8_cstr_to_utf16_wstring(argv[i]);
+    }
 
     current_pid = GetCurrentProcess();
 
@@ -248,7 +261,7 @@ std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
     }
 
     // creating child process
-    if (CreateProcessW(NULL, /* pointer to name of executable module */
+    if (CreateProcessW(filenameW, /* pointer to name of executable module */
                        &cmd[0], /* pointer to command line string */
                        NULL, /* pointer to process security attributes */
                        NULL, /* pointer to thread security attributes */
