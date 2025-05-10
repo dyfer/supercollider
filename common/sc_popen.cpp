@@ -261,7 +261,7 @@ std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[
     }
 
     // creating child process
-    if (CreateProcessW(filenameW, /* pointer to name of executable module */
+    if (CreateProcessW(filenameW.c_str(), /* pointer to name of executable module */
                        &cmd[0], /* pointer to command line string */
                        NULL, /* pointer to process security attributes */
                        NULL, /* pointer to thread security attributes */
