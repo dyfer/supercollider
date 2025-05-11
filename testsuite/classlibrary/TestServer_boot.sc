@@ -102,6 +102,7 @@ TestServer_boot : UnitTest {
 		var count = 0;
 		var func = { count = count + 1 };
 
+		1.wait; // wait to make sure the server from the previous test finished
 		ServerBoot.add(func, s);
 		this.bootServer(s);
 		this.cycleNotify(s);
@@ -120,6 +121,7 @@ TestServer_boot : UnitTest {
 		var count = 0;
 		var func = { count = count + 1 };
 
+		1.wait; // wait to make sure the server from the previous test finished
 		ServerTree.add(func, s);
 		this.bootServer(s);
 		this.cycleNotify(s);
