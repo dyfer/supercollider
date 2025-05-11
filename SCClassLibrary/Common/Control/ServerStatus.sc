@@ -283,7 +283,10 @@ ServerStatusWatcher {
 			var newClientID = msg[2], newMaxLogins = msg[3];
 			failOSCFunc.free;
 
+			"in doneOSCFunc".postln;
+
 			if(newClientID.notNil) {
+				"newClientID.notNil".postln;
 				// notify on:
 				// on registering scsynth sends back a free clientID and maxLogins
 				// this method doesn't fork/wait so we're still in the clear
@@ -295,12 +298,15 @@ ServerStatusWatcher {
 				// XXX: this is a workaround because using `serverBooting` is not reliable
 				// when server is rebooted quickly.
 				if(addingStatusWatcher) {
+					"addingStatusWatcher".postln;
 					this.prFinalizeBoot;
 				} {
+					"notified = true".postln;
 					notified = true;
 				}
 
 			} {
+				"notified = false".postln;
 				notified = false;
 			};
 
@@ -309,10 +315,12 @@ ServerStatusWatcher {
 		failOSCFunc = OSCFunc({|msg|
 
 			doneOSCFunc.free;
+			"failOSCFunc".postln;
 			server.prHandleNotifyFailString(msg[2], msg);
 
 		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
+		"sending /notify".postln;
 		server.sendMsg("/notify", flag.binaryValue, server.clientID);
 
 		if(flag){
