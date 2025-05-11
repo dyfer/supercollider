@@ -105,6 +105,7 @@ TestServer_boot : UnitTest {
 		1.wait; // wait to make sure the server from the previous test finished
 		ServerBoot.add(func, s);
 		this.bootServer(s);
+		1.wait; // wait to make sure booting finished for real
 		this.cycleNotify(s);
 
 		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
@@ -124,6 +125,7 @@ TestServer_boot : UnitTest {
 		1.wait; // wait to make sure the server from the previous test finished
 		ServerTree.add(func, s);
 		this.bootServer(s);
+		1.wait; // wait to make sure booting finished for real
 		this.cycleNotify(s);
 
 		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
