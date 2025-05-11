@@ -457,7 +457,7 @@ Server {
 	}
 
 	initTree {
-		fork({
+		forkIfNeeded({
 			this.sendDefaultGroups;
 			tree.value(this);
 			this.sync;
