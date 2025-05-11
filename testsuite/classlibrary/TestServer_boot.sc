@@ -103,11 +103,14 @@ TestServer_boot : UnitTest {
 		var func = { count = count + 1 };
 
 		ServerBoot.add(func, s);
-		this.bootServer(s);
+		s.bootSync;
+		s.sync; // double check everything is ready...?
 		this.cycleNotify(s);
+		s.sync; // double check everything is ready...?
 
 		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
-		1.wait;
+		// OTOH, why wouldn't bootSync take care of this?
+		// 1.wait;
 
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerBoot actions to run.");
 
@@ -121,11 +124,14 @@ TestServer_boot : UnitTest {
 		var func = { count = count + 1 };
 
 		ServerTree.add(func, s);
-		this.bootServer(s);
+		s.bootSync;
+		s.sync; // double check everything is ready...?
 		this.cycleNotify(s);
+		s.sync; // double check everything is ready...?
 
 		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
-		1.wait;
+		// OTOH, why wouldn't bootSync take care of this?
+		// 1.wait;
 
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerTree actions to run.");
 
