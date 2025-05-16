@@ -160,8 +160,10 @@ static SC_Lock processlist_mutex;
 std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
     // joins strings using space as delimeter
     std::string commandLine = std::accumulate(
-        strings.begin(), strings.end(), std::string(),
-        [](const std::string& a, const std::string& b) -> std::string { return a + (a.length() > 0 ? " " : "") + b; });
+        strings.begin(), strings.end(), std::string(), [](const std::string& a, const std::string& b) -> std::string {
+            std::string quoted = (b.find(' ') != std::string::npos) ? "\"" + b + "\"" : b;
+            return a + (a.length() > 0 ? " " : "") + quoted;
+        });
 
     return sc_popen_c(commandLine.data(), type.data());
 }
