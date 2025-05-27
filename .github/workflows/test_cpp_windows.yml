@@ -82,6 +82,13 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
 
+      - name: cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/ccache # updated in ccache 4.7, see https://github.com/ccache/ccache/issues/1023
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-
+
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v4
         with:
@@ -90,6 +97,12 @@ jobs:
           arch: ${{ matrix.qt-arch }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}-${{ matrix.qt-modules }}
+
+      - name: install ccache
+        shell: bash
+        run: |
+          choco install ccache --no-progress
+          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
 
       - name: install libsndfile
         shell: bash
@@ -141,5 +154,9 @@ jobs:
           cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
+        shell: bash
+        run: cmake --build $BUILD_PATH --config Release --target install --parallel 2
+
+      - name: run cpp tests
         shell: bash
         run: cmake --build $BUILD_PATH --config Release --target "${{ matrix.test-cmd }}"

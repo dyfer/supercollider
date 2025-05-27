@@ -52,6 +52,13 @@ jobs:
           echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
           echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
 
+      - name: cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-
+
       - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
         run: rm -rf $(brew --cache)/downloads
 
@@ -62,6 +69,12 @@ jobs:
           path: ~/Library/Caches/Homebrew/downloads
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-
+
+      - name: setup ccache
+        run: |
+          brew install ccache --quiet
+          # add ccache to PATH
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
 
       - name: install homebrew packages
         if: matrix.homebrew-packages
@@ -87,6 +100,9 @@ jobs:
           echo "CMAKE_FLAGS:" $CMAKE_FLAGS
 
           cmake $CMAKE_FLAGS ..
+
+      - name: build
+        run: cmake --build $BUILD_PATH --config Release --target install
 
       - name: run cpp tests
         run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS
