@@ -18,11 +18,6 @@ An interface to abstract over different FFT libraries, for SuperCollider 3.
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-NOTE:
-vDSP uses a "SplitBuf" as an intermediate representation of the data.
-For speed we keep this global, although this makes the code non-thread-safe.
-(This is not new to this refactoring. Just worth noting.)
 */
 
 #include "clz.h"
@@ -91,15 +86,15 @@ typedef struct scfft {
     short wintype;
     float *indata, *outdata, *trbuf;
     float scalefac; // Used to rescale the data to unity gain
+#if SC_FFT_VDSP
+    FFTSetup fftSetup;
+    float* realp;
+    float* imagp;
+#endif
 } scfft;
 
 
 static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
-
-#if SC_FFT_VDSP
-static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, one per FFT size
-static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
-#endif
 
 #if SC_FFT_GREEN
 static float* cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
@@ -184,20 +179,6 @@ static bool scfft_global_initialization(void) {
         cosTable[i] = create_cosTable(i);
     }
     printf("SC FFT global init: cosTable initialised.\n");
-#elif SC_FFT_VDSP
-    // vDSP inits its twiddle factors
-    for (int i = SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE + 1; ++i) {
-        fftSetup[i] = vDSP_create_fftsetup(i, FFT_RADIX2);
-        if (fftSetup[i] == NULL) {
-            printf("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1 << i);
-        }
-    }
-    // vDSP prepares its memory-aligned buffer for rearranging input data.
-    // Note max size here - meaning max input buffer size is these two sizes added together.
-    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
-    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
-    // printf("SC FFT global init: vDSP initialised.\n");
 #elif SC_FFT_FFTW
     size_t maxSize = 1 << SC_FFT_LOG2_MAXSIZE;
     float* buffer1 = (float*)fftwf_malloc((maxSize + 1) * sizeof(float));
@@ -271,6 +252,26 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
     f->outdata = outdata;
     f->trbuf = trbuf;
 
+#if SC_FFT_VDSP
+    f->fftSetup = vDSP_create_fftsetup(f->log2nfull, FFT_RADIX2);
+    if (!f->fftSetup) {
+        alloc.free(f);
+        return NULL;
+    }
+    size_t halfsize = f->nfull / 2;
+    f->realp = (float*)malloc(halfsize * sizeof(float));
+    f->imagp = (float*)malloc(halfsize * sizeof(float));
+    if (!f->realp || !f->imagp) {
+        if (f->realp)
+            free(f->realp);
+        if (f->imagp)
+            free(f->imagp);
+        vDSP_destroy_fftsetup(f->fftSetup);
+        alloc.free(f);
+        return NULL;
+    }
+#endif
+
     // Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
     if (fullsize > largest_fftsize) {
         scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
@@ -308,11 +309,6 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
     if (log2_fullsize > largest_log2n) {
         largest_log2n = log2_fullsize;
         largest_fftsize = 1 << largest_log2n;
-#if SC_FFT_VDSP
-        size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
-        splitBuf.realp = (float*)realloc(splitBuf.realp, newsize);
-        splitBuf.imagp = (float*)realloc(splitBuf.imagp, newsize);
-#endif
     }
 #if SC_FFT_FFTW
     size_t maxSize = 1 << largest_log2n;
@@ -340,10 +336,7 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
     }
 
     // Ensure our FFT twiddle factors (or whatever) have been created
-#if SC_FFT_VDSP
-    if (fftSetup[log2_fullsize] == 0)
-        fftSetup[log2_fullsize] = vDSP_create_fftsetup(log2_fullsize, FFT_RADIX2);
-#elif SC_FFT_GREEN
+#if SC_FFT_GREEN
     if (cosTable[log2_fullsize] == 0)
         cosTable[log2_fullsize] = create_cosTable(log2_fullsize);
 #endif
@@ -402,10 +395,13 @@ void scfft_dofft(scfft* f) {
     memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
     f->outdata[1] = f->trbuf[f->nfull]; // Pack nyquist val in
 #elif SC_FFT_VDSP
+    COMPLEX_SPLIT splitBuf;
+    splitBuf.realp = f->realp;
+    splitBuf.imagp = f->imagp;
     // Perform even-odd split
     vDSP_ctoz((COMPLEX*)f->trbuf, 2, &splitBuf, 1, f->nfull >> 1);
     // Now the actual FFT
-    vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_FORWARD);
+    vDSP_fft_zrip(f->fftSetup, &splitBuf, 1, f->log2nfull, FFT_FORWARD);
     // Copy the data to the public output buf, transforming it back out of "split" representation
     vDSP_ztoc(&splitBuf, 1, (DSPComplex*)f->outdata, 2, f->nfull >> 1);
 #elif SC_FFT_GREEN
@@ -428,8 +424,11 @@ void scfft_doifft(scfft* f) {
     fftwf_execute_dft_c2r(precompiledBackwardPlans[f->log2nfull], (fftwf_complex*)trbuf, f->outdata);
 
 #elif SC_FFT_VDSP
+    COMPLEX_SPLIT splitBuf;
+    splitBuf.realp = f->realp;
+    splitBuf.imagp = f->imagp;
     vDSP_ctoz((COMPLEX*)f->indata, 2, &splitBuf, 1, f->nfull >> 1);
-    vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
+    vDSP_fft_zrip(f->fftSetup, &splitBuf, 1, f->log2nfull, FFT_INVERSE);
     vDSP_ztoc(&splitBuf, 1, (DSPComplex*)f->outdata, 2, f->nfull >> 1);
 #elif SC_FFT_GREEN
     float* trbuf = f->trbuf;
@@ -443,4 +442,20 @@ void scfft_doifft(scfft* f) {
     scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
-void scfft_destroy(scfft* f, SCFFT_Allocator& alloc) { alloc.free(f); }
+void scfft_destroy(scfft* f, SCFFT_Allocator& alloc) {
+#if SC_FFT_VDSP
+    if (f->fftSetup) {
+        vDSP_destroy_fftsetup(f->fftSetup);
+        f->fftSetup = nullptr;
+    }
+    if (f->realp) {
+        free(f->realp);
+        f->realp = nullptr;
+    }
+    if (f->imagp) {
+        free(f->imagp);
+        f->imagp = nullptr;
+    }
+#endif
+    alloc.free(f);
+}

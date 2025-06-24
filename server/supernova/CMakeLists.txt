@@ -13,22 +13,25 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
-# scsynth uses vDSP implementation for FFT on macOS
-# however current implementation of vDSP is not thread-safe
-# so we use FFTW with supernova on macOS
-# once vDSP implementation becomes thread-safe
-# this logic can be reworked to use vDSP on macOS
+# for historical reasons, as the vDSP implementation
+# wasn't thread-safe in the past
+# and couldn't be used in supernova
 
-find_package(FFTW3f 3.3)
-
-if (NOT FFTW3F_FOUND OR FFT_GREEN)
-    message(STATUS "FFT library (supernova): Green")
-    set(FFT_GREEN 1)
-    add_definitions("-DSC_FFT_GREEN")
+if (APPLE)
+    add_definitions("-DSC_FFT_VDSP")
+    message(STATUS "FFT library (supernova): vDSP")
 else()
-    message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
-    message(STATUS "FFT library (supernova): FFTW")
-    add_definitions("-DSC_FFT_FFTW")
+    find_package(FFTW3f 3.3)
+
+    if (NOT FFTW3F_FOUND OR FFT_GREEN)
+        message(STATUS "FFT library (supernova): Green")
+        set(FFT_GREEN 1)
+        add_definitions("-DSC_FFT_GREEN")
+    else()
+        message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
+        message(STATUS "FFT library (supernova): FFTW")
+        add_definitions("-DSC_FFT_FFTW")
+    endif()
 endif()
 
 set(libsupernova_src
