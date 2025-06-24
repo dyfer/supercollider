@@ -108,8 +108,77 @@ static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, on
 #    ifdef SUPERNOVA
 
 struct BufferPair {
-    std::vector<float> real;
-    std::vector<float> imag;
+    float* real = nullptr;
+    float* imag = nullptr;
+    size_t size = 0;
+
+    BufferPair() = default;
+
+    explicit BufferPair(size_t size): size(size) {
+#        ifdef NOVA_SIMD
+        real = static_cast<float*>(nova::malloc_aligned(size * sizeof(float)));
+        imag = static_cast<float*>(nova::malloc_aligned(size * sizeof(float)));
+#        else
+        real = static_cast<float*>(malloc(size * sizeof(float)));
+        imag = static_cast<float*>(malloc(size * sizeof(float)));
+#        endif
+    }
+
+    void resize(size_t newsize) {
+        if (newsize == size)
+            return; // no-op if size unchanged
+
+        if (real)
+            free(real);
+        if (imag)
+            free(imag);
+
+        size = newsize;
+
+#        ifdef NOVA_SIMD
+        real = static_cast<float*>(nova::malloc_aligned(size * sizeof(float)));
+        imag = static_cast<float*>(nova::malloc_aligned(size * sizeof(float)));
+#        else
+        real = static_cast<float*>(malloc(size * sizeof(float)));
+        imag = static_cast<float*>(malloc(size * sizeof(float)));
+#        endif
+    }
+
+    ~BufferPair() {
+        if (real)
+            free(real);
+        if (imag)
+            free(imag);
+    }
+
+    // No copy
+    BufferPair(const BufferPair&) = delete;
+    BufferPair& operator=(const BufferPair&) = delete;
+
+    // Move semantics
+    BufferPair(BufferPair&& other) noexcept: real(other.real), imag(other.imag), size(other.size) {
+        other.real = nullptr;
+        other.imag = nullptr;
+        other.size = 0;
+    }
+
+    BufferPair& operator=(BufferPair&& other) noexcept {
+        if (this != &other) {
+            if (real)
+                free(real);
+            if (imag)
+                free(imag);
+
+            real = other.real;
+            imag = other.imag;
+            size = other.size;
+
+            other.real = nullptr;
+            other.imag = nullptr;
+            other.size = 0;
+        }
+        return *this;
+    }
 };
 
 // Global pool of split buffers (used by multiple threads)
@@ -123,9 +192,7 @@ static inline BufferPair* ensureSplitBufForThread() {
     if (splitBufIndex < 0 || splitBufIndex >= globalSplitBufs.size()) {
         std::lock_guard<std::mutex> lock(globalSplitBufsMutex);
         splitBufIndex = globalSplitBufs.size();
-        auto pair = std::make_unique<BufferPair>();
-        pair->real.resize(SC_FFT_MAXSIZE / 2);
-        pair->imag.resize(SC_FFT_MAXSIZE / 2);
+        auto pair = std::make_unique<BufferPair>(SC_FFT_MAXSIZE / 2);
         globalSplitBufs.push_back(std::move(pair));
     }
     return globalSplitBufs[splitBufIndex].get();
@@ -231,18 +298,16 @@ static bool scfft_global_initialization(void) {
     }
     // vDSP prepares its memory-aligned buffer for rearranging input data.
     // Note max size here - meaning max input buffer size is these two sizes added together.
-    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
+    size_t size = SC_FFT_MAXSIZE * sizeof(float) / 2;
 #    ifdef SUPERNOVA
     std::lock_guard<std::mutex> lock(globalSplitBufsMutex);
     // Preallocate buffers based on a guessed number of threads, since we don't know how many are used actually
     size_t kPreallocatedBufCount = std::thread::hardware_concurrency();
     while (globalSplitBufs.size() < kPreallocatedBufCount) {
-        auto pair = std::make_unique<BufferPair>();
-        pair->real.resize(SC_FFT_MAXSIZE / 2);
-        pair->imag.resize(SC_FFT_MAXSIZE / 2);
-        globalSplitBufs.push_back(std::move(pair));
+        globalSplitBufs.push_back(std::make_unique<BufferPair>(SC_FFT_MAXSIZE / 2));
     }
 #    else
+    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
     splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
     splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
 #    endif
@@ -361,8 +426,7 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 #    ifdef SUPERNOVA
         size_t newsize = (1 << largest_log2n) / 2;
         BufferPair* bufPair = ensureSplitBufForThread();
-        bufPair->real.resize(newsize);
-        bufPair->imag.resize(newsize);
+        bufPair->resize(newsize);
 #    else
         size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
         splitBuf.realp = (float*)realloc(splitBuf.realp, newsize);
@@ -461,8 +525,8 @@ void scfft_dofft(scfft* f) {
 #    ifdef SUPERNOVA
     BufferPair* bufPair = ensureSplitBufForThread();
     COMPLEX_SPLIT splitBuf;
-    splitBuf.realp = bufPair->real.data();
-    splitBuf.imagp = bufPair->imag.data();
+    splitBuf.realp = bufPair->real;
+    splitBuf.imagp = bufPair->imag;
 #    endif
     // Perform even-odd split
     vDSP_ctoz((COMPLEX*)f->trbuf, 2, &splitBuf, 1, f->nfull >> 1);
@@ -493,8 +557,8 @@ void scfft_doifft(scfft* f) {
 #    ifdef SUPERNOVA
     BufferPair* bufPair = ensureSplitBufForThread();
     COMPLEX_SPLIT splitBuf;
-    splitBuf.realp = bufPair->real.data();
-    splitBuf.imagp = bufPair->imag.data();
+    splitBuf.realp = bufPair->real;
+    splitBuf.imagp = bufPair->imag;
 #    endif
     vDSP_ctoz((COMPLEX*)f->indata, 2, &splitBuf, 1, f->nfull >> 1);
     vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
