@@ -23,6 +23,9 @@ NOTE:
 vDSP uses a "SplitBuf" as an intermediate representation of the data.
 For speed we keep this global, although this makes the code non-thread-safe.
 (This is not new to this refactoring. Just worth noting.)
+NEW ADDITION:
+Additional logic was used when adapting this for Supernova,
+ensuring that each thread has its own SplitBuf.
 */
 
 #include "clz.h"
@@ -37,6 +40,11 @@ For speed we keep this global, although this makes the code non-thread-safe.
 
 #ifdef NOVA_SIMD
 #    include "simd_binary_arithmetic.hpp"
+#endif
+
+#ifdef SUPERNOVA
+#    include <thread>
+#    include <vector>
 #endif
 
 
@@ -98,7 +106,67 @@ static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 
 #if SC_FFT_VDSP
 static FFTSetup fftSetup[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1]; // vDSP setups, one per FFT size
-static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
+size_t kBufSize = SC_FFT_MAXSIZE * sizeof(float) / 2;
+
+struct BufferPair {
+    float* real = nullptr;
+    float* imag = nullptr;
+    size_t size = 0;
+
+    BufferPair() = default;
+
+    explicit BufferPair(size_t size): size(size) {
+        real = static_cast<float*>(nova::malloc_aligned(size));
+        imag = static_cast<float*>(nova::malloc_aligned(size));
+    }
+
+    void resize(size_t newsize) {
+        if (newsize == size)
+            return; // no-op if size unchanged
+
+        if (real)
+            free(real);
+        if (imag)
+            free(imag);
+
+        size = newsize;
+
+        real = static_cast<float*>(nova::malloc_aligned(size));
+        imag = static_cast<float*>(nova::malloc_aligned(size));
+    }
+
+    ~BufferPair() {
+        if (real)
+            free(real);
+        if (imag)
+            free(imag);
+    }
+};
+#    ifdef SUPERNOVA
+// Global pool of buffer pairs, one per thread ideally
+static std::mutex globalBufPairsMutex;
+static std::vector<std::unique_ptr<BufferPair>> globalBufPairs;
+// Thread-local index into globalBufPairs
+thread_local int bufPairIndex = -1;
+#    else
+static BufferPair* gBufPair; // Temp buf for holding rearranged data
+#    endif
+
+static inline BufferPair* getBufferPair() {
+#    ifdef SUPERNOVA
+    if (bufPairIndex < 0 || bufPairIndex >= globalBufPairs.size()) {
+        std::lock_guard<std::mutex> lock(globalBufPairsMutex);
+        bufPairIndex = globalBufPairs.size();
+        auto pair = std::make_unique<BufferPair>(kBufSize);
+        globalBufPairs.push_back(std::move(pair));
+    }
+    return globalBufPairs[bufPairIndex].get();
+#    else
+    return gBufPair;
+#    endif
+}
+
+
 #endif
 
 #if SC_FFT_GREEN
@@ -194,9 +262,18 @@ static bool scfft_global_initialization(void) {
     }
     // vDSP prepares its memory-aligned buffer for rearranging input data.
     // Note max size here - meaning max input buffer size is these two sizes added together.
-    // vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-    splitBuf.realp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
-    splitBuf.imagp = (float*)malloc(SC_FFT_MAXSIZE * sizeof(float) / 2);
+#    ifdef SUPERNOVA
+    std::lock_guard<std::mutex> lock(globalBufPairsMutex);
+    // Preallocate buffers for a number of threads based on hardware concurrency,
+    // as we don't know how many supernova is actually using
+    // if we run out, more will be allocated on demand
+    size_t kPreallocatedBufCount = std::thread::hardware_concurrency();
+    while (globalBufPairs.size() < kPreallocatedBufCount) {
+        globalBufPairs.push_back(std::make_unique<BufferPair>(kBufSize));
+    }
+#    else
+    gBufPair = new BufferPair(kBufSize);
+#    endif
     // printf("SC FFT global init: vDSP initialised.\n");
 #elif SC_FFT_FFTW
     size_t maxSize = 1 << SC_FFT_LOG2_MAXSIZE;
@@ -310,8 +387,7 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
         largest_fftsize = 1 << largest_log2n;
 #if SC_FFT_VDSP
         size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
-        splitBuf.realp = (float*)realloc(splitBuf.realp, newsize);
-        splitBuf.imagp = (float*)realloc(splitBuf.imagp, newsize);
+        getBufferPair()->resize(newsize);
 #endif
     }
 #if SC_FFT_FFTW
@@ -402,6 +478,10 @@ void scfft_dofft(scfft* f) {
     memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
     f->outdata[1] = f->trbuf[f->nfull]; // Pack nyquist val in
 #elif SC_FFT_VDSP
+    BufferPair* bufPair = getBufferPair();
+    COMPLEX_SPLIT splitBuf;
+    splitBuf.realp = bufPair->real;
+    splitBuf.imagp = bufPair->imag;
     // Perform even-odd split
     vDSP_ctoz((COMPLEX*)f->trbuf, 2, &splitBuf, 1, f->nfull >> 1);
     // Now the actual FFT
@@ -428,6 +508,10 @@ void scfft_doifft(scfft* f) {
     fftwf_execute_dft_c2r(precompiledBackwardPlans[f->log2nfull], (fftwf_complex*)trbuf, f->outdata);
 
 #elif SC_FFT_VDSP
+    BufferPair* bufPair = getBufferPair();
+    COMPLEX_SPLIT splitBuf;
+    splitBuf.realp = bufPair->real;
+    splitBuf.imagp = bufPair->imag;
     vDSP_ctoz((COMPLEX*)f->indata, 2, &splitBuf, 1, f->nfull >> 1);
     vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
     vDSP_ztoc(&splitBuf, 1, (DSPComplex*)f->outdata, 2, f->nfull >> 1);
