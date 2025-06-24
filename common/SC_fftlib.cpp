@@ -77,6 +77,11 @@ extern "C" {
 
 #endif
 
+#if SC_FFT_VDSP
+#    include <map>
+#    include <vector>
+#endif
+
 
 // This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or
 // repeatedly. It should be possible for indata and outdata to be the same, for quasi-in-place operation.
@@ -95,6 +100,15 @@ typedef struct scfft {
 
 
 static float* fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
+
+#if SC_FFT_VDSP
+struct BufferPair {
+    std::vector<float> real;
+    std::vector<float> imag;
+};
+
+thread_local std::map<size_t, BufferPair> threadLocalBuffers;
+#endif
 
 #if SC_FFT_GREEN
 static float* cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
@@ -171,7 +185,10 @@ static bool scfft_global_initialization(void) {
             fftWindow[wintype][i] = scfft_create_fftwindow(wintype, i);
         }
     }
-#if SC_FFT_GREEN
+#if SC_FFT_VDSP
+    static thread_local std::vector<float> realpBuffer(1 << SC_FFT_LOG2_MAXSIZE / 2);
+    static thread_local std::vector<float> imagpBuffer(1 << SC_FFT_LOG2_MAXSIZE / 2);
+#elif SC_FFT_GREEN
     for (int i = 0; i < SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
         cosTable[i] = 0;
     }
@@ -223,6 +240,7 @@ static size_t scfft_trbufsize(unsigned int fullsize) {
 
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 static int largest_fftsize = 1 << largest_log2n;
+thread_local std::map<size_t, std::vector<float>> threadLocalTransformBuffers;
 
 scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype, float* indata, float* outdata,
                     SCFFT_Direction forward, SCFFT_Allocator& alloc) {
@@ -235,9 +253,16 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
         return NULL;
 
     scfft* f = (scfft*)chunk;
-    float* trbuf = (float*)(chunk + sizeof(scfft));
-    trbuf = (float*)((size_t)((char*)trbuf + (alignment - 1))
-                     & -alignment); // FIXME: should be intptr_t instead of size_t once we use c++11
+
+    auto& trbufVec = threadLocalTransformBuffers[fullsize];
+    size_t trbufSize = fullsize; // default
+#if SC_FFT_FFTW
+    trbufSize = fullsize + 2; // FFTW specific size
+#endif
+    if (trbufVec.size() < trbufSize)
+        trbufVec.resize(trbufSize);
+
+    f->trbuf = trbufVec.data();
 
 #ifdef NOVA_SIMD
     assert(nova::vec<float>::is_aligned(trbuf));
@@ -250,7 +275,6 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
     f->wintype = wintype;
     f->indata = indata;
     f->outdata = outdata;
-    f->trbuf = trbuf;
 
 #if SC_FFT_VDSP
     f->fftSetup = vDSP_create_fftsetup(f->log2nfull, FFT_RADIX2);
@@ -258,18 +282,16 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
         alloc.free(f);
         return NULL;
     }
+
     size_t halfsize = f->nfull / 2;
-    f->realp = (float*)malloc(halfsize * sizeof(float));
-    f->imagp = (float*)malloc(halfsize * sizeof(float));
-    if (!f->realp || !f->imagp) {
-        if (f->realp)
-            free(f->realp);
-        if (f->imagp)
-            free(f->imagp);
-        vDSP_destroy_fftsetup(f->fftSetup);
-        alloc.free(f);
-        return NULL;
-    }
+    auto& bufferPair = threadLocalBuffers[f->nfull];
+    if (bufferPair.real.size() < halfsize)
+        bufferPair.real.resize(halfsize);
+    if (bufferPair.imag.size() < halfsize)
+        bufferPair.imag.resize(halfsize);
+
+    f->realp = bufferPair.real.data();
+    f->imagp = bufferPair.imag.data();
 #endif
 
     // Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
@@ -293,7 +315,7 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
 #endif
     }
 
-    memset(trbuf, 0, scfft_trbufsize(fullsize));
+    memset(f->trbuf, 0, scfft_trbufsize(fullsize));
 
     return f;
 }
@@ -447,14 +469,6 @@ void scfft_destroy(scfft* f, SCFFT_Allocator& alloc) {
     if (f->fftSetup) {
         vDSP_destroy_fftsetup(f->fftSetup);
         f->fftSetup = nullptr;
-    }
-    if (f->realp) {
-        free(f->realp);
-        f->realp = nullptr;
-    }
-    if (f->imagp) {
-        free(f->imagp);
-        f->imagp = nullptr;
     }
 #endif
     alloc.free(f);
