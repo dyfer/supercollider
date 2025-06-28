@@ -31,6 +31,7 @@
 #include "SC_InlineBinaryOp.h"
 #include <stdlib.h>
 #include <algorithm>
+#include <string> // For std::stod
 
 #ifndef _WIN32
 #    include <sys/time.h>
@@ -346,12 +347,37 @@ void SC_AudioDriver::RunThread() {
         scprintf("SC_AudioDriver: could not set thread priority to user-interactive: %s\n", strerror(result));
     }
 #    ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
+
+    double computation_multiplier = 0.4;
+    double constraint_multiplier = 0.8;
+
+    const char* comp_env_str = std::getenv("SC_COMPUTATION_MULT");
+    if (comp_env_str) {
+        try {
+            // Convert string to double
+            computation_multiplier = std::stod(comp_env_str);
+            printf("AudioDriver: Found env var SC_COMPUTATION_MULT=%f\n", computation_multiplier);
+        } catch (const std::invalid_argument& e) {
+            scprintf("AudioDriver: Invalid value for SC_COMPUTATION_MULT: %s\n", comp_env_str);
+        }
+    }
+
+    const char* cons_env_str = std::getenv("SC_CONSTRAINT_MULT");
+    if (cons_env_str) {
+        try {
+            constraint_multiplier = std::stod(cons_env_str);
+            printf("AudioDriver: Found env var SC_CONSTRAINT_MULT=%f\n", constraint_multiplier);
+        } catch (const std::invalid_argument& e) {
+            scprintf("AudioDriver: Invalid value for SC_CONSTRAINT_MULT: %s\n", cons_env_str);
+        }
+    }
+
     int blockSize = mWorld->mBufLength;
     int ns_per_block = 1e9 / mSampleRate * blockSize;
-    int computation = ns_per_block * 0.9;
-    int constraint = ns_per_block * 0.98;
-    // printf("Verifying values: mSampleRate = %f, blockSize = %d, period = %d, computation = %d, constraint = %d\n",
-    // mSampleRate, blockSize, ns_per_block, computation, constraint);
+    int computation = ns_per_block * computation_multiplier;
+    int constraint = ns_per_block * constraint_multiplier;
+    printf("Verifying values: mSampleRate = %f, blockSize = %d, period = %d, computation = %d, constraint = %d\n",
+           mSampleRate, blockSize, ns_per_block, computation, constraint);
 
     bool success = nova::thread_set_priority_rt(ns_per_block, computation, constraint, true);
     if (!success) {
