@@ -637,7 +637,7 @@ void* TempoClock::Run() {
     // On macOS we use the modern Quality of Service (QoS) API
     // to signal the nature and importance of this thread to the OS.
     // Note that it is set slightly lower than the main scheduler
-    int err = pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+    int err = pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, -5);
     if (err != 0) {
         post("Error: Couldn't set QoS class for TempoClock: %s\n", strerror(err));
     }
