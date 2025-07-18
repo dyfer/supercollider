@@ -165,7 +165,8 @@ PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice
 
         // in case we still don't have a proper device, use default devices
         if (*inDevice == paNoDevice || *outDevice == paNoDevice) {
-            *inDevice = GetPaDefaultDevice(true);
+            // *inDevice = GetPaDefaultDevice(true);
+            *inDevice = paNoDevice; // hardcoded to no input device
             *outDevice = GetPaDefaultDevice(false);
             if (*inDevice != paNoDevice && *outDevice != paNoDevice)
                 fprintf(stdout, "Selecting default system input/output devices\n");
