@@ -3,10 +3,12 @@ unset(CMAKE_C_FLAGS)
 unset(CMAKE_CXX_FLAGS)
 if(WIN32)
     remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
+else()
+    remove_definitions(-fvisibility=hidden) # needed for the shared library
 endif()
 
-set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library" FORCE)
-set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library" FORCE)
+set(PA_BUILD_STATIC OFF CACHE BOOL "PortAudio static library" FORCE)
+set(PA_BUILD_SHARED ON CACHE BOOL "PortAudio shared library" FORCE)
 
 # disable platform suffix
 set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE)
@@ -31,4 +33,4 @@ if(WIN32 AND NOT PA_USE_ASIO)
 endif()
 
 # when building PA ourselves, we create an ALIAS target
-add_library(PortAudio::PortAudio ALIAS portaudio_static)
+add_library(PortAudio::PortAudio ALIAS portaudio)
