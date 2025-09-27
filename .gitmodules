@@ -23,5 +23,5 @@
 	path = external_libraries/portaudio/portaudio_submodule
 	url = https://github.com/PortAudio/portaudio.git
 [submodule "external_libraries/libgit"]
-	path = external_libraries/libgit
+	path = external_libraries/libgit2/libgit2
 	url = https://github.com/libgit2/libgit2
