@@ -313,7 +313,7 @@ ServerShmInterface {
 		^this
 	}
 
-	connect {
+	connect { |portNumber|
 		_ServerShmInterface_connectSharedMem
 		^this.primitiveFailed
 	}
@@ -323,22 +323,22 @@ ServerShmInterface {
 		^this.primitiveFailed
 	}
 
-	getControlBusValue {
+	getControlBusValue { |busNumber|
 		_ServerShmInterface_getControlBusValue
 		^this.primitiveFailed
 	}
 
-	getControlBusValues {
+	getControlBusValues { |busNumber, count|
 		_ServerShmInterface_getControlBusValues
 		^this.primitiveFailed
 	}
 
-	setControlBusValue {
+	setControlBusValue { |busNumber, value|
 		_ServerShmInterface_setControlBusValue
 		^this.primitiveFailed
 	}
 
-	setControlBusValues {
+	setControlBusValues { |busNumber, values|
 		_ServerShmInterface_setControlBusValues
 		^this.primitiveFailed
 	}

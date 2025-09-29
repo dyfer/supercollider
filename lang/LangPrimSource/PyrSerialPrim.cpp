@@ -320,6 +320,10 @@ static serial_port::flow_control::type asFlowControlType(bool hardware, bool sof
 // primitives
 
 static int prSerialPort_Open(struct VMGlobals* g, int numArgsPushed) {
+    if (numArgsPushed != SerialPort::kNumOptions + 1) {
+        error("Not enough arguments were passed to prSerialPort_Open");
+        return errFailed;
+    }
     PyrSlot* args = g->sp - 1 - SerialPort::kNumOptions;
 
     int err;
@@ -472,7 +476,7 @@ void initSerialPrimitives() {
     base = nextPrimitiveIndex();
     index = 0;
 
-    definePrimitive(base, index++, "_SerialPort_Open", prSerialPort_Open, 2 + SerialPort::kNumOptions, 0);
+    definePrimitive(base, index++, "_SerialPort_Open", prSerialPort_Open, 1, 1);
     definePrimitive(base, index++, "_SerialPort_Close", prSerialPort_Close, 1, 0);
     definePrimitive(base, index++, "_SerialPort_Next", prSerialPort_Next, 1, 0);
     definePrimitive(base, index++, "_SerialPort_Put", prSerialPort_Put, 2, 0);

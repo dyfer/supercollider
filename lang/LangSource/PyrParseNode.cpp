@@ -40,6 +40,7 @@
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
+#include "PyrPrimitive.h"
 
 namespace fs = std::filesystem;
 
@@ -1494,6 +1495,52 @@ void PyrMethodNode::compile(PyrSlot* result) {
     methraw->methType = methType;
     // set primitive
     // optimize common cases
+
+
+    if (mPrimitiveName) {
+        auto prim = gPrimitiveTable.table[methraw->specialIndex];
+        if (prim.func == undefinedPrimitive) {
+            error("Method %s:%s has an undefined primitive.\n",
+                  slotRawSymbol(&slotRawClass(&method->ownerclass)->name)->name, slotRawSymbol(&method->name)->name);
+            nodePostErrorLine((PyrParseNode*)mPrimitiveName);
+            compileErrors++;
+            return;
+        }
+
+        if (prim.numArgs != numArgs) {
+            error("Method %s:%s's number of arguments does not match the primitive.\n",
+                  slotRawSymbol(&slotRawClass(&method->ownerclass)->name)->name, slotRawSymbol(&method->name)->name);
+            nodePostErrorLine((PyrParseNode*)mPrimitiveName);
+            compileErrors++;
+            return;
+        }
+
+        if (prim.varArgs != 0 && methraw->varargs == 0) {
+            error("Primitive has variable arguments but, method %s:%s does not.\n",
+                  slotRawSymbol(&slotRawClass(&method->ownerclass)->name)->name, slotRawSymbol(&method->name)->name);
+            nodePostErrorLine((PyrParseNode*)mPrimitiveName);
+            compileErrors++;
+            return;
+        }
+
+        if (methraw->varargs > 0 && prim.varArgs == 0) {
+            error("Method %s:%s has variable arguments but primitive does not. prim var args %d methraw->varargs %d\n",
+                  slotRawSymbol(&slotRawClass(&method->ownerclass)->name)->name, slotRawSymbol(&method->name)->name,
+                  prim.varArgs, methraw->varargs);
+            nodePostErrorLine((PyrParseNode*)mPrimitiveName);
+            compileErrors++;
+            return;
+        }
+
+        if (prim.keyArgs && methraw->varargs == 0) {
+            error("Primitive has variable keyword arguments but, method %s:%s does not.\n",
+                  slotRawSymbol(&slotRawClass(&method->ownerclass)->name)->name, slotRawSymbol(&method->name)->name);
+            nodePostErrorLine((PyrParseNode*)mPrimitiveName);
+            compileErrors++;
+            return;
+        }
+    }
+
 
     if (methType == methNormal || methType == methPrimitive) {
         PyrSlot dummy;

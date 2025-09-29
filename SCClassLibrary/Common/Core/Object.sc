@@ -84,11 +84,11 @@ Object {
 		_ObjectPerformMsg;
 		^this.primitiveFailed
 	}
-	perform { arg selector ... args;
+	perform { |selector ...args, kwargs|
 		_ObjectPerform;
 		^this.primitiveFailed
 	}
-	performList { | ...args, kwargs|
+	performList { |selector ...args, kwrgs|
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
@@ -104,18 +104,18 @@ Object {
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
-	superPerform { | ... args, kwargs|
+	superPerform { |selector ...args, kwargs|
 		_SuperPerform;
 		^this.primitiveFailed
 	}
-	superPerformList { | ...args, kwargs|
+	superPerformList { |selector ...args, kwargs|
 		_SuperPerformList;
 		^this.primitiveFailed
 	}
 
-	tryPerform { |  ... args, kwargs|
-		^if(this.respondsTo(args[0]), {
-			this.performArgs(args[0],  args[1..], kwargs)
+	tryPerform { |selector  ...args, kwargs|
+		^if(this.respondsTo(selector), {
+			this.performArgs(selector, args, kwargs)
 		})
 	}
 
@@ -745,7 +745,7 @@ Object {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*prNewCopyArgs { arg ... args;
+	*prNewCopyArgs { | ...args, kwargs|
 		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
 		// creates a new instance which holds the args as slots

@@ -3184,7 +3184,10 @@ HOT void Interpret(VMGlobals* g) {
                 case methPrimitive: /* primitive */
                     g->sp = sp;
                     g->ip = ip;
-                    doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
+                    if (numKeyArgsPushed > 0)
+                        doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
+                    else
+                        doPrimitive(g, meth, numArgsPushed);
                     sp = g->sp;
                     ip = g->ip;
                     break;

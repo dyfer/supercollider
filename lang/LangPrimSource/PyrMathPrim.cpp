@@ -83,8 +83,18 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
     PyrSlot *a, *b;
     PyrSymbol* msg;
 
-    a = g->sp - 1;
-    b = g->sp;
+    if (numArgsPushed == -1) {
+        // We have called this from the interpreter.
+        // This is quite a hack, consider refactoring this in future so a 'special' value isn't used.
+        a = g->sp - 1;
+        b = g->sp;
+    } else {
+        a = g->sp - (numArgsPushed - 1);
+        b = g->sp - (numArgsPushed - 2);
+    }
+
+    // adverb is ignored. I've written it here to make it clear that it is still passed to the primitive.
+    PyrSlot* adverb = g->sp;
 
     switch (GetTag(a)) {
     case tagInt:
@@ -175,7 +185,13 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
         }
         break;
     }
-    g->sp--; // drop
+
+    // drop
+    if (numArgsPushed == -1) {
+        g->sp--;
+    } else {
+        g->sp = g->sp - (numArgsPushed - 1);
+    }
     g->numpop = 0;
 #if TAILCALLOPTIMIZE
     g->tailCall = 0;
@@ -195,8 +211,15 @@ template <typename Functor> inline int prOpInt(VMGlobals* g, int numArgsPushed) 
     PyrSlot *a, *b;
     PyrSymbol* msg;
 
-    a = g->sp - 1;
-    b = g->sp;
+    if (numArgsPushed == -1) {
+        // We have called this from the interpreter.
+        // This is quite a hack, consider refactoring this in future so a 'special' value isn't used.
+        a = g->sp - 1;
+        b = g->sp;
+    } else {
+        a = g->sp - (numArgsPushed - 1);
+        b = g->sp - (numArgsPushed - 2);
+    }
 
     switch (GetTag(b)) {
     case tagInt:
@@ -221,7 +244,13 @@ template <typename Functor> inline int prOpInt(VMGlobals* g, int numArgsPushed) 
         SetFloat(a, Functor::run((double)slotRawInt(a), slotRawFloat(b)));
         break;
     }
-    g->sp--; // drop
+
+    // drop
+    if (numArgsPushed == -1) {
+        g->sp--;
+    } else {
+        g->sp = g->sp - (numArgsPushed - 1);
+    }
     g->numpop = 0;
 #if TAILCALLOPTIMIZE
     g->tailCall = 0;
@@ -241,8 +270,16 @@ template <typename Functor> inline int prOpFloat(VMGlobals* g, int numArgsPushed
     PyrSlot *a, *b;
     PyrSymbol* msg;
 
-    a = g->sp - 1;
-    b = g->sp;
+    if (numArgsPushed == -1) {
+        // We have called this from the interpreter.
+        // This is quite a hack, consider refactoring this in future so a 'special' value isn't used.
+        a = g->sp - 1;
+        b = g->sp;
+    } else {
+        a = g->sp - (numArgsPushed - 1);
+        b = g->sp - (numArgsPushed - 2);
+    }
+
 
     switch (GetTag(b)) {
     case tagInt:
@@ -267,7 +304,13 @@ template <typename Functor> inline int prOpFloat(VMGlobals* g, int numArgsPushed
         SetRaw(a, Functor::run(slotRawFloat(a), slotRawFloat(b)));
         break;
     }
-    g->sp--; // drop
+
+    // drop
+    if (numArgsPushed == -1) {
+        g->sp--;
+    } else {
+        g->sp = g->sp - (numArgsPushed - 1);
+    }
     g->numpop = 0;
 #if TAILCALLOPTIMIZE
     g->tailCall = 0;
@@ -303,8 +346,8 @@ int prSubInt(VMGlobals* g, int numArgsPushed) { return prOpInt<subNum>(g, numArg
 int prMulInt(VMGlobals* g, int numArgsPushed) { return prOpInt<mulNum>(g, numArgsPushed); }
 
 int prModSeasideInt(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
+    PyrSlot* a = g->sp - 2;
+    PyrSlot* b = g->sp - 1;
     int in;
     int err;
 
@@ -1326,13 +1369,14 @@ void initMathPrimitives() {
 
     base = nextPrimitiveIndex();
     index = 0;
-    definePrimitive(base, index++, "_AddInt", prAddInt, 2, 0);
-    definePrimitive(base, index++, "_SubInt", prSubInt, 2, 0);
-    definePrimitive(base, index++, "_MulInt", prMulInt, 2, 0);
-    definePrimitive(base, index++, "_ModSeasideInt", prModSeasideInt, 2, 0);
-    definePrimitive(base, index++, "_AddFloat", prAddFloat, 2, 0);
-    definePrimitive(base, index++, "_SubFloat", prSubFloat, 2, 0);
-    definePrimitive(base, index++, "_MulFloat", prMulFloat, 2, 0);
+    definePrimitive(base, index++, "_AddInt", prAddInt, 3, 0);
+    definePrimitive(base, index++, "_SubInt", prSubInt, 3, 0);
+    definePrimitive(base, index++, "_MulInt", prMulInt, 3, 0);
+    definePrimitive(base, index++, "_ModSeasideInt", prModSeasideInt, 3, 0);
+    definePrimitive(base, index++, "_AddFloat", prAddFloat, 3, 0);
+    definePrimitive(base, index++, "_SubFloat", prSubFloat, 3, 0);
+    definePrimitive(base, index++, "_MulFloat", prMulFloat, 3, 0);
+
     definePrimitive(base, index++, "_NthPrime", prNthPrime, 1, 0);
     definePrimitive(base, index++, "_PrevPrime", prPrevPrime, 1, 0);
     definePrimitive(base, index++, "_NextPrime", prNextPrime, 1, 0);
