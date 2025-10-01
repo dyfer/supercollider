@@ -46,7 +46,12 @@ TestProcessCreation : UnitTest {
 		};
 		cond = CondVar();
 		cmd.unixCmd({|ex| exitCode = ex; cond.signalOne}, false);
-		cond.waitFor(2);
+		exitCode.isNil.if{
+			"waiting...".postln;
+			cond.waitFor(2);
+		 } {
+			"exitCode was already set".warn;
+		 };
 		this.assertEquals(exitCode, 0, "quoted command with quoted argument evaluates successfully");
 	}
 
