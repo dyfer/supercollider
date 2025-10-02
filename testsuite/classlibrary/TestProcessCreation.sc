@@ -16,6 +16,9 @@ TestProcessCreation : UnitTest {
 		var res1 = if(thisProcess.platform.name == \windows) {str1} {str1.replace("\"", "")};
 		var res2 = if(thisProcess.platform.name == \windows) {str2} {str2.replace("\'", "")};
 		var out1, out2;
+		// FIXME: wait before the first test on Windows
+		// because we have issues with underlying precess creation
+		if(thisProcess.platform.name == \windows, {"waiting...".postln; 1.wait});
 		out1 = "echo %".format(str1).unixCmdGetStdOut.replace("\n", "");
 		this.assertEquals(out1, res1, "double quotes result asCompileString: %".format(out1.asCompileString));
 		out2 = "echo %".format(str2).unixCmdGetStdOut.replace("\n", "");
