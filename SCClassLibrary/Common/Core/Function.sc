@@ -53,7 +53,7 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { |selector... args, kwargs|
+	functionPerformList { | ...args, kwargs|
         _ObjectPerformList;
         this.primitiveFailed
 	}

@@ -1137,6 +1137,9 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int objectPerform(struct VMGlobals* g, int numArgsPushed) {
+    if (numArgsPushed < 2)
+        return errFailed;
+
     PyrSlot *recvrSlot, *selSlot, *listSlot;
     PyrSlot *pslot, *qslot;
     PyrSymbol* selector;
@@ -1214,6 +1217,8 @@ int objectPerform(struct VMGlobals* g, int numArgsPushed) {
 
 int objectPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed);
 int objectPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed) {
+    if (numArgsPushed < 2)
+        return errFailed;
     PyrSlot *recvrSlot, *selSlot, *listSlot;
     PyrSlot *pslot, *qslot;
     PyrSymbol* selector;
@@ -1277,6 +1282,8 @@ int objectPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed)
 
 
 int objectSuperPerform(struct VMGlobals* g, int numArgsPushed) {
+    if (numArgsPushed < 2)
+        return errFailed;
     PyrSlot *recvrSlot, *selSlot, *listSlot;
     PyrSlot *pslot, *qslot;
     PyrSymbol* selector;
@@ -1347,6 +1354,8 @@ int objectSuperPerform(struct VMGlobals* g, int numArgsPushed) {
 
 int objectSuperPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed);
 int objectSuperPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed) {
+    if (numArgsPushed < 2)
+        return errFailed;
     PyrSlot *recvrSlot, *selSlot, *listSlot;
     PyrSlot *pslot, *qslot;
     PyrSymbol* selector;
@@ -1513,6 +1522,8 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
 }
 
 int objectPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed) {
+    if (numArgsPushed < 2)
+        return errFailed;
     return performListTemplate(
         g, numArgsPushed, numKeyArgsPushed,
         [](struct VMGlobals* g, int numArgs, int numKeyArgs) -> int {
@@ -1526,6 +1537,8 @@ int objectPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKey
 int objectPerformList(struct VMGlobals* g, int numArgsPushed) { return objectPerformListWithKeys(g, numArgsPushed, 0); }
 
 int objectSuperPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKeyArgs) {
+    if (numArgsPushed < 2)
+        return errFailed;
     return performListTemplate(
         g, numArgsPushed, numKeyArgs,
         [](struct VMGlobals* g, int numArgs, int numKeyArgs) -> int {
@@ -3999,18 +4012,18 @@ void initPrimitives() {
 
     definePrimitive(base, index++, "_Identical", objectIdentical, 2, 0);
     definePrimitive(base, index++, "_NotIdentical", objectNotIdentical, 2, 0);
-    definePrimitiveWithVariableKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2);
+    definePrimitiveWithVariableKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 1);
     index += 2;
     definePrimitive(base, index++, "_ObjectPerformArgs", objectPerformArgs, 4, 0);
     definePrimitive(base, index++, "_ObjectSuperPerformArgs", objectSuperPerformArgs, 4, 0);
 
-    definePrimitiveWithVariableKeys(base, index, "_ObjectPerformList", objectPerformList, objectPerformListWithKeys, 2);
+    definePrimitiveWithVariableKeys(base, index, "_ObjectPerformList", objectPerformList, objectPerformListWithKeys, 1);
     index += 2;
 
-    definePrimitiveWithVariableKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2);
+    definePrimitiveWithVariableKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 1);
     index += 2;
     definePrimitiveWithVariableKeys(base, index++, "_SuperPerformList", objectSuperPerformList,
-                                    objectSuperPerformListWithKeys, 2);
+                                    objectSuperPerformListWithKeys, 1);
     index += 2;
     definePrimitive(base, index++, "_ObjectPerformMsg", objectPerformSelList, 2, 0);
     // definePrimitive(base, index++, "_ArrayPerformMsg", arrayPerformMsg, 1, 1);

@@ -84,11 +84,11 @@ Object {
 		_ObjectPerformMsg;
 		^this.primitiveFailed
 	}
-	perform { |selector ...args, kwargs|
+	perform { | ...args, kwargs|
 		_ObjectPerform;
 		^this.primitiveFailed
 	}
-	performList { |selector ...args, kwrgs|
+	performList { | ...args, kwrgs|
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
@@ -104,23 +104,23 @@ Object {
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
-	superPerform { |selector ...args, kwargs|
+	superPerform { | ...args, kwargs|
 		_SuperPerform;
 		^this.primitiveFailed
 	}
-	superPerformList { |selector ...args, kwargs|
+	superPerformList { | ...args, kwargs|
 		_SuperPerformList;
 		^this.primitiveFailed
 	}
 
-	tryPerform { |selector  ...args, kwargs|
-		^if(this.respondsTo(selector), {
-			this.performArgs(selector, args, kwargs)
+	tryPerform { | ...args, kwargs|
+		^if(this.respondsTo(args[0]), {
+			this.performArgs(args[0], args[1..], kwargs)
 		})
 	}
 
-	multiChannelPerform { arg selector ... args;
-		^flop([this, selector] ++ args).collect { |item|
+	multiChannelPerform { | ... args|
+		^flop([this, args[0]] ++ args[1..]).collect { |item|
 			performList(item[0], item[1], item[2..])
 		}
 	}
