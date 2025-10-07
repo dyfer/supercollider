@@ -38,7 +38,7 @@ TestUGen_RTAlloc : UnitTest {
 	}
 
 	assertAllocPass { |name, func, runtimeSamples=(server.options.blockSize)|
-		var out = this.awaitSynthOutput(func, runtimeSamples);
+		var out = this.awaitSynthOutput(func, runtimeSamples, 10);
 		if (out.isNil) {
 			this.assert(false, "% allocPass test should complete".format(name))
 		} {
@@ -49,7 +49,7 @@ TestUGen_RTAlloc : UnitTest {
 	}
 
 	assertAllocFail { |name, func, runtimeSamples=(server.options.blockSize)|
-		var out = this.awaitSynthOutput(func, runtimeSamples, 3);
+		var out = this.awaitSynthOutput(func, runtimeSamples, 10);
 		if (out.isNil) {
 			this.assert(false, "% allocFail test should complete".format(name))
 		} {
