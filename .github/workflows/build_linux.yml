@@ -54,7 +54,15 @@ jobs:
             use-syslibs: false
             shared-libscsynth: true
             ctest: false
-            
+
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "gcc-15"
+            cxx-compiler: "g++-15"
+            use-syslibs: false
+            shared-libscsynth: false
+            ctest: true
+
           - job-name: ""
             os-version: "22.04"
             c-compiler: "clang-11"
