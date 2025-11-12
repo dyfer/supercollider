@@ -229,6 +229,7 @@ if(File.exists(~testProto).not) {
 	~testrun.(~testProto, ~testResult);
 	"\n\n******** DONE ********\n\n".postln;
 	if(~exitWhenDone) {
+		Server.killAll;
 		5.wait; // wait for the server to quit before shutting down
 		0.exit;
 	}; // exit only if the script was called with arguments
