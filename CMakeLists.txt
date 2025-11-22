@@ -345,6 +345,21 @@ set(CMAKE_CXX_STANDARD 17)
 #############################################
 # compiler settings - hardware
 
+message(STATUS "--- DIAGNOSTIC START ---")
+message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "Target Architecture: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+
+# Calculate the default again just to see what CMake thinks
+if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.40")
+    message(STATUS "Logic Check: Version >= 19.40. Default should be SSE4.2")
+else()
+    message(STATUS "Logic Check: Version < 19.40. Default should be SSE2")
+endif()
+
+message(STATUS "Current Cached MSVC_ARCH: '${MSVC_ARCH}'")
+message(STATUS "--- DIAGNOSTIC END ---")
+
 if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	if (NATIVE)
 		add_compile_options("-march=native")
