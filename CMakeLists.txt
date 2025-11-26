@@ -76,32 +76,8 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    add_compile_options(
-        -Werror=return-type      # Error out if function definitions lack a return type
-        -fschedule-insns2        # Optimize instruction scheduling
-        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
-        -fno-math-errno          # Optimize math functions by not setting errno
-        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
-        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
-        -fno-associative-math    # Prevent reordering of floating-point operations
-    )
-
 	if(${_gcc_version} VERSION_LESS 4.8)
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
-	endif()
-
-	if(APPLE)
-        execute_process(
-                COMMAND ${CMAKE_CXX_COMPILER} --version
-                OUTPUT_VARIABLE _gcc_version_info
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-		if ("${_gcc_version_info}" MATCHES "Apple")
-			add_definitions("-fpascal-strings")
-		endif()
-		add_definitions("-D_REENTRANT")
-	elseif(NOT (WIN32 AND NOT CYGWIN))
-		add_definitions("-pthread")
 	endif()
 
 elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
@@ -414,11 +390,27 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
-    if(CMAKE_COMPILER_IS_CLANG AND NOT SC_CLANG_USES_LIBSTDCPP)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT SC_CLANG_USES_LIBSTDCPP)
         # the default
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+        add_compile_options("-stdlib=libc++")
+        add_link_options("-stdlib=libc++")
     endif()
+
+    add_compile_options(
+        -Werror=return-type      # Error out if function definitions lack a return type
+        -fschedule-insns2        # Optimize instruction scheduling
+        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
+        -fno-math-errno          # Optimize math functions by not setting errno
+        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
+        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
+        -fno-associative-math    # Prevent reordering of floating-point operations
+    )
+
+	if(APPLE)
+		add_compile_definitions("_REENTRANT")
+	elseif(NOT WIN32)
+		add_compile_options("-pthread")
+	endif()
 
 	if(FORTIFY)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
