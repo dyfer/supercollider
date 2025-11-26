@@ -66,24 +66,6 @@ if(WIN32)
 
 endif(WIN32)
 
-#############################################
-# Compiler flags etc
-
-if (${CMAKE_COMPILER_IS_GNUCXX})
-    execute_process(
-            COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-            OUTPUT_VARIABLE _gcc_version
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
-	if(${_gcc_version} VERSION_LESS 4.8)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
-	endif()
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-endif()
-
 if(APPLE)
 	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
@@ -156,11 +138,11 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
@@ -313,11 +295,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 #############################################
 # some preprocessor flags
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
-		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
+		if(NOT APPLE AND NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
 		endif()
@@ -333,7 +315,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 endif()
 
 #############################################
-# other compiler settings
+# other compiler flags
 
 # set default symbol visibility
 SET(CMAKE_CXX_VISIBILITY_PRESET hidden)
