@@ -312,6 +312,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	endif()
 endif()
 
+# support for building on Raspberry Pi 1/2/3 and BBB
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
+  add_compile_options("-mfloat-abi=hard" "-mfpu=neon")
+elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
+  add_compile_options("-march=armv6" "-mtune=arm1176jzf-s" "-mfloat-abi=hard" "-mfpu=vfp")
+endif()
+
 #############################################
 # other compiler flags
 
@@ -391,21 +398,6 @@ endif(MSVC)
 
 if(MINGW)
 	add_compile_options(-mstackrealign)
-endif()
-
-# support for building on Raspberry Pi 1/2/3 and BBB
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=neon")
-  endforeach()
-elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
-  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -march=armv6")
-    set(${flag} "${${flag}} -mtune=arm1176jzf-s")
-    set(${flag} "${${flag}} -mfloat-abi=hard")
-    set(${flag} "${${flag}} -mfpu=vfp")
-  endforeach()
 endif()
 
 if (NO_GPL3)
