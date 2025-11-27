@@ -179,6 +179,11 @@ if(APPLE)
     option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()
 
+if(SC_DISABLE_XCODE_CODESIGNING)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+endif()
+
 #############################################
 # Detect CCache
 
@@ -286,8 +291,6 @@ else()
   set(SYSTEM_YAMLCPP OFF)
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
-
 #############################################
 # some preprocessor flags
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -311,6 +314,8 @@ endif()
 
 #############################################
 # other compiler flags
+
+set(CMAKE_CXX_STANDARD 17)
 
 # set default symbol visibility
 SET(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -384,11 +389,6 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_ENABLE_ATOMIC_ALIGNMENT_FIX)
 endif(MSVC)
 
-if (SC_MEMORY_DEBUGGING)
-	add_definitions(-DDISABLE_MEMORY_POOLS)
-	add_definitions(-DENABLE_MEMORY_CHECKS)
-endif()
-
 if(MINGW)
 	add_compile_options(-mstackrealign)
 endif()
@@ -409,12 +409,11 @@ elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
 endif()
 
 if (NO_GPL3)
-	add_definitions(-DNO_GPL3)
+	add_compile_definitions(NO_GPL3)
 endif()
 
-if(SC_DISABLE_XCODE_CODESIGNING)
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
-    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+if (SC_MEMORY_DEBUGGING)
+	add_compile_definitions(DISABLE_MEMORY_POOLS ENABLE_MEMORY_CHECKS)
 endif()
 
 #############################################
