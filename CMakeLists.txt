@@ -380,11 +380,6 @@ if(MSVC)
     /wd4996 # The POSIX name for this item is deprecated.
   )
 
-# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
-# caused by some versions of libsndfile's C++ header redefining nullptr as NULL.
-# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
-  add_compile_options("/Zc:__cplusplus")
-
 # for math operations, we expect the default /fp:precise flag to be used, so that we match settings for gcc/clang
 
 endif(MSVC)
