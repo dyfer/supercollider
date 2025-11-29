@@ -387,9 +387,6 @@ if(MSVC)
 
 # for math operations, we expect the default /fp:precise flag to be used, so that we match settings for gcc/clang
 
-# _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
-# see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS _ENABLE_ATOMIC_ALIGNMENT_FIX)
 endif(MSVC)
 
 if(MINGW)
