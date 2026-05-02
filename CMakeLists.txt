@@ -78,7 +78,7 @@ endif()
 #############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
-option(FINAL_BUILD "Build as single source file." OFF)
+option(FINAL_BUILD "Build as single source file." ON)
 option(USE_CCACHE "Use ccache if available." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
