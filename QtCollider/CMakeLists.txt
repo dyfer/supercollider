@@ -19,6 +19,9 @@ find_package(QT NAMES Qt6 ${REQUIRED_QT_VERSION} QUIET COMPONENTS Core)
 if (NOT QT_FOUND)
     set(REQUIRED_QT_VERSION 5.15)
     find_package(QT NAMES Qt5 ${REQUIRED_QT_VERSION} QUIET COMPONENTS Core)
+    if (NOT QT_FOUND)
+      message(FATAL_ERROR "Qt not found.")
+    endif()
 endif()
 set(QT_VERSION_MAJOR ${QT_VERSION_MAJOR} PARENT_SCOPE) # make it available elsewhere
 
@@ -31,7 +34,7 @@ if(SC_USE_QTWEBENGINE)
   list(APPEND QT_COLLIDER_LIBS Qt::WebEngineCore Qt::WebEngineWidgets)
 endif()
 
-if (${QT_VERSION_MAJOR} GREATER_EQUAL 6 AND UNIX AND SC_USE_QTWEBENGINE)
+if ("${QT_VERSION_MAJOR}" GREATER_EQUAL 6 AND UNIX AND SC_USE_QTWEBENGINE)
     list(APPEND QT_COLLIDER_LIBS Qt::DBus)
 endif()
 
