@@ -154,6 +154,8 @@ endif()
 
 file(GLOB_RECURSE all_headers ./*.h*)
 
+# excludes for scsynth unity build
+# SC_Graph.cpp, SC_TimeDLL.hpp
 if (FINAL_BUILD)
 	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources} ${all_headers})
 	add_library(libscsynth ${LIBSCSYNTH_TYPE} libscsynth_final.cpp)
