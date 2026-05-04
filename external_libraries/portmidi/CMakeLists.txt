@@ -7,3 +7,4 @@ add_subdirectory(portmidi_submodule)
 target_include_directories(portmidi PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/portmidi_submodule/porttime> # add missing include
 )
+set_target_properties(portmidi PROPERTIES UNITY_BUILD OFF)

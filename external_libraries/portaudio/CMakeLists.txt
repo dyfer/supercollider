@@ -26,6 +26,8 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.10)
 
 add_subdirectory(portaudio_submodule)
 
+set_target_properties(portaudio_static PROPERTIES UNITY_BUILD OFF)
+
 if(WIN32 AND NOT PA_USE_ASIO)
     message(STATUS "Building PortAudio WITHOUT support for ASIO")
 endif()
