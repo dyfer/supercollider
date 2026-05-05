@@ -1,9 +1,36 @@
 cmake_minimum_required(VERSION 3.12)
 
 # pick up vcpkg installation, if VCPKG_ROOT is set
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT "$ENV{VCPKG_ROOT}" STREQUAL "")
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+if(DEFINED ENV{VCPKG_ROOT} AND NOT "$ENV{VCPKG_ROOT}" STREQUAL "")
+	# vcpkg packages config
+	if(WIN32)
+		set(VCPKG_DEFAULT ON)
+	else()
+		set(VCPKG_DEFAULT OFF)
+	endif()
+	option(USE_VCPKG_FFTW "Use fftw3 from vcpkg" ${VCPKG_DEFAULT})
+	option(USE_VCPKG_LIBSNDFILE "Use libsndfile from vcpkg" ${VCPKG_DEFAULT})
+	option(USE_VCPKG_READLINE "Use readline from vcpkg" ${VCPKG_DEFAULT})
+
+	set(VCPKG_FEATURES "")
+	if(USE_VCPKG_FFTW)
+		list(APPEND VCPKG_FEATURES "fftw3")
+	endif()
+	if(USE_VCPKG_LIBSNDFILE)
+		list(APPEND VCPKG_FEATURES "libsndfile")
+	endif()
+	if(USE_VCPKG_READLINE)
+		list(APPEND VCPKG_FEATURES "readline")
+	endif()
+	set(VCPKG_MANIFEST_FEATURES ${VCPKG_FEATURES})
+
+	# set toolchain file and overlay triplets
+	if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    	set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+	endif()
     message(STATUS "Using CMAKE_TOOLCHAIN_FILE at ${CMAKE_TOOLCHAIN_FILE}")
+	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/triplets")
+	message(STATUS "Using VCPKG_OVERLAY_TRIPLETS at ${VCPKG_OVERLAY_TRIPLETS}")
 endif()
 
 include(SCVersion.txt)
