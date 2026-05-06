@@ -27,6 +27,7 @@ FIND_PATH(
   HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
     "$ENV{ProgramW6432}/fftw"
     "$ENV{ProgramFiles}/fftw"
+  PATH_SUFFIXES bin
 )
 
 SET(FFTW3F_FOUND "NO")
