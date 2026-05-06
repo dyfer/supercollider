@@ -309,31 +309,35 @@ elseif(WIN32)
     endif(NOT MSVC)
 
     if(FFTW3F_FOUND)
-      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
-      add_custom_command(TARGET scsynth
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:scsynth>
-      )
+      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*/*fftw3f*.dll")
+	  if(FFTW3F_DLL)
+		add_custom_command(TARGET scsynth
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:scsynth>
+		)
+	  endif()
     endif(FFTW3F_FOUND)
 
     if(SNDFILE_FOUND)
-      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
-      add_custom_command(TARGET scsynth
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:scsynth>
-      )
+      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*/*sndfile*.dll")
+	  if(SNDFILE_DLL)
+		add_custom_command(TARGET scsynth
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:scsynth>
+		)
+	endif()
     endif(SNDFILE_FOUND)
 
     add_custom_command(TARGET scsynth
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:scsynth>" "$<TARGET_FILE_DIR:sclang>"
       COMMENT "Adding scynth to target sclang"
     )
 
     if(SC_IDE)
       add_custom_command(TARGET scsynth
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:SuperCollider>
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_FILE_DIR:scsynth>" "$<TARGET_FILE_DIR:SuperCollider>"
         COMMENT "Adding scynth to target SuperCollider"
       )
     endif(SC_IDE)
