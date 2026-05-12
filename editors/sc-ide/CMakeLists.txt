@@ -421,14 +421,6 @@ elseif(WIN32)
       )
     endforeach()
 
-    install(TARGETS SuperCollider
-        DESTINATION "${SC_WIN_BUNDLE_NAME}"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    )
-    install(FILES ${translations}
-        DESTINATION "${SC_WIN_BUNDLE_NAME}/translations"
-    )
-
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
       list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
@@ -439,17 +431,21 @@ elseif(WIN32)
     if(READLINE_LIBRARY_DIR)
       list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
     endif(READLINE_LIBRARY_DIR)
-    if(QT_BIN_PATH)
-      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
-    endif(QT_BIN_PATH)
 
-    # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
-    # will run windeployqt afterward to auto-deploy QtWebEngine dependencies
-    install(CODE
-        "
-            include(BundleUtilities)
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\" \"\" \"${SC_WIN_DLL_DIRS}\")
-        "
+    install(TARGETS SuperCollider
+        DESTINATION "${SC_WIN_BUNDLE_NAME}"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		RUNTIME_DEPENDENCIES
+			DIRECTORIES ${SC_WIN_DLL_DIRS}
+			PRE_EXCLUDE_REGEXES 
+				"api-ms-.*"
+				"ext-ms-.*"
+			POST_EXCLUDE_REGEXES
+				"^([a-zA-Z]:)?/[Ww][iI][nN][dD][oO][wW][sS]/"
+				"^.*Qt[56].*\\.dll$"
+    )
+    install(FILES ${translations}
+        DESTINATION "${SC_WIN_BUNDLE_NAME}/translations"
     )
 
 
@@ -550,13 +546,13 @@ if(APPLE OR WIN32)
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 --verbose 1 --no-compiler-runtime
-                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
+                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}\"
             ")
         set(VERIFY_CMD "")
     endif()
 
     if(NOT DEPLOY_PROG)
-        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+        message(FATAL_ERROR "Could not find windeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH")
     endif()
 
     message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
