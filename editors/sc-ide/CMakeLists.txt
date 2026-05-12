@@ -429,30 +429,6 @@ elseif(WIN32)
         DESTINATION "${SC_WIN_BUNDLE_NAME}/translations"
     )
 
-    set(SC_WIN_DLL_DIRS)
-    if(SNDFILE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
-    endif(SNDFILE_LIBRARY_DIR)
-    if(FFTW3F_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
-    endif(FFTW3F_LIBRARY_DIR)
-    if(READLINE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
-    endif(READLINE_LIBRARY_DIR)
-    if(QT_BIN_PATH)
-      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
-    endif(QT_BIN_PATH)
-
-    # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
-    # will run windeployqt afterward to auto-deploy QtWebEngine dependencies
-    install(CODE
-        "
-            include(BundleUtilities)
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\" \"\" \"${SC_WIN_DLL_DIRS}\")
-        "
-    )
-
-
 else()
   install(TARGETS SuperCollider
       RUNTIME DESTINATION "bin"
@@ -548,22 +524,39 @@ if(APPLE OR WIN32)
         endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
-                --verbose 1 --no-compiler-runtime
-                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
-            ")
+		set(DEPLOY_CMD 
+            "${DEPLOY_PROG}"
+            --verbose 1 
+            --no-compiler-runtime
+            "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe"
+            "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/scsynth.exe"
+            "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/plugins/DiskIO_UGens.scx"
+            "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/scide.exe"
+        )
+        
+        # if(SC_USE_QTWEBENGINE)
+        #     list(APPEND DEPLOY_CMD "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/QtWebEngineProcess.exe")
+        # endif()
+        
+        if(SUPERNOVA)
+            list(APPEND DEPLOY_CMD 
+                "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/supernova.exe"
+                "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/plugins/DiskIO_UGens_supernova.scx"
+            )
+        endif()
         set(VERIFY_CMD "")
     endif()
 
     if(NOT DEPLOY_PROG)
-        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+        message(FATAL_ERROR "Could not find windeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH")
     endif()
 
     message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
     install(CODE
         "
             message(STATUS \"Deploying additional Qt resources and libraries\")
-            execute_process(COMMAND ${DEPLOY_CMD}
+			set(DEPLOY_CMD_LIST \"${DEPLOY_CMD}\")
+            execute_process(COMMAND \${DEPLOY_CMD_LIST}
                 RESULT_VARIABLE RES
                 OUTPUT_VARIABLE OUT
                 ERROR_VARIABLE ERR
