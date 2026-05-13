@@ -169,7 +169,9 @@ jobs:
         run: |
           cmake --build $BUILD_PATH --config Release --target install --parallel 2
 
-      - run: grep -n -C 2 "TokenType" D:/a/supercollider/supercollider/build/lang/CMakeFiles/libsclang.dir/Unity/unity_1_cxx.i
+      - run: |
+          ls -la D:/a/supercollider/supercollider/build/lang/CMakeFiles/libsclang.dir/Unity/
+          grep -n -C 2 "TokenType" D:/a/supercollider/supercollider/build/lang/CMakeFiles/libsclang.dir/Unity/unity_1_cxx*.i
         continue-on-error: true
         shell: bash
 
