@@ -42,7 +42,7 @@ jobs:
             cmake-generator: "Visual Studio 17 2022"
             vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
             vcpkg-triplet: x64-windows-release
-            use-qtwebengine: "ON" # might need to be turned off for MinGW
+            use-qtwebengine: "OFF" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             ctest: true
             artifact-suffix: "win64" # set if needed - will trigger artifact upload
