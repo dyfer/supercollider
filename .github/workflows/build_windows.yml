@@ -49,6 +49,7 @@ jobs:
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
             ctest-cmd: "RUN_TESTS"
+            extra-cmake-flags: "-D FINAL_BUILD=ON"
 
           - job-name: "64-bit MinGW with ctest"
             fftw-arch: "x64"
