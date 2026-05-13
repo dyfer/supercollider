@@ -212,3 +212,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     include_directories(X11_INCLUDE_DIR)
     list(APPEND QT_COLLIDER_LIBS ${X11_X11_LIB})
 endif()
+
+if(MSVC AND SC_USE_QTWEBENGINE)
+  set_source_files_properties(${QT_COLLIDER_DIR}/widgets/QcWebView.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+  set_source_files_properties(${QT_COLLIDER_DIR}/widgets/web_page.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+endif()
