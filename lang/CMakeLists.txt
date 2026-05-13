@@ -190,6 +190,10 @@ add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 if(FINAL_BUILD)
 	set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_source_files_properties(
+        "${CMAKE_CURRENT_BINARY_DIR}/lang/CMakeFiles/libsclang.dir/Unity/unity_1_cxx.cxx" 
+        PROPERTIES COMPILE_FLAGS "/P"
+    )
     if(WIN32)
         set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
         set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
