@@ -30,7 +30,7 @@ jobs:
             # artifact-suffix: "win32" # set if needed - will trigger artifact upload
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win32-installer"
-            extra-cmake-flags: "-D FINAL_BUILD=ON"
+            extra-cmake-flags: "-D FINAL_BUILD=ON -D CMAKE_CXX_FLAGS=\"/showIncludes\""
 
           - job-name: "64-bit MSVC 2022 with ctest"
             fftw-arch: "x64"
@@ -49,7 +49,7 @@ jobs:
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
             ctest-cmd: "RUN_TESTS"
-            extra-cmake-flags: "-D FINAL_BUILD=ON"
+            extra-cmake-flags: "-D FINAL_BUILD=ON -D CMAKE_CXX_FLAGS=\"/showIncludes\""
 
           - job-name: "64-bit MinGW with ctest"
             fftw-arch: "x64"
@@ -165,8 +165,13 @@ jobs:
 
       - name: build
         shell: bash
+        continue-on-error: true
         run: |
           cmake --build $BUILD_PATH --config Release --target install --parallel 2
+
+      - run: grep -n -C 2 "TokenType" D:/a/supercollider/supercollider/build/lang/CMakeFiles/libsclang.dir/Unity/unity_1_cxx.i
+        continue-on-error: true
+        shell: bash
 
       - name: create archive
         if: matrix.artifact-suffix
