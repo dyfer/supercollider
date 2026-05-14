@@ -54,12 +54,14 @@ jobs:
             os-version: "2022"
             qt-version: "6.7.0"
             qt-arch: "win64_mingw"
+            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
             cmake-generator: "MinGW Makefiles"
             vcpkg-triplet: x64-mingw-dynamic-release
             chocolatey-options: "" # '--forcex86' for 32-bit build
             use-qtwebengine: "OFF" # might need to be turned off for MinGW
             qt-modules: "qtpositioning"
             artifact-suffix: "win64-mingw" # set if needed - will trigger artifact upload
+            extra-cmake-flags: "-D USE_VCPKG_FFTW=OFF"
             ctest: true
             ctest-cmd: "test"
 
@@ -117,8 +119,6 @@ jobs:
         run: |
           curl -L ${{ matrix.sndfile-url }} -o sndfile.zip
           7z x sndfile.zip -o"$PROGRAMFILES" -y
-
-          ls -R "$PROGRAMFILES/libsndfile"* | grep -E "bin|lib"
 
       - name: download fftw
         shell: bash
