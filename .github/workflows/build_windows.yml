@@ -106,9 +106,8 @@ jobs:
           cache-key-prefix: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}-${{ matrix.qt-modules }}
 
       - name: install ccache
-        shell: bash
-        run: |
-          winget install ccache
+        shell: ps
+        run: winget install ccache
 
       - name: install libsndfile
         shell: bash
