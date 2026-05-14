@@ -19,7 +19,9 @@ endif()
 
 find_package(Readline 5.0)
 
-find_package(Sndfile)
+if(NOT NO_LIBSNDFILE)
+	find_package(Sndfile)
+endif()
 
 if (SC_QT OR SC_IDE)
 	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
@@ -318,9 +320,9 @@ if(SNDFILE_FOUND)
 	endif()
 	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
-elseif(NOT NO_LIBSNDFILE)
-	message(SEND_ERROR "Cannot find libsndfile")
-endif(SNDFILE_FOUND)
+else()
+	target_compile_definitions(libsclang PUBLIC NO_LIBSNDFILE)
+endif()
 
 if (FFTW3F_FOUND)
 	target_include_directories (libsclang ${FFTW3F_INCLUDE_DIR})

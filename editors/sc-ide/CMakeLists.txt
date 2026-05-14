@@ -430,9 +430,25 @@ elseif(WIN32)
     )
 
     set(SC_WIN_DLL_DIRS)
-    if(SNDFILE_LIBRARY_DIR)
-      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
-    endif(SNDFILE_LIBRARY_DIR)
+	if(DEFINED VCPKG_ROOT OR DEFINED ENV{VCPKG_ROOT})
+		if(DEFINED VCPKG_ROOT)
+			set(_vcpkg_base "${VCPKG_ROOT}")
+		else()
+			set(_vcpkg_base "$ENV{VCPKG_ROOT}")
+		endif()
+		list(APPEND SC_WIN_DLL_DIRS "${_vcpkg_base}/installed/${VCPKG_TARGET_TRIPLET}/bin")
+	endif()
+	if(TARGET Sndfile::sndfile)
+		get_target_property(SNDFILE_DLL_PATH Sndfile::sndfile IMPORTED_LOCATION)
+		if(NOT SNDFILE_DLL_PATH)
+			get_target_property(SNDFILE_DLL_PATH Sndfile::sndfile IMPORTED_LOCATION_RELEASE)
+		endif()
+		
+		if(SNDFILE_DLL_PATH AND NOT SNDFILE_DLL_PATH MATCHES "-NOTFOUND$")
+			get_filename_component(SNDFILE_LIB_DIR "${SNDFILE_DLL_PATH}" DIRECTORY)
+			list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIB_DIR}")
+		endif()
+	endif()
     if(FFTW3F_LIBRARY_DIR)
       list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
     endif(FFTW3F_LIBRARY_DIR)
@@ -445,6 +461,9 @@ elseif(WIN32)
 
     # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
     # will run windeployqt afterward to auto-deploy QtWebEngine dependencies
+	if(SC_WIN_DLL_DIRS)
+		list(REMOVE_DUPLICATES SC_WIN_DLL_DIRS)
+	endif()
     install(CODE
         "
             include(BundleUtilities)
