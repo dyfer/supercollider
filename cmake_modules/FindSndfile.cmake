@@ -6,6 +6,14 @@ if(DEFINED ENV{VCPKG_ROOT})
     find_package(sndfile CONFIG QUIET)
 endif()
 
+if(NOT TARGET Sndfile::sndfile)
+    if(TARGET sndfile::sndfile)
+        add_library(Sndfile::sndfile ALIAS sndfile::sndfile)
+    elseif(TARGET sndfile)
+        add_library(Sndfile::sndfile ALIAS sndfile)
+    endif()
+endif()
+
 # if sndfile was not found in vcpkg
 if(NOT TARGET Sndfile::sndfile)
 
