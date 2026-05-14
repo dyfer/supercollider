@@ -118,7 +118,7 @@ jobs:
           curl -L ${{ matrix.sndfile-url }} -o sndfile.zip
           7z x sndfile.zip -o"$PROGRAMFILES" -y
 
-          ls -R "$PROGRAMFILES/libsndfile*" | grep -E "bin|lib"
+          ls -R "$PROGRAMFILES/libsndfile"* | grep -E "bin|lib"
 
       - name: download fftw
         shell: bash
