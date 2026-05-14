@@ -40,13 +40,20 @@ elseif (APPLE)
   endif()
 
 else()
+  set(SNDFILE_HINT_PATHS_WIN "")
+  if(WIN32)
+    file(GLOB SNDFILE_HINT_PATHS_WIN 
+      "$ENV{ProgramFiles}/libsndfile*"
+      "$ENV{ProgramFiles\(x86\)}/libsndfile*"
+      "$ENV{ProgramW6432}/libsndfile*"
+    )
+  endif()
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
     HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/include"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/include"
-      "$ENV{ProgramFiles}/libsndfile/include"
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile"
+      ${SNDFILE_HINT_PATHS_WIN}
+    PATH_SUFFIXES 
+      include
     PATHS /usr/local/include
       /usr/include
   )
@@ -54,16 +61,11 @@ else()
   find_library(SNDFILE_LIBRARY
     NAMES sndfile sndfile-1 libsndfile libsndfile-1
     HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
-      "$ENV{ProgramFiles}/libsndfile/lib"
-      "$ENV{ProgramFiles}/libsndfile/bin"
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile"
+      ${SNDFILE_HINT_PATHS_WIN}
+    PATH_SUFFIXES 
+      lib
+      bin
     PATHS /usr/local/
       /usr/lib
   )
@@ -71,17 +73,11 @@ else()
   find_path(SNDFILE_LIBRARY_DIR
     NAMES libsndfile.dll libsndfile-1.dll sndfile.dll
     HINTS
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
-      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
-      "$ENV{ProgramFiles}/libsndfile/lib"
-      "$ENV{ProgramFiles}/libsndfile/bin"
-    PATH_SUFFIXES "bin"
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile"
+      ${SNDFILE_HINT_PATHS_WIN}
+    PATH_SUFFIXES 
+      lib
+      bin
   )
 
   # Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
