@@ -20,7 +20,7 @@ jobs:
             qt-version: "5.15.2"
             qt-arch: "win32_msvc2019"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip"
-            sndfile-url: "https://github.com/libsndfile/libsndfile/releases/download/1.2.2/libsndfile-1.2.2-win64.zip"
+            sndfile-url: "https://github.com/libsndfile/libsndfile/releases/download/1.2.2/libsndfile-1.2.2-win32.zip"
             cmake-generator: "Visual Studio 17 2022"
             vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
             vcpkg-triplet: x86-windows-release
