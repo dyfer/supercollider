@@ -116,11 +116,7 @@ jobs:
         shell: bash
         run: |
           curl -L ${{ matrix.sndfile-url }} -o sndfile.zip
-
-          TARGET_DIR="${PROGRAMFILES}/libsndfile"
-          mkdir -p "$TARGET_DIR"
-
-          7z x sndfile.zip -o"$TARGET_DIR" -y
+          7z x sndfile.zip -o"${PROGRAMFILES}" -y
 
           ls -R "$TARGET_DIR" | grep -E "bin|lib"
 
