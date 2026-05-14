@@ -4,6 +4,7 @@ FIND_PATH(
     FFTW3F_INCLUDE_DIR
     NAMES fftw3.h
     HINTS $ENV{FFTW3_DIR}/include
+      "${CMAKE_PREFIX_PATH}"
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
       "$ENV{ProgramW6432}/fftw"
       "$ENV{ProgramFiles}/fftw"
@@ -14,6 +15,7 @@ FIND_LIBRARY(
     FFTW3F_LIBRARY
     NAMES fftw3f fftw3f-3 libfftw3f libfftw3f-3
     HINTS $ENV{FFTW3_DIR}/lib
+      "${CMAKE_PREFIX_PATH}"
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
       "$ENV{ProgramW6432}/fftw"
       "$ENV{ProgramFiles}/fftw"
@@ -25,6 +27,7 @@ FIND_PATH(
   FFTW3F_LIBRARY_DIR
   NAMES libfftw3f-3.dll libfftw3f.dll fftw3f-3.dll fftw3f.dll
   HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
+    "${CMAKE_PREFIX_PATH}/bin"
     "$ENV{ProgramW6432}/fftw"
     "$ENV{ProgramFiles}/fftw"
 )
