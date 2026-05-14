@@ -2,16 +2,24 @@
 # Search in vcpkg, pkgconfig, and system locations.
 # Create unified target Sndfile::sndfile
 
+if(TARGET Sndfile::sndfile)
+    return()
+endif()
+
 if(DEFINED ENV{VCPKG_ROOT})
     find_package(sndfile CONFIG QUIET)
 endif()
 
 if(NOT TARGET Sndfile::sndfile)
     if(TARGET sndfile::sndfile)
+        set_target_properties(sndfile::sndfile PROPERTIES IMPORTED_GLOBAL TRUE)
         add_library(Sndfile::sndfile ALIAS sndfile::sndfile)
     elseif(TARGET sndfile)
+        set_target_properties(sndfile PROPERTIES IMPORTED_GLOBAL TRUE)
         add_library(Sndfile::sndfile ALIAS sndfile)
     endif()
+else()
+    set_target_properties(Sndfile::sndfile PROPERTIES IMPORTED_GLOBAL TRUE)
 endif()
 
 # if sndfile was not found in vcpkg
@@ -70,7 +78,7 @@ if(NOT TARGET Sndfile::sndfile)
     endif()
 
     # create the unified target
-    add_library(Sndfile::sndfile UNKNOWN IMPORTED)
+    add_library(Sndfile::sndfile UNKNOWN IMPORTED GLOBAL)
     
     # configure the target properties, including the DLL if found
     if(WIN32 AND SNDFILE_RUNTIME_DLL)
