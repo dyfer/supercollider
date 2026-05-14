@@ -108,8 +108,7 @@ jobs:
       - name: install ccache
         shell: bash
         run: |
-          choco install ccache --no-progress
-          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
+          winget install ccache
 
       - name: install libsndfile
         shell: bash
