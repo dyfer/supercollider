@@ -21,7 +21,7 @@ TestServer_dumpTree : UnitTest {
 		// this overwrites the automatically created default group, so that we only get the root group in the output
 		score.score = ([
 			[0.0, ['/g_dumpTree', 0, 0]],
-			[2.0, [0]] // stop
+			[20.0, [0]] // stop
 		]);
 		// write osc score to a file
 		score.writeOSCFile(oscPath);
