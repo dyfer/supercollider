@@ -34,12 +34,6 @@
 		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
-		'suite': "TestLinkClock",
-		'test': "*",
-		'skip': true,
-		'skipReason': "UnitTest has unknown issues when run in GHA (FIXME)",
-	),
-	(
 		'suite': "TestNodeProxyRoles",
 		'test': "test_proxyroles_xfade_smoothly",
 		'skipReason': "UnitTest fails in GHA (FIXME)",
