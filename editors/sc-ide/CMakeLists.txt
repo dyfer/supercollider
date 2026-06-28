@@ -343,6 +343,9 @@ elseif(WIN32)
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
+	if(MINGW) # fix compilation with qt 6.8
+		set_target_properties(SuperCollider PROPERTIES qt_no_entrypoint TRUE)
+	endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
