@@ -9,11 +9,10 @@ on:
 jobs:
   build-macos:
     runs-on: macos-${{ matrix.os-version }}
-    continue-on-error: ${{ matrix.not-needed-for-ci-test }}
+    continue-on-error: ${{ ! matrix.needed-for-tests }}
     strategy:
       fail-fast: false
       matrix:
-        not-needed-for-ci-test: [true]
         include:
           - job-name: "universal arm64 x64 with ctest"
             os-version: "15"
@@ -31,7 +30,7 @@ jobs:
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-universal"
             ctest: true
-            not-needed-for-ci-test: false
+            needed-for-tests: true
 
           - job-name: "x64 legacy"
             os-version: "15-intel"
