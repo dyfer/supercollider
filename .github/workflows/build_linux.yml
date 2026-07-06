@@ -25,8 +25,8 @@ jobs:
 
           - job-name: ""
             os-version: "22.04"
-            c-compiler: "gcc-11"
-            cxx-compiler: "g++-11"
+            c-compiler: "gcc-11123123"
+            cxx-compiler: "g++-123123"
             use-syslibs: false
             shared-libscsynth: false
             ctest: false
