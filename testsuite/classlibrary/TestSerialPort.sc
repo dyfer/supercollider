@@ -336,7 +336,7 @@ TestSerialPort : UnitTest {
 		rxErrs = 0;
 
 		// Overflow the buffer by exactly 1
-		for(0, kBufferSize) { |i|
+		for(0, kBufferSize + 256) { |i|
 			while { res = out.put($a); res == false } { // retry if writing failed
 				"retrying...".postln;
 				0.001.wait;
