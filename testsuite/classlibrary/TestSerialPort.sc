@@ -46,8 +46,8 @@ TestSerialPort : UnitTest {
 			// handle Windows in the future
 			block {|break|
 				[
-					"C:\Program Files\com0com\setupc.exe"
-					"C:\Program Files (x86)\com0com\setupc.exe"
+					"C:\\Program Files\\com0com\\setupc.exe"
+					"C:\\Program Files (x86)\\com0com\\setupc.exe"
 				].do({|thisPath|
 					if(File.exists(thisPath), {
 						utilityExec = thisPath;
