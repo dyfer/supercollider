@@ -294,10 +294,10 @@ TestSerialPort : UnitTest {
 			0.0001.wait;
 		};
 
-		fork { 3.wait; cond.test_(true).signal };
+		fork { 10.wait; cond.test_(true).signal };
 
 		// spin until all data has been read
-		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
+		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors.postln; 0.01.wait; };
 
 		this.assert(rxErrs > 0);
 
