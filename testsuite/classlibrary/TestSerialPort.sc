@@ -35,7 +35,7 @@ TestSerialPort : UnitTest {
 		skipSerialTests = false;
 		this.findSocat;
 		utilityExec ?? {
-			"Skipping most SerialPort tests because socat is not installed.".warn;
+			"Skipping most SerialPort tests because % is not installed.".format((thisProcess.platform.name == \windows).if{"com0com"} {"socat"}).warn;
 			skipSerialTests = true;
 		};
 		^skipSerialTests;
