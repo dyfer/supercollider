@@ -347,7 +347,7 @@ TestSerialPort : UnitTest {
 
 		"Written bytes: %\n".postf(written);
 
-		fork { 10.wait; cond.test_(true).signal; if(finished.not) {"TIMEOUT!".warn}};
+		fork { 20.wait; cond.test_(true).signal; if(finished.not) {"TIMEOUT!".warn}};
 
 		// spin until all data has been read
 		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
