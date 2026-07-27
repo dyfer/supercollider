@@ -11,7 +11,7 @@ TestSerialPort : UnitTest {
 	var skipSerialTests;
 	var input;
 	var output;
-	var socatExec;
+	var utilityExec;
 
 	const kBufferSize = 8192;
 
@@ -34,7 +34,7 @@ TestSerialPort : UnitTest {
 		};
 		skipSerialTests = false;
 		this.findSocat;
-		socatExec ?? {
+		utilityExec ?? {
 			"Skipping most SerialPort tests because socat is not installed.".warn;
 			skipSerialTests = true;
 		};
@@ -42,12 +42,23 @@ TestSerialPort : UnitTest {
 	}
 
 	findSocat {
-		if(thisProcess.platform.name == \windows, {
+		if(thisProcess.platform.name == \windows) {
 			// handle Windows in the future
-		}, {
-			socatExec = "which socat".unixCmdGetStdOut.replace($\n);
-			if(socatExec.size == 0, {socatExec = nil}); //reset to nil if it's an empty string
-			socatExec ?? {
+			block {|break|
+				[
+					"C:\Program Files\com0com\setupc.exe"
+					"C:\Program Files (x86)\com0com\setupc.exe"
+				].do({|thisPath|
+					if(File.exists(thisPath), {
+						utilityExec = thisPath;
+						break.();
+					})
+				})
+			}
+		} {
+			utilityExec = "which socat".unixCmdGetStdOut.replace($\n);
+			if(utilityExec.size == 0, {utilityExec = nil}); //reset to nil if it's an empty string
+			utilityExec ?? {
 				block {|break|
 					[
 						"/usr/bin/socat",
@@ -55,27 +66,60 @@ TestSerialPort : UnitTest {
 						"/opt/homebrew/bin/socat"
 					].do({|thisPath|
 						if(File.exists(thisPath), {
-							socatExec = thisPath;
+							utilityExec = thisPath;
 							break.();
 						})
 					})
 				}
 			};
-		});
-		socatExec !? {socatExec = thisProcess.platform.formatPathForCmdLine(socatExec)}
+		};
+		utilityExec !? {utilityExec = thisProcess.platform.formatPathForCmdLine(utilityExec)}
 	}
 
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
-		^this.createSocatPorts();
+		if(thisProcess.platform.name == \windows) {
+			^this.getCom0ComPort;
+		} {
+			^this.createSocatPorts;
+		}
 	}
 
 	destroyPorts {
-		"killall socat".unixCmdGetStdOut();
+		if(thisProcess.platform.name != \windows) {
+			"killall socat".unixCmdGetStdOut();
+		};
+	}
+
+	getCom0ComPort { // Windows only
+		var cmd = "% list".format(utilityExec);
+		var allPorts = cmd.unixCmdGetStdOutLines;
+		var first, second;
+		var getNameFromLine;
+
+		getNameFromLine = {|line|
+			var thisPort = line.findRegexp("PortName=([^,\r\n]+)")[1][1];
+			if(thisPort == "-") {thisPort = "\\\\.\\" ++ line.split($ ).first}; // use internal name if there's no alias;
+			thisPort
+		};
+
+		first = allPorts[0].postln;
+		first = getNameFromLine.(first);
+		if(first.isEmpty) {
+			Error("Could not get the port name").throw;
+		};
+
+		second = allPorts[1].postln;
+		second = getNameFromLine.(second);
+		if(second.isEmpty) {
+			Error("Could not get the port name").throw;
+		};
+
+		^[first, second]
 	}
 
 	createSocatPorts {
-		var cmd = "% -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1".format(socatExec);
+		var cmd = "% -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1".format(utilityExec);
 		var pipe = Pipe.new(cmd, "r");
 		var first, second;
 
