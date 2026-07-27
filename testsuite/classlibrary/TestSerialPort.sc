@@ -79,7 +79,8 @@ TestSerialPort : UnitTest {
 		var pipe = Pipe.new(cmd, "r");
 		var first, second;
 
-		first = pipe.getLine;
+		"creating socat ports".postln;
+		first = pipe.getLine.postln;
 		first = first.findRegexp("/dev/(ttys|pts).*");
 		if(first.isEmpty) {
 			Error("socat is not installed").throw;
@@ -87,7 +88,7 @@ TestSerialPort : UnitTest {
 
 		first = first[0][1];
 
-		second = pipe.getLine;
+		second = pipe.getLine.postln;
 		second = second.findRegexp("/dev/(ttys|pts).*");
 		if(second.isEmpty) {
 			Error("couldn't read second tty from socat").throw;
