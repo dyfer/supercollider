@@ -326,6 +326,7 @@ TestSerialPort : UnitTest {
 	test_rxErrors_bufferOverflow {
 		var in, out, cond, rxErrs;
 		var finished = false;
+		var written = 0, res;
 		if(this.skipSerialTests) { ^this };
 
 		in = this.mkPort(input);
@@ -335,12 +336,15 @@ TestSerialPort : UnitTest {
 
 		// Overflow the buffer by exactly 1
 		for(0, kBufferSize) { |i|
-			while { out.put($a) == false } { // retry if writing failed
+			while { res = out.put($a); res == false } { // retry if writing failed
 				"retrying...".postln;
 				0.001.wait;
 			};
+			if(res) {written = written + 1};
 			0.0001.wait;
 		};
+
+		"Written bytes: %\n".postf(written);
 
 		fork { 3.wait; cond.test_(true).signal; if(finished.not) {"TIMEOUT!".warn}};
 
