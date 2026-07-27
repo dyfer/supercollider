@@ -22,22 +22,21 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: ""
+          - job-name: "shared libscsynth"
             os-version: "22.04"
             c-compiler: "gcc-11"
             cxx-compiler: "g++-11"
             use-syslibs: false
-            shared-libscsynth: false
+            shared-libscsynth: true
             ctest: false
 
-          - job-name: "with ctest"
+          - job-name: ""
             os-version: "22.04"
             c-compiler: "gcc-12"
             cxx-compiler: "g++-12"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
-            ctest: true
+            ctest: false
 
           - job-name: "use system libraries with ctest"
             os-version: "24.04"
@@ -47,13 +46,14 @@ jobs:
             shared-libscsynth: false
             ctest: true
 
-          - job-name: "shared libscsynth"
+          - job-name: "with ctest"
             os-version: "24.04"
             c-compiler: "gcc-14"
             cxx-compiler: "g++-14"
             use-syslibs: false
-            shared-libscsynth: true
-            ctest: false
+            shared-libscsynth: false
+            artifact-suffix: "ubuntu-24.04-gcc14" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            ctest: true
             
           - job-name: ""
             os-version: "22.04"
