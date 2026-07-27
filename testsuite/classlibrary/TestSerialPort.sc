@@ -11,6 +11,7 @@ TestSerialPort : UnitTest {
 	var skipSerialTests;
 	var input;
 	var output;
+	var socatExec;
 
 	const kBufferSize = 8192;
 
@@ -32,15 +33,36 @@ TestSerialPort : UnitTest {
 			^skipSerialTests;
 		};
 		skipSerialTests = false;
-		if(thisProcess.platform.name == \windows) {
-			"Skipping most SerialPort tests because platform is Windows.".warn;
-			skipSerialTests = true;
-		};
-		if("which socat".systemCmd != 0) {
+		this.findSocat;
+		socatExec ?? {
 			"Skipping most SerialPort tests because socat is not installed.".warn;
 			skipSerialTests = true;
 		};
 		^skipSerialTests;
+	}
+
+	findSocat {
+		if(thisProcess.platform.name == \windows, {
+			// handle Windows in the future
+		}, {
+			socatExec = "which socat".unixCmdGetStdOut.replace($\n);
+			if(socatExec.size == 0, {socatExec = nil}); //reset to nil if it's an empty string
+			socatExec ?? {
+				block {|break|
+					[
+						"/usr/bin/socat",
+						"/usr/local/bin/socat",
+						"/opt/homebrew/bin/socat"
+					].do({|thisPath|
+						if(File.exists(thisPath), {
+							socatExec = thisPath;
+							break.();
+						})
+					})
+				}
+			};
+		});
+		socatExec !? {socatExec = thisProcess.platform.formatPathForCmdLine(socatExec)}
 	}
 
 	// Create a pair of virtual serial ports and return their names
@@ -53,7 +75,7 @@ TestSerialPort : UnitTest {
 	}
 
 	createSocatPorts {
-		var cmd = "socat -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1";
+		var cmd = "% -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1".format(socatExec);
 		var pipe = Pipe.new(cmd, "r");
 		var first, second;
 
