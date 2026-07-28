@@ -58,6 +58,9 @@ jobs:
 
           echo "installing com0com"
           choco install com0com --yes --no-progress
+          echo "setting up COM ports"
+          cd "/c/Program Files (x86)/com0com"
+          ./setupc.exe install PortName=COM3 PortName=COM4
 
       - name: Run tests
         shell: bash
