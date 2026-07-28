@@ -100,6 +100,10 @@ TestSerialPort : UnitTest {
 
 		"allPorts: ".post; allPorts.postcs;
 
+		if(allPorts.size == 0) {
+			Error("No virtual ports available, create ports first").throw;
+		};
+
 		allPorts = allPorts.split($\n);
 
 		getNameFromLine = {|line|
