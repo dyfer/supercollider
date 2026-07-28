@@ -56,6 +56,9 @@ jobs:
 
       - name: Run tests
         shell: bash
+        env:
+          QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-gpu"
+          LIBGL_ALWAYS_SOFTWARE: "1"
         continue-on-error: true
         run: |
           timeout 20m $SCLANG --include-path $TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
