@@ -341,6 +341,11 @@ TestSerialPort : UnitTest {
 		cond = Condition();
 		rxErrs = 0;
 
+		"testing, is this thing on?".postln;
+		out.put($a);
+		0.1.wait;
+		in.read.postln; // should print 97
+
 		// Overflow the buffer by exactly 1
 		for(0, kBufferSize + 256) { |i|
 			while { res = out.put($a); res == false } { // retry if writing failed
