@@ -98,6 +98,8 @@ TestSerialPort : UnitTest {
 		var first, second;
 		var getNameFromLine;
 
+		"allPorts: ".post; allPorts.postcs;
+
 		allPorts = allPorts.split($\n);
 
 		getNameFromLine = {|line|
@@ -117,6 +119,8 @@ TestSerialPort : UnitTest {
 		if(second.isEmpty) {
 			Error("Could not get the port name").throw;
 		};
+
+		"Using ports % and %\n".postf(first, second);
 
 		^[first, second]
 	}
