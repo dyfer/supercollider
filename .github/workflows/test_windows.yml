@@ -61,7 +61,7 @@ jobs:
           unzip -q com0com.zip -d com0com_signed
           cd com0com_signed
           ls -l
-          ./Setup_com0com_v3.0.0.0_W7_x64_signed.exe /S
+          cmd.exe /c start /wait "" Setup_com0com_v3.0.0.0_W7_x64_signed.exe /S
           # cd "/c/Program Files (x86)/com0com"
           # ./setupc.exe install PortName=COM3 PortName=COM4
 
