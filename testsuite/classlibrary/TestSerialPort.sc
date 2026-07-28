@@ -80,7 +80,7 @@ TestSerialPort : UnitTest {
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
 		if(thisProcess.platform.name == \windows) {
-			^this.getCom0ComPort;
+			^this.getCom0ComPorts;
 		} {
 			^this.createSocatPorts;
 		}
@@ -92,25 +92,27 @@ TestSerialPort : UnitTest {
 		};
 	}
 
-	getCom0ComPort { // Windows only
+	getCom0ComPorts { // Windows only
 		var cmd = "% list".format(utilityExec);
-		var allPorts = cmd.unixCmdGetStdOutLines;
+		var allPorts = cmd.unixCmdGetStdOut;
 		var first, second;
 		var getNameFromLine;
 
+		allPorts = allPorts.split($\n);
+
 		getNameFromLine = {|line|
 			var thisPort = line.findRegexp("PortName=([^,\r\n]+)")[1][1];
-			if(thisPort == "-") {thisPort = "\\\\.\\" ++ line.split($ ).first}; // use internal name if there's no alias;
+			if((thisPort == "-") || (thisPort == "COM#")) {thisPort = "\\\\.\\" ++ line.split($ ).first}; // use internal name if there's no alias;
 			thisPort
 		};
 
-		first = allPorts[0].postln;
+		first = allPorts[0].stripWhiteSpace;
 		first = getNameFromLine.(first);
 		if(first.isEmpty) {
 			Error("Could not get the port name").throw;
 		};
 
-		second = allPorts[1].postln;
+		second = allPorts[1].stripWhiteSpace;
 		second = getNameFromLine.(second);
 		if(second.isEmpty) {
 			Error("Could not get the port name").throw;
