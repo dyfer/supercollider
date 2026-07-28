@@ -56,14 +56,27 @@ jobs:
           # start jack
           /c/Program\ Files/JACK2/jackd.exe --no-realtime -d dummy &
 
-          echo "installing com0com"
-          curl -sL "https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip/download" -o com0com.zip
-          unzip -q com0com.zip -d com0com_signed
-          cd com0com_signed
-          ls -l
-          MSYS_NO_PATHCONV=1 cmd.exe /c start /wait "" Setup_com0com_v3.0.0.0_W7_x64_signed.exe /S
-          # cd "/c/Program Files (x86)/com0com"
-          # ./setupc.exe install PortName=COM3 PortName=COM4
+      - name: Install and configure com0com
+        shell: pwsh
+        run: |
+          Write-Output "Downloading com0com..."
+          Invoke-WebRequest -Uri "https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip/download" -OutFile "com0com.zip"
+          
+          Write-Output "Extracting archive..."
+          Expand-Archive -Path "com0com.zip" -DestinationPath "com0com_signed" -Force
+          Set-Location -Path "com0com_signed"
+          
+          Write-Output "Extracting and trusting publisher certificate..."
+          $cert = (Get-AuthenticodeSignature "Setup_com0com_v3.0.0.0_W7_x64_signed.exe").SignerCertificate
+          [System.IO.File]::WriteAllBytes("com0com.cer", $cert.Export("Cert"))
+          certutil.exe -addstore TrustedPublisher com0com.cer
+          
+          Write-Output "Running silent installer..."
+          Start-Process -FilePath ".\Setup_com0com_v3.0.0.0_W7_x64_signed.exe" -ArgumentList "/S" -Wait -NoNewWindow
+          
+          Write-Output "Creating virtual COM ports..."
+          $setupc = "C:\Program Files (x86)\com0com\setupc.exe"
+          & $setupc install PortName=COM3 PortName=COM4
 
       - name: Run tests
         shell: bash
