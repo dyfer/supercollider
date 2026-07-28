@@ -47,12 +47,12 @@ jobs:
             ctest: true
 
           - job-name: "with ctest"
-            os-version: "24.04"
-            c-compiler: "gcc-14"
-            cxx-compiler: "g++-14"
+            os-version: "26.04"
+            c-compiler: "gcc-16"
+            cxx-compiler: "g++-16"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "ubuntu-24.04-gcc14" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
             ctest: true
             
           - job-name: ""
@@ -148,7 +148,10 @@ jobs:
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
 
       - name: install qt from apt
-        run: sudo apt-get install --yes qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools  libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
+        run: |
+          sudo apt-get install --yes qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools linguist-qt6 qt6-l10n-tools libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev libqt6opengl6-dev libqt6svg6-dev
+          # some package names differ between ubuntu 24.04 and 26.04 so we try both
+          sudo apt-get install -y libqt6webchannel6-dev libqt6websockets6-dev || sudo apt-get install -y qt6-webchannel-dev qt6-websockets-dev
 
       - name: configure
         run: |
