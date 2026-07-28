@@ -58,6 +58,11 @@ jobs:
 
           echo "installing com0com"
           choco install com0com --yes --no-progress
+          echo "downloading com0com certificate"
+          curl -sL "https://raw.githubusercontent.com/Apollon77/SupportingFiles/master/appveyor/serial/com0com.cer" -o com0com.cer
+          echo "installing com0com certificate"
+          certutil -addstore -f "Root" com0com.cer
+          certutil -addstore -f "TrustedPublisher" com0com.cer
           echo "setting up COM ports"
           cd "/c/Program Files (x86)/com0com"
           ./setupc.exe install PortName=COM3 PortName=COM4
