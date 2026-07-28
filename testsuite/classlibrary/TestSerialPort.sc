@@ -126,7 +126,7 @@ TestSerialPort : UnitTest {
 	}
 
 	createSocatPorts {
-		var cmd = "% -d -d -b 1 pty,raw,echo=0 pty,raw,echo=0 2>&1".format(utilityExec);
+		var cmd = "% -d -d -b 1 pty,raw,echo=0 pty,raw,echo=0,ignoreeof 2>&1".format(utilityExec);
 		var pipe = Pipe.new(cmd, "r");
 		var first, second;
 
