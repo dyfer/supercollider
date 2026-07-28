@@ -57,10 +57,11 @@ jobs:
           /c/Program\ Files/JACK2/jackd.exe --no-realtime -d dummy &
 
           echo "installing com0com"
-          curl -sL "https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip" -o com0com.zip
+          curl -sL "https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip/download" -o com0com.zip
           unzip -q com0com.zip -d com0com_signed
           cd com0com_signed
-          cmd.exe /c start /wait Setup_com0com_v3.0.0.0_W7_x64_signed.exe /S
+          ls -l
+          ./Setup_com0com_v3.0.0.0_W7_x64_signed.exe //SILENT //SUPPRESSMSGBOXES
           # echo "setting up COM ports"
           # cd "/c/Program Files (x86)/com0com"
           # ./setupc.exe install PortName=COM3 PortName=COM4
