@@ -90,7 +90,7 @@ jobs:
           }
           
           Write-Output "Running silent installer..."
-          $process = Start-Process -FilePath ".\Setup_com0com_v3.0.0.0_W7_x64_signed.exe" -ArgumentList "/S" -Wait -NoNewWindow -WorkingDirectory (Get-Location).Path
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S" -Wait -NoNewWindow -PassThru -WorkingDirectory $installer.DirectoryName
           Write-Output "Installer finished with exit code: $($process.ExitCode)"
           
           Write-Output "Creating virtual COM ports..."
