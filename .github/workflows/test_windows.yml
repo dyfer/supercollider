@@ -60,23 +60,49 @@ jobs:
         shell: pwsh
         run: |
           Write-Output "Downloading com0com..."
-          Invoke-WebRequest -Uri "https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip/download" -OutFile "com0com.zip"
+          curl.exe -sL "https://downloads.sourceforge.net/project/com0com/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip" -o com0com.zip
           
           Write-Output "Extracting archive..."
           Expand-Archive -Path "com0com.zip" -DestinationPath "com0com_signed" -Force
-          Set-Location -Path "com0com_signed"
+          
+          # Dynamically locate the installer in case the zip creates nested folders
+          $installer = Get-ChildItem -Path "com0com_signed" -Filter "Setup_com0com_*.exe" -Recurse | Select-Object -First 1
+          
+          if (-not $installer) {
+              Write-Error "Could not find the com0com setup executable. Download or extraction failed."
+              exit 1
+          }
+          
+          Write-Output "Found installer at: $($installer.FullName)"
           
           Write-Output "Extracting and trusting publisher certificate..."
-          $cert = (Get-AuthenticodeSignature "Setup_com0com_v3.0.0.0_W7_x64_signed.exe").SignerCertificate
-          [System.IO.File]::WriteAllBytes("com0com.cer", $cert.Export("Cert"))
-          certutil.exe -addstore TrustedPublisher com0com.cer
+          $sig = Get-AuthenticodeSignature -FilePath $installer.FullName
+          
+          if ($sig.SignerCertificate) {
+              # Use explicit .NET enum to avoid cast errors
+              $certType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Cert
+              $certBytes = $sig.SignerCertificate.Export($certType)
+              
+              [System.IO.File]::WriteAllBytes("com0com.cer", $certBytes)
+              certutil.exe -addstore TrustedPublisher com0com.cer
+          } else {
+              Write-Warning "Could not read the certificate signature from the executable."
+          }
           
           Write-Output "Running silent installer..."
-          Start-Process -FilePath ".\Setup_com0com_v3.0.0.0_W7_x64_signed.exe" -ArgumentList "/S" -Wait -NoNewWindow
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S" -Wait -PassThru -NoNewWindow
+          Write-Output "Installer finished with exit code: $($process.ExitCode)"
           
           Write-Output "Creating virtual COM ports..."
           $setupc = "C:\Program Files (x86)\com0com\setupc.exe"
-          & $setupc install PortName=COM3 PortName=COM4
+          
+          if (Test-Path $setupc) {
+              & $setupc install PortName=COM3 PortName=COM4
+              Write-Output "COM ports created successfully."
+          } else {
+              Write-Error "setupc.exe not found. The silent installation likely failed."
+              exit 1
+          }
 
       - name: Run tests
         shell: bash
