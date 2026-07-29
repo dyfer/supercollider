@@ -201,10 +201,12 @@ TestSerialPort : UnitTest {
 	}
 
 	test_open_errorOnExistingDevice_crtsctsAndXonxoffBothTrue {
+		var port;
 		if(this.skipSerialTests) { ^this };
-		this.assertException({ SerialPort(input, crtscts: true, xonxoff: true) },
+		this.assertException({ port = SerialPort(input, crtscts: true, xonxoff: true) },
 			PrimitiveFailedError,
 			"Trying to open a serial port with both xonxoff and crtscts should throw");
+		port !? { port.close() };
 	}
 
 	test_open_errorOnMissingDevice {
