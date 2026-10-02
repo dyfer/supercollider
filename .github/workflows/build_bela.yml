@@ -86,7 +86,6 @@ jobs:
         run: |
           sudo ln -s ${{ github.workspace }}/sysroot/usr/xenomai /usr/xenomai
           sudo ln -s ${{ github.workspace }}/sysroot/lib/${{ matrix.library-arch }} /lib/${{ matrix.library-arch }}
-          sudo ln -s ${{ github.workspace }}/sysroot/usr/lib/${{ matrix.library-arch }} /usr/lib/${{ matrix.library-arch }}
 
       - name: Generate Toolchain.cmake
         run: |
