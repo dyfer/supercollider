@@ -79,8 +79,8 @@ jobs:
           LOOP_DEV=$(sudo losetup -a | grep "bela_image.img" | cut -d: -f1)
           
           mkdir -p ${{ github.workspace }}/sysroot
-          # Mount partition 2, which contains the root filesystem on Bela/BeagleBone images
-          sudo mount ${LOOP_DEV}p2${{ github.workspace }}/sysroot
+          # Mount partition 1, which contains the root filesystem on Bela/BeagleBone images
+          sudo mount ${LOOP_DEV}p1 ${{ github.workspace }}/sysroot
 
       - name: Create required symlinks
         run: |
