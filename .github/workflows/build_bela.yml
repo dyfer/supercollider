@@ -91,7 +91,7 @@ jobs:
 
       - name: Generate Toolchain.cmake
         run: |
-          cat << 'EOF' > "${TOOLCHAIN_FILE}"
+          cat << 'EOF' > ${TOOLCHAIN_FILE}
           SET(CMAKE_SYSTEM_NAME Linux)
           SET(CMAKE_SYSTEM_VERSION 1)
           
