@@ -20,6 +20,7 @@ jobs:
             cxx-compiler: "g++-11"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: false
 
           - job-name: "use system libraries with ctest"
@@ -28,6 +29,7 @@ jobs:
             cxx-compiler: "g++-13"
             use-syslibs: true
             shared-libscsynth: false
+            build-type: "Release"
             ctest: true
 
           - job-name: "shared libscsynth"
@@ -36,6 +38,7 @@ jobs:
             cxx-compiler: "g++-14"
             use-syslibs: false
             shared-libscsynth: true
+            build-type: "Release"
             ctest: false
 
           - job-name: ""
@@ -44,6 +47,7 @@ jobs:
             cxx-compiler: "g++-15"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: false
 
           - job-name: "with ctest"
@@ -52,7 +56,19 @@ jobs:
             cxx-compiler: "g++-16"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in test_linux.yml
+            build-type: "Release"
+            ctest: true
+
+          - job-name: "with ctest test configuration"
+            os-version: "26.04"
+            c-compiler: "gcc-16"
+            cxx-compiler: "g++-16"
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: "ubuntu-26.04-gcc16-test" # will trigger artifact upload; after changing this update the test-linux artifact-file in test_linux.yml
+            build-type: "Debug"
+            additional-cmake-flags: ""
             ctest: true
             
           - job-name: ""
@@ -61,6 +77,7 @@ jobs:
             cxx-compiler: "clang++-14"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: false
 
           - job-name: "with ctest"
@@ -69,6 +86,7 @@ jobs:
             cxx-compiler: "clang++-18"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: true
 
           - job-name: ""
@@ -77,6 +95,7 @@ jobs:
             cxx-compiler: "clang++-19"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: false
 
           - job-name: ""
@@ -85,6 +104,7 @@ jobs:
             cxx-compiler: "clang++-20"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: false
 
           - job-name: "with ctest"
@@ -93,6 +113,7 @@ jobs:
             cxx-compiler: "clang++-21"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: true
 
           - job-name: "arm64 with ctest"
@@ -101,6 +122,7 @@ jobs:
             cxx-compiler: "clang++-21"
             use-syslibs: false
             shared-libscsynth: false
+            build-type: "Release"
             ctest: true
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
@@ -128,8 +150,8 @@ jobs:
           path: |
             ~/.ccache
             ~/.cache/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.build-type }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.build-type }}-
 
       - name: install dependencies
         run: |
@@ -157,13 +179,13 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          EXTRA_CMAKE_FLAGS=
+          EXTRA_CMAKE_FLAGS="${{ matrix.additional-cmake-flags }}"
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
+          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} .. # --debug-output
 
       - name: build
         run: |
