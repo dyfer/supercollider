@@ -73,7 +73,7 @@ jobs:
 
       - name: Download and mount Bela image
         run: |
-          wget ${{ matrix.bela-image-url }} -O bela_image.img.xz
+          wget -nv ${{ matrix.bela-image-url }} -O bela_image.img.xz
           xz -d bela_image.img.xz
           
           # Attach the uncompressed image to a loop device and parse partitions
@@ -134,6 +134,9 @@ jobs:
           SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
           SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
           EOF
+
+          echo "Contents of Toolchain file at ${TOOLCHAIN_FILE}:"
+          cat ${TOOLCHAIN_FILE}
 
       - name: configure
         run: |
