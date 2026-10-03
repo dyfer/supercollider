@@ -34,7 +34,8 @@ jobs:
     env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      SYSROOT: ${sysroot}
+      SYSROOT: ${{ github.workspace }}/../sysroot
+      TOOLCHAIN_FILE: ${{ github.workspace }}/build/Toolchain-${{ matrix.library-arch }}.cmake
 
     steps:
       - uses: actions/checkout@v7
@@ -90,7 +91,7 @@ jobs:
 
       - name: Generate Toolchain.cmake
         run: |
-          cat << 'EOF' > ${{ github.workspace }}/Toolchain-${{ matrix.library-arch }}.cmake
+          cat << 'EOF' > "${TOOLCHAIN_FILE}"
           SET(CMAKE_SYSTEM_NAME Linux)
           SET(CMAKE_SYSTEM_VERSION 1)
           
@@ -138,15 +139,15 @@ jobs:
 
           # Confine pkg-config strictly to the sysroot
           export PKG_CONFIG_DIR=""
-          export PKG_CONFIG_SYSROOT_DIR="${sysroot}"
+          export PKG_CONFIG_SYSROOT_DIR="${SYSROOT}"
           export PKG_CONFIG_LIBDIR="${PKG_CONFIG_SYSROOT_DIR}/usr/lib/pkgconfig:${PKG_CONFIG_SYSROOT_DIR}/usr/share/pkgconfig:${PKG_CONFIG_SYSROOT_DIR}/usr/lib/${{ matrix.library-arch }}/pkgconfig"
 
-          cmake -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release \
-          -DAUDIOAPI=bela -DBELA_CONFIG_PATH="${SYSROOT}/usr/local/bin/bela-config" \
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/Toolchain-${{ matrix.library-arch }}.cmake \
-          -DSC_EL=OFF -DSC_VIM=OFF -DSC_QT=OFF -DSC_IDE=OFF \
+          cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_QT=OFF -DSC_IDE=OFF \
           -DINSTALL_HELP=OFF -DNO_X11=ON -DSC_HIDAPI=OFF -DNO_AVAHI=ON \
-          -DSUPERNOVA=OFF -DENABLE_TESTSUITE=OFF .. # --debug-output
+          -DSUPERNOVA=OFF -DENABLE_TESTSUITE=OFF \
+          -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release \
+          -DAUDIOAPI=bela -DBELA_CONFIG_PATH="${SYSROOT}/usr/local/bin/bela-config" \
+          -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" .. # --debug-output
 
       - name: build
         run: |
