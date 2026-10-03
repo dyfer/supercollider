@@ -147,8 +147,11 @@ jobs:
           cmake -DSC_EL=OFF -DSC_VIM=OFF -DSC_QT=OFF -DSC_IDE=OFF \
           -DINSTALL_HELP=OFF -DNO_X11=ON -DSC_HIDAPI=OFF -DNO_AVAHI=ON \
           -DSUPERNOVA=OFF -DENABLE_TESTSUITE=OFF \
+          -DCMAKE_SYSROOT="${SYSROOT}" \
+          -DCMAKE_PREFIX_PATH="${SYSROOT}/usr;${SYSROOT}/usr/lib/${{ matrix.library-arch }}"\
           -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release \
-          -DAUDIOAPI=bela -DBELA_CONFIG_PATH="${SYSROOT}/usr/local/bin/bela-config" \
+          -DAUDIOAPI=bela \
+          # -DBELA_CONFIG="${SYSROOT}/usr/local/bin/bela-config" \
           -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" .. # --debug-output
 
       - name: build
