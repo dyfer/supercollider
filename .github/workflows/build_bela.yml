@@ -73,7 +73,7 @@ jobs:
 
       - name: Download and mount Bela image
         run: |
-          wget -q ${{ matrix.bela-image-url }} -O bela_image.img.xz
+          wget ${{ matrix.bela-image-url }} -O bela_image.img.xz
           xz -d bela_image.img.xz
           
           # Attach the uncompressed image to a loop device and parse partitions
@@ -151,7 +151,6 @@ jobs:
           -DCMAKE_PREFIX_PATH="${SYSROOT}/usr;${SYSROOT}/usr/lib/${{ matrix.library-arch }}"\
           -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release \
           -DAUDIOAPI=bela \
-          # -DBELA_CONFIG="${SYSROOT}/usr/local/bin/bela-config" \
           -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" .. # --debug-output
 
       - name: build
