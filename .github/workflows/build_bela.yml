@@ -35,7 +35,7 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       SYSROOT: ${{ github.workspace }}/../sysroot
-      TOOLCHAIN_FILE: ${{ github.workspace }}/build/Toolchain-${{ matrix.library-arch }}.cmake
+      TOOLCHAIN_FILE: ${{ github.workspace }}/../Toolchain-${{ matrix.library-arch }}.cmake
 
     steps:
       - uses: actions/checkout@v7
@@ -79,10 +79,12 @@ jobs:
           # Attach the uncompressed image to a loop device and parse partitions
           sudo losetup -P -f bela_image.img
           LOOP_DEV=$(sudo losetup -a | grep "bela_image.img" | cut -d: -f1)
+          echo "LOOP_DEV: ${LOOP_DEV}"
           
           mkdir -p ${SYSROOT}
           # Mount partition 1, which contains the root filesystem on Bela/BeagleBone images
           sudo mount ${LOOP_DEV}p1 ${SYSROOT}
+          echo "${LOOP_DEV}p1 mounted at ${SYSROOT}"
 
       - name: Create required symlinks
         run: |
