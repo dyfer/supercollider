@@ -69,6 +69,7 @@ HelpBrowser {
 	}
 
 	*goTo {|url|
+		if(url.isNil) { "url is nil".warn; ^this };
 		if(this.prShouldRedirect(url)) {
 			this.prOpenRedirectMenu(url)
 		} {
