@@ -968,19 +968,15 @@ URI {
 		uri.scheme = "file";
 		uri.authority = "";
 		uri.path = string;
-		if (thisProcess.platform.name === \windows) {
-			uri.path = uri.path.replace("\\","/");
-			if (uri.path.size >= 2 and: {uri.path[1] == $:})
-			{ uri.path = "/" ++ uri.path; }
-		}
-		^ uri;
+		uri.path = uri.path.replace("\\","/");
+		if (uri.path.size >= 2 and: {uri.path[1] == $:}) { uri.path = "/" ++ uri.path };
+		^uri;
 	}
 
 	*tolerant { |string|
 		var uri;
 
-		if (thisProcess.platform.name === \windows
-			and: { string.size >= 2 and: { string[1] == $:} } )
+		if (string.size >= 2 and: { string[1] == $:})
 		{
 			^ this.fromLocalPath(string);
 		};
