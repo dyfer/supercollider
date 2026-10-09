@@ -19,7 +19,7 @@ returns:: an instance of URI
 
 METHOD:: fromLocalPath
 
-Convert file path into a URI.
+Convert file path into a URI. Note that it only accepts absolute paths.
 
 METHOD:: tolerant
 
@@ -32,7 +32,7 @@ INSTANCEMETHODS::
 
 METHOD:: asString
 
-returns:: the URI as a string
+returns:: the URI as a string, e.g. code::"https://example.com":: or code::"file:///path/to/file.txt"::.
 
 METHOD:: asLocalPath
 
@@ -40,11 +40,11 @@ returns:: A file path string, e.g. code::"/path/to/file.txt":: on *nix or code::
 
 METHOD:: scheme
 
-returns:: The Scheme component of the URI, like code::"https://":: or code::"file:///"::.
+returns:: The Scheme component of the URI, like code::"https":: or code::"file"::.
 
 METHOD:: authority
 
-returns:: The Authority component of the URI, i.e. the hostname. Typically the server name for URLs, empty for local file paths.
+returns:: The Authority component of the URI, i.e. the hostname in URLs. It's typically empty for local file paths.
 
 METHOD:: path
 
