@@ -1,0 +1,80 @@
+TITLE:: URI
+summary:: Uniform Resource Identifier conversions
+categories:: HelpSystem, IDE
+related:: Classes/String, Classes/WebView
+
+DESCRIPTION::
+
+A representation of the Uniform Resource Identifier (URI).
+This class attempts compliance with specification link::http://datatracker.ietf.org/doc/rfc3986/##Generic Syntax (RFC 3986)::.
+Use it to construct a valid URIs from local paths and existing URLs.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new URI instance from a valid URI string.
+
+returns:: an instance of URI
+
+METHOD:: fromLocalPath
+
+Convert file path into a URI.
+
+METHOD:: tolerant
+
+Create a new URI instance, accepting both URLs and local paths as input.
+
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: asString
+
+returns:: the URI as a string
+
+METHOD:: asLocalPath
+
+returns:: A file path string, e.g. code::"/path/to/file.txt":: on *nix or code::c:\file\to\path.txt:: on Windows.
+
+METHOD:: scheme
+
+returns:: The Scheme component of the URI, like code::"https://":: or code::"file:///"::.
+
+METHOD:: authority
+
+returns:: The Authority component of the URI, i.e. the hostname. Typically the server name for URLs, empty for local file paths.
+
+METHOD:: path
+
+returns:: The Path segment of the URI, pointing to the local file. Typically empty for URLs.
+
+METHOD:: fragment
+
+returns:: The Fragment component of the URI, like a link to a section of a document.
+
+METHOD:: query
+
+returns:: The Query component of the URI, typically indicated after code::"?":: in the URI string.
+
+PRIVATE:: init
+
+
+EXAMPLES::
+
+code::
+u = URI("https://example.com?query=1#section");
+u.dump; // inspect elements
+
+p = URI("file:///path/to/file.txt");
+p.dump;
+
+// conversion from local paths
+URI.fromLocalPath("/path/to/file.txt").asString; // returns "file:///path/to/file.txt"
+URI.tolerant("/path/to/file.txt").asString; // the same as above, but can accept URLs transparently
+
+"/path/to/file.txt".pathToURI; // shorthand for Strings
+
+
+::
