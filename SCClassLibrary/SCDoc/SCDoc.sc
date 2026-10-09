@@ -1050,6 +1050,10 @@ URI {
 
 		^lines;
 	}
+
+	pathToURI {
+		^URI.fromLocalPath(this).asString;
+	}
 }
 
 + Method {
