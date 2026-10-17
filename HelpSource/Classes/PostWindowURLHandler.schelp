@@ -23,7 +23,7 @@ method:: register
 argument:: name 
 
 A link::Classes/Symbol:: representing the scheme of the URI.
-For example, if the URL is code::bang:///hello:: then the code::name:: should be code::\bang::.
+For example, if the URL is code::bang:///hello:: then the code::name:: should be code::"bang"::.
 
 argument:: fn
 A link::Classes/Function:: accepting one argument, which is the full url as a link::Classes/String::.
