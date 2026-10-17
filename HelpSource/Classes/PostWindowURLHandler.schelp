@@ -5,17 +5,14 @@ categories:: Frontends, IDE
 
 DESCRIPTION::
 Used to respond to specific URLs when clicking links in the post window.
-For example, when clicking on a code::file://:: link, by default this will open the file.
+For example, when clicking on a code::file:///:: link, by default this will open the file.
 
 
 Here is an example of how this class can be used.
 
 When the user clicks on a URL in the post window with the scheme code::scdoc::, open the help file in the IDE help browser.
 code::
-PostWindowURLHandler.register(\scdoc, {|url|
-	var prefix = "scdoc://";
-	ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
-});
+"scdoc:///Classes/Array.html#-put".postln; // creates clickable link in the post window
 ::
 
 CLASSMETHODS::
@@ -25,8 +22,8 @@ method:: register
 
 argument:: name 
 
-A link::Classes/Symbol:: representing the scheme of the URI. 
-For example, if the URL is code::bang://hello:: then the code::name:: should be code::\bang::.
+A link::Classes/Symbol:: representing the scheme of the URI.
+For example, if the URL is code::bang:///hello:: then the code::name:: should be code::\bang::.
 
 argument:: fn
 A link::Classes/Function:: accepting one argument, which is the full url as a link::Classes/String::.
@@ -39,4 +36,4 @@ argument:: scheme
 The scheme of the URI.
 
 argument:: url
-The full url, including the scheme.
+The full url, including the scheme and the authority (hostname).
