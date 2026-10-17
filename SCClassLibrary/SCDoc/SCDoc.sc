@@ -964,13 +964,22 @@ URI {
 		^super.new.init(validUriString)
 	}
 
+	*prHexValue { |char|
+		var ascii = char.ascii;
+		if (ascii >= 48 and: { ascii <= 57 }) { ^(ascii - 48) }; // 0-9
+		if (ascii >= 65 and: { ascii <= 70 }) { ^(ascii - 55) }; // A-F
+		if (ascii >= 97 and: { ascii <= 102 }) { ^(ascii - 87) }; // a-f
+		^nil;
+	}
+
 	*encodeComponent { |string, allowed = ""|
-		var out = "", charCode;
+		var out;
 		string ?? { ^nil };
+		out = String.new(string.size);
 		string.do { |char|
-			charCode = char.ascii.bitAnd(0xFF);
+			var charCode = char.ascii.bitAnd(0xFF);
 			if (unreservedChars.includes(char) or: { allowed.includes(char) }) {
-				out = out ++ char;
+				out = out.add(char);
 			} {
 				out = out ++ "%" ++ charCode.asHexString(2).toUpper;
 			};
@@ -984,15 +993,14 @@ URI {
 		size = string.size;
 		while { inc < size } {
 			char = string[inc];
-			if (char == $% and: { (inc + 2) < size }) {
-				h1 = string[inc + 1].digit;
-				h2 = string[inc + 2].digit;
-				if (h1.notNil and: { h2.notNil } and: { h1 < 16 } and: { h2 < 16 }) {
-					out = out ++ ((h1 * 16) + h2).asAscii;
-					inc = inc + 3;
+			if ((char == $%) and: { (inc + 2) < size }) {
+				h1 = URI.prHexValue(string[inc + 1]);
+				h2 = URI.prHexValue(string[inc + 2]);
+				if (h1.notNil and: { h2.notNil }) {
+					out = out.add(((h1 * 16) + h2).asAscii);
 					inc = inc + 3;
 				} {
-					out = out ++ char;
+					out = out.add(char);
 					inc = inc + 1;
 				};
 			} {
