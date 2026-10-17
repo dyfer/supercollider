@@ -15,8 +15,10 @@ ScIDE {
 		Class.initClassTree(PostWindowURLHandler);
 
 		PostWindowURLHandler.register(\scdoc, {|url|
-			var prefix = "scdoc://";
-			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+			var uri = URI(url);
+			uri.path = SCDoc.helpTargetDir +/+ uri.path;
+			uri.scheme = "file";
+			ScIDE.openHelpUrl(uri.asString)
 		});
 
 		PostWindowURLHandler.register(\file, {|url|
