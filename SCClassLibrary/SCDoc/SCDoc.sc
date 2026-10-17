@@ -956,6 +956,7 @@ URI {
 	*/
 
 	classvar parseRegexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";
+	classvar unreservedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 
 	var <>scheme, <>authority, <>path, <>query, <>fragment;
 
@@ -963,68 +964,130 @@ URI {
 		^super.new.init(validUriString)
 	}
 
-	*fromLocalPath { |string|
-		var uri = super.new;
-		uri.scheme = "file";
-		uri.authority = "";
-		uri.path = string;
-		if (thisProcess.platform.name === \windows) {
-			uri.path = uri.path.replace("\\","/");
-			if (uri.path.size >= 2 and: {uri.path[1] == $:})
-			{ uri.path = "/" ++ uri.path; }
-		}
-		^ uri;
+	*encodeComponent { |string, allowed = ""|
+		var out = "", charCode;
+		string ?? { ^nil };
+		string.do { |char|
+			charCode = char.ascii.bitAnd(0xFF);
+			if (unreservedChars.includes(char) or: { allowed.includes(char) }) {
+				out = out ++ char;
+			} {
+				out = out ++ "%" ++ charCode.asHexString(2).toUpper;
+			};
+		};
+		^out;
 	}
 
-	*tolerant { |string|
-		var uri;
+	*decodeComponent { |string|
+		var out = "", inc = 0, size, char, h1, h2;
+		string ?? { ^nil };
+		size = string.size;
+		while { inc < size } {
+			char = string[inc];
+			if (char == $% and: { (inc + 2) < size }) {
+				h1 = string[inc + 1].digit;
+				h2 = string[inc + 2].digit;
+				if (h1.notNil and: { h2.notNil } and: { h1 < 16 } and: { h2 < 16 }) {
+					out = out ++ ((h1 * 16) + h2).asAscii;
+					inc = inc + 3;
+					inc = inc + 3;
+				} {
+					out = out ++ char;
+					inc = inc + 1;
+				};
+			} {
+				out = out ++ char;
+				inc = inc + 1;
+			};
+		};
+		^out;
+	}
 
-		if (thisProcess.platform.name === \windows
-			and: { string.size >= 2 and: { string[1] == $:} } )
-		{
-			^ this.fromLocalPath(string);
+	*fromLocalPath { |string, platform(thisProcess.platform.name)|
+		var uri, rest, slashIdx, normPath;
+		normPath = string;
+		uri = super.new;
+		uri.scheme = "file";
+		uri.authority = "";
+
+		if (platform === \windows) {
+			normPath = normPath.replace("\\", "/");
+			if (normPath.beginsWith("//")) {
+				rest = normPath.drop(2);
+				slashIdx = rest.find("/");
+				if (slashIdx.notNil) {
+					uri.authority = rest.keep(slashIdx);
+					normPath = rest.drop(slashIdx);
+				} {
+					uri.authority = rest;
+					normPath = "/";
+				};
+			} {
+				if (normPath.size >= 2 and: { normPath[1] == $: }) {
+					normPath = "/" ++ normPath;
+				};
+			};
+		};
+
+		uri.path = normPath;
+		^uri;
+	}
+
+	*tolerant { |string, platform(thisProcess.platform.name)|
+		var uri;
+		string ?? { ^this.new(nil) };
+
+		if (platform === \windows) {
+			if ((string.size >= 2 and: { string[1] == $: }) or: { string.beginsWith("\\\\") }) {
+				^this.fromLocalPath(string, platform);
+			};
 		};
 
 		uri = this.new(string);
-		if (uri.scheme.isNil && string.notNil) {
+		if (uri.scheme.isNil) {
 			uri.scheme = "file";
-			if (uri.authority.isNil) { uri.authority = "" }
+			if (uri.authority.isNil) { uri.authority = "" };
 		};
-		^ uri;
+		^uri;
 	}
 
 	init { |string|
 		var result;
 		if (string.notNil) {
-			string = string.replace("%20"," ");
-			result = string.findRegexp( parseRegexp ).flop[1];
-			if (result[1].size > 0) { scheme = result[2] };
-			if (result[3].size>0) { authority = result[4] };
-			path = result[5];
-			if (result[6].size > 0) { query = result[7] };
-			if (result[8].size > 0) { fragment = result[9] };
+			result = string.findRegexp(parseRegexp).flop[1];
+			if (result[1].size > 0) { scheme = result[2].toLower };
+			if (result[3].size > 0) { authority = URI.decodeComponent(result[4]) };
+			path = URI.decodeComponent(result[5]);
+			if (result[6].size > 0) { query = URI.decodeComponent(result[7]) }; // assumes query is an unstructured string where sub-delimiters (&, =) have no special meaning
+			if (result[8].size > 0) { fragment = URI.decodeComponent(result[9]) };
 		};
 	}
 
-	asLocalPath {
+	asLocalPath { |platform(thisProcess.platform.name)|
 		var localPath;
 		if (scheme != "file") { ^nil };
-		if (thisProcess.platform.name === \windows) {
-			localPath = path;
-			if (localPath.beginsWith("/")) { localPath = localPath.drop(1) };
-			localPath = localPath.replace("/","\\");
-			^localPath;
-		}
-		^ path.copy;
+
+		if (platform === \windows) {
+			localPath = path.copy;
+			if (authority.notNil and: { authority.size > 0 } and: { authority != "localhost" }) {
+				^("\\\\" ++ authority ++ localPath.replace("/", "\\"));
+			};
+			if (localPath.size >= 3 and: { localPath[0] == $/ } and: { localPath[2] == $: }) {
+				localPath = localPath.drop(1);
+			};
+			^localPath.replace("/", "\\");
+		};
+
+		^path.copy;
 	}
 
 	asString {
 		var str = "";
-		if (scheme.notNil) { str = str ++ scheme ++ ":" };
-		if (authority.notNil) { str = str ++ "//" ++ authority };
-		str = str ++ path;
-		if (query.notNil) { str = str ++ "?" ++ query };
-		if (fragment.notNil) { str = str ++ "#" ++ fragment };
+		scheme !? { str = str ++ scheme.toLower ++ ":" };
+		authority !? { str = str ++ "//" ++ URI.encodeComponent(authority, "!$&'()*+,;=:[]@") };
+		path !? { str = str ++ URI.encodeComponent(path, "/:@!$&'()*+,;=") };
+		query !? { str = str ++ "?" ++ URI.encodeComponent(query, "/?:@!$&'()*+,;=") };
+		fragment !? { str = str ++ "#" ++ URI.encodeComponent(fragment, "/?:@!$&'()*+,;=") };
 		^str;
 	}
 }
