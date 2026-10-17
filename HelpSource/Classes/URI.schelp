@@ -25,6 +25,21 @@ METHOD:: tolerant
 
 Create a new URI instance, accepting both URLs and local paths as input.
 
+METHOD:: encodeComponent
+Converts a raw string into a percent-encoded URI string while preserving characters that are structurally legal in that specific URI component.
+
+ARGUMENT:: string
+The raw string to be encoded.
+
+ARGUMENT:: allowed
+A string of characters that should not be percent-encoded.
+
+METHOD:: decodeComponent
+Converts a percent-encoded URI string into a raw string.
+
+ARGUMENT:: string
+The percent-encoded URI string to be decoded.
+
 
 
 
