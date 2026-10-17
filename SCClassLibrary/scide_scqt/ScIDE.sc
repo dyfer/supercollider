@@ -15,14 +15,17 @@ ScIDE {
 		Class.initClassTree(PostWindowURLHandler);
 
 		PostWindowURLHandler.register(\scdoc, {|url|
-			var prefix = "scdoc://";
-			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
+			var uri = URI(url);
+			uri.path = SCDoc.helpTargetDir +/+ uri.path;
+			uri.scheme = "file";
+			ScIDE.openHelpUrl(uri.asString)
 		});
 
+		// handle URIs with line and column number in the "fragment" part: file:///path/to/file.scd#line:column
 		PostWindowURLHandler.register(\file, {|url|
-			var prefix = "file://";
-			var parts = url[prefix.size..].split($:);
-			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+			var uri = URI(url);
+			var lineAndColumn = uri.fragment.split($:);
+			{ Document.openAtLine(uri.asLocalPath, lineAndColumn[0] ?? { 0 }, lineAndColumn[1] ?? { 0 }) }.fork(AppClock)
 		});
 
 		PostWindowURLHandler.register(\http, {|url|
