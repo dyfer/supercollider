@@ -20,9 +20,8 @@ ScIDE {
 		});
 
 		PostWindowURLHandler.register(\file, {|url|
-			var prefix = "file://";
-			var parts = url[prefix.size..].split($:);
-			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
+			var parts = URI(url).path.split($:);
+			{ Document.openAtLine(parts[0], parts[1] ?? { 0 }, parts[2] ?? { 0 }) }.fork(AppClock)
 		});
 
 		PostWindowURLHandler.register(\http, {|url|
