@@ -7,7 +7,7 @@ DESCRIPTION::
 
 A representation of the Uniform Resource Identifier (URI).
 This class attempts compliance with specification link::http://datatracker.ietf.org/doc/rfc3986/##Generic Syntax (RFC 3986)::.
-Use it to construct a valid URIs from local paths and existing URLs.
+Use it to construct a valid URIs from local paths and existing URLs, e.g. convert code::"/path/to/file.txt":: to code::"file:///path/to/file.txt"::.
 
 
 CLASSMETHODS::
@@ -21,9 +21,15 @@ METHOD:: fromLocalPath
 
 Convert file path into a URI. Note that it only accepts absolute paths.
 
+ARGUMENT:: platform
+A Symbol representing platform, defaulting to code::thisProcess.platform.name::. Windows paths need to be parsed differently than *nix paths, so specifying this argument allows to enforce desired operation when converting paths for a different platform.
+
 METHOD:: tolerant
 
 Create a new URI instance, accepting both URLs and local paths as input.
+
+ARGUMENT:: platform
+A Symbol - see above for description.
 
 METHOD:: encodeComponent
 Converts a raw string into a percent-encoded URI string while preserving characters that are structurally legal in that specific URI component.
@@ -40,7 +46,7 @@ Converts a percent-encoded URI string into a raw string.
 ARGUMENT:: string
 The percent-encoded URI string to be decoded.
 
-
+PRIVATE:: prHexValue
 
 
 INSTANCEMETHODS::
