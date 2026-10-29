@@ -8,7 +8,7 @@
 #include <lexer.hpp>
 #include <sstream>
 #ifdef _MSC_VER
-#    include <windows.h>
+#    include <SC_Codecvt.hpp>
 #endif // _MSC_VER
 
 using namespace sc::lex;
@@ -19,17 +19,6 @@ template <typename Stream> void print(Stream& s, SourceCodeRange r) {
 }
 
 #ifdef _MSC_VER
-// utility function to convert default Windows stdin encoding to UTF-8
-// https://stackoverflow.com/questions/215963/how-do-you-properly-use-widechartomultibyte
-std::string utf8_encode(const std::wstring& wstr) {
-    if (wstr.empty())
-        return std::string();
-    int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), NULL, 0, NULL, NULL);
-    std::string strTo(static_cast<size_t>(size_needed), 0);
-    WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), strTo.data(), size_needed, NULL, NULL);
-    return strTo;
-}
-
 // need wmain for Windows default stdin encoding
 int wmain(int argc, wchar_t* argv[]) {
 #else
@@ -48,7 +37,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "ERROR: can't set console output codepage to UTF-8." << std::endl;
     }
 
-    const std::string source_str = utf8_encode(std::wstring(argv[1]));
+    const std::string source_str = SC_Codecvt::utf16_wcstr_to_utf8_string(std::wstring(argv[1]));
     const auto* source = source_str.c_str();
 #else
     const auto* const source = argv[1];
