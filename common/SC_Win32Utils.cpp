@@ -29,6 +29,7 @@
 #    include <time.h>
 #    include <windows.h>
 #    include <shlobj.h>
+#    include <SC_Codecvt.hpp>
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst) {
     for (int i = 0; i < len; i++)
@@ -225,21 +226,12 @@ int win32_name_thread(const char* name) {
     }();
 #    endif
     if (fn) {
-        auto size = MultiByteToWideChar(CP_UTF8, 0, name, -1, nullptr, 0);
-        if (size == 0) {
-            return GetLastError();
-        }
-        auto buffer = (WCHAR*)alloca(size * sizeof(WCHAR));
-        auto count = MultiByteToWideChar(CP_UTF8, 0, name, -1, buffer, size);
-        if (count == 0) {
-            return GetLastError();
-        }
-
-        HRESULT result = fn(GetCurrentThread(), buffer);
+        std::wstring wname = SC_Codecvt::utf8_cstr_to_utf16_wstring(name);
+        HRESULT result = fn(GetCurrentThread(), wname.c_str());
         if (result == S_OK) {
             return ERROR_SUCCESS;
         } else {
-            return GetLastError();
+            return HRESULT_CODE(result);
         }
     } else {
         return ERROR_CALL_NOT_IMPLEMENTED;
