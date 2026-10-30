@@ -41,10 +41,6 @@
 #include <string> // string
 #include <filesystem>
 
-#ifdef _WIN32
-#    include <windows.h> // MultiByteToWideChar, WideCharToMultiByte
-#endif
-
 /** \namespace SC_Codecvt
  *  \brief Namespace for codepage conversion functions. */
 namespace SC_Codecvt {
@@ -57,36 +53,12 @@ namespace SC_Codecvt {
  *
  * This function is only defined on Windows, to avoid unnecessary header includes.
  * If invalid utf8 is provided, it will be replaced with U+FFFD. */
-inline std::wstring utf8_cstr_to_utf16_wstring(const char* s) noexcept {
-    if (!s || *s == '\0')
-        return {};
-
-    int required_size = MultiByteToWideChar(CP_UTF8, 0, s, -1, nullptr, 0);
-
-    if (required_size <= 1)
-        return {};
-
-    std::wstring result(static_cast<std::size_t>(required_size - 1), L'\0');
-    MultiByteToWideChar(CP_UTF8, 0, s, -1, result.data(), required_size);
-    return result;
-}
+std::wstring utf8_cstr_to_utf16_wstring(const char* s) noexcept;
 
 /** \brief Converts a UTF-16 wchar_t str to UTF-8 std::string
  *
  * This function is only defined on Windows, to avoid unnecessary header includes. */
-inline std::string utf16_wcstr_to_utf8_string(const wchar_t* s) noexcept {
-    if (!s || *s == L'\0')
-        return {};
-
-    int required_size = WideCharToMultiByte(CP_UTF8, 0, s, -1, nullptr, 0, nullptr, nullptr);
-
-    if (required_size <= 1)
-        return {};
-
-    std::string result(static_cast<std::size_t>(required_size - 1), '\0');
-    WideCharToMultiByte(CP_UTF8, 0, s, -1, result.data(), required_size, nullptr, nullptr);
-    return result;
-}
+std::string utf16_wcstr_to_utf8_string(const wchar_t* s) noexcept;
 
 #endif // _WIN32
 
@@ -94,12 +66,12 @@ inline std::string utf16_wcstr_to_utf8_string(const wchar_t* s) noexcept {
  *
  * On POSIX platforms, this just converts using .string(). On Windows, uses
  * conversion between UTF-16 and UTF-8. */
-inline std::string path_to_utf8_str(const std::filesystem::path& p) { return p.u8string(); }
+std::string path_to_utf8_str(const std::filesystem::path& p);
 
 /** \brief Converts a UTF-8 encoded string to a path.
  *
  * On POSIX platforms, this converts using the default constructor. On Windows,
  * uses conversion between UTF-16 and UTF-8. */
-inline std::filesystem::path utf8_str_to_path(const std::string& s) { return std::filesystem::u8path(s); }
+std::filesystem::path utf8_str_to_path(const std::string& s);
 
 } // SC_Codecvt
