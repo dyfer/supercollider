@@ -6,6 +6,7 @@ add_library(sc_lexer STATIC
     src/text_location.cpp
     src/source_utils.cpp
     src/tokens.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
 )
 
 target_include_directories(sc_lexer PUBLIC include)

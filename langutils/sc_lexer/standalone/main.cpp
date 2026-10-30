@@ -8,7 +8,7 @@
 #include <lexer.hpp>
 #include <sstream>
 #ifdef _MSC_VER
-#    include <SC_Codecvt.hpp>
+#    include "SC_Codecvt.hpp"
 #endif // _MSC_VER
 
 using namespace sc::lex;
