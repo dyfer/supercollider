@@ -13,6 +13,10 @@ jobs:
 
     env:
       BUILD_PATH: ${{ github.workspace }}/build
+      CCACHE_COMPILERCHECK: content
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_SLOPPINESS: time_macros,pch_defines,include_file_mtime
 
     steps:
       - uses: actions/checkout@v7
@@ -35,6 +39,7 @@ jobs:
 
       - name: configure
         run: |
+          ccache -z || true # clear ccache stats
           mkdir $BUILD_PATH && cd $BUILD_PATH
           emcmake cmake \
             -DSC_EL=no \
@@ -53,6 +58,9 @@ jobs:
         run: |
           cd $BUILD_PATH
           emmake cmake --build . --target  webeditor
+
+      - name: print ccache stats
+        run: ccache -s || true
 
       - name: run sclang eval test
         run: |

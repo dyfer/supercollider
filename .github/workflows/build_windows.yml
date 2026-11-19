@@ -79,6 +79,10 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       FFTW_INSTALL_DIR: "C:/Program Files/fftw"
+      CCACHE_COMPILERCHECK: content
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_SLOPPINESS: time_macros,pch_defines,include_file_mtime
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
       INSTALLER_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.installer-suffix }}"
     steps:
@@ -147,6 +151,8 @@ jobs:
       - name: configure
         shell: bash
         run: |
+          ccache -z || true # clear ccache stats
+
           export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -157,6 +163,10 @@ jobs:
         shell: bash
         run: |
           cmake --build $BUILD_PATH --config Release --target install --parallel 2
+
+      - name: print ccache stats
+        shell: bash
+        run: ccache -s || true
 
       - name: create archive
         if: matrix.artifact-suffix

@@ -111,6 +111,10 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
+      CCACHE_COMPILERCHECK: content
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_SLOPPINESS: time_macros,pch_defines,include_file_mtime
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
 
     steps:
@@ -155,6 +159,8 @@ jobs:
 
       - name: configure
         run: |
+          ccache -z || true # clear ccache stats
+
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
           EXTRA_CMAKE_FLAGS=
@@ -170,6 +176,8 @@ jobs:
           cd $BUILD_PATH
           make install -j$(nproc)
 
+      - name: print ccache stats
+        run: ccache -s || true
 
       - name: create archive
         if: matrix.artifact-suffix

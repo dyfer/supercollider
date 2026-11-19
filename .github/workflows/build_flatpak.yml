@@ -63,6 +63,9 @@ jobs:
             --repo=repo builddir \
             platform/linux/online.supercollider.SuperCollider.yml
 
+      - name: print ccache stats
+        run: ccache -s || true
+
       - name: Create bundle
         run: |
           flatpak build-bundle repo "${{ env.FLATPAK_FILE }}" online.supercollider.SuperCollider
