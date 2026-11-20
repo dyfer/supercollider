@@ -26,6 +26,7 @@ jobs:
 
     env:
       FLATPAK_FILE: "SuperCollider-${{ inputs.sc-version }}-Linux-${{ matrix.artifact-suffix }}.flatpak"
+      CCACHE_DIR: "${{ github.workspace }}/.flatpak-builder/ccache" # point main ccache to where flatpak-builder stores cache
 
     steps:
       - uses: actions/checkout@v7
@@ -35,7 +36,7 @@ jobs:
       - name: Install flatpak and flatpak-builder
         run: |
           sudo apt-get update
-          sudo apt-get install -y flatpak flatpak-builder
+          sudo apt-get install -y flatpak flatpak-builder ccache
 
       - name: Add Flathub remote
         run: |
@@ -48,11 +49,15 @@ jobs:
             org.kde.Sdk//6.10 \
             io.qt.qtwebengine.BaseApp//6.10
 
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: cache ccache
         uses: actions/cache@v6
         with:
-          path: .flatpak-builder
-          key: flatpak-${{ matrix.arch }}-${{ hashFiles('platform/linux/online.supercollider.SuperCollider.yml') }}
+          path: ${{ env.CCACHE_DIR }}
+          key: flatpak-${{ matrix.arch }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: flatpak-${{ matrix.arch }}-
 
       - name: Build Flatpak
