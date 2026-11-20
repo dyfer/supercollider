@@ -32,6 +32,19 @@ jobs:
       - name: Verify emsdk
         run: emcc -v
 
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: cache ccache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.ccache
+            ~/.cache/ccache
+          key: ${{ runner.os }}-wasm-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-wasm-
+
       - name: install dependencies
         run: |
           sudo apt-get update
