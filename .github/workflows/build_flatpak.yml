@@ -60,6 +60,16 @@ jobs:
           key: flatpak-${{ matrix.arch }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: flatpak-${{ matrix.arch }}-
 
+      - name: setup ccache
+        run: |
+          mkdir -p "$CCACHE_DIR"/ccache
+          cat <<EOF > "$CCACHE_DIR"/ccache.conf
+          base_dir = /run/build
+          sloppiness = time_macros,include_file_mtime,include_file_ctime,file_macro
+          EOF
+
+          ccache -z || true # clear ccache stats
+
       - name: Build Flatpak
         run: |
           flatpak-builder \
