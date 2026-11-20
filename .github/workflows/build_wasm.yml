@@ -17,6 +17,7 @@ jobs:
       CCACHE_BASEDIR: ${{ github.workspace }}
       CCACHE_NOHASHDIR: "true"
       CCACHE_SLOPPINESS: time_macros,pch_defines,include_file_mtime
+      EM_COMPILER_WRAPPER: ccache
 
     steps:
       - uses: actions/checkout@v7
@@ -39,9 +40,7 @@ jobs:
       - name: cache ccache
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.ccache
-            ~/.cache/ccache
+          path: ~/.config/ccache
           key: ${{ runner.os }}-wasm-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-wasm-
 
@@ -63,6 +62,7 @@ jobs:
             -DSC_QT=no \
             -DNO_AVAHI=yes \
             -DSC_ABLETON_LINK=no \
+            -DUSE_CCACHE=no \
             -DCMAKE_BUILD_TYPE="Release" \
             -DNO_X11=yes \
             ..
